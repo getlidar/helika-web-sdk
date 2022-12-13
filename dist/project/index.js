@@ -42,5 +42,21 @@ class Project extends base_1.Base {
         };
         return this.getRequest(`/external/affiliate`, params);
     }
+    //doesn't require api key
+    isOnAllowlist(wallet_address, custom_url) {
+        var params = {
+            wallet_address: wallet_address,
+            custom_url: custom_url,
+        };
+        return this.getRequest(`/external/is-on-allow-list`, params);
+    }
+    getAllowlist(custom_url, page, page_size) {
+        var params = {
+            custom_url: custom_url,
+            page: page,
+            page_size: page_size,
+        };
+        return this.getRequest(`/external/allow-list`, params);
+    }
 }
 exports.Project = Project;

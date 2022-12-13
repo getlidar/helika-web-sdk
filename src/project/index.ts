@@ -80,5 +80,41 @@ export class Project extends Base {
 
     return this.getRequest(`/external/affiliate`,params);
   }
+
+  //doesn't require api key
+  isOnAllowlist(
+    wallet_address:string,
+    custom_url:string,
+  ): Promise<boolean> {
+
+    var params:{
+      wallet_address: string,
+      custom_url:string,
+    } = { 
+      wallet_address: wallet_address,
+      custom_url: custom_url,
+    }
+
+    return this.getRequest(`/external/is-on-allow-list`,params);
+  }
+
+  getAllowlist(
+    custom_url: string,
+    page: number,
+    page_size: number,
+  ): Promise<boolean> {
+
+    var params:{
+      custom_url: string,
+      page: number,
+      page_size: number,
+    } = { 
+      custom_url: custom_url,
+      page: page,
+      page_size: page_size,
+    }
+
+    return this.getRequest(`/external/allow-list`,params);
+  }
   
 }

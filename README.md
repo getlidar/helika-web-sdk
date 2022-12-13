@@ -62,8 +62,6 @@ Response: N/A
 ```ts
 import Refmint from "refmint-sdk"
 
-//Log Referral Example:
-
 const custom_url = 'refmintsdk'; //example project on testnet
 const link_id = 'fqOm45Jv'; //example link id for an affiliate on the example project
 const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t1'; //demo api key for testnet
@@ -91,8 +89,6 @@ Response: boolean
 
 ```ts
 import Refmint from "refmint-sdk"
-
-//Log Referral Example:
 
 const custom_url = "refmintsdk";
 const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
@@ -135,8 +131,6 @@ Response:<br />
 
 ```ts
 import Refmint from "refmint-sdk"
-
-//Log Referral Example:
 
 const custom_url = "refmintsdk";
 const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
@@ -282,4 +276,65 @@ refmintClient.myScore(custom_url,wallet_address).then((resp) => {
 	console.log(e);
 });
 
+```
+
+Is On Allowlist Check Example:
+
+Arguments:<br />
+&emsp;custom_url: string // Custom URL of your project<br />
+&emsp;wallet_address: string // wallet_address of the user to be checked<br />
+
+Response: boolean
+
+
+```ts
+import Refmint from "refmint-sdk"
+
+const custom_url = "refmintsdk";
+const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
+
+refmintClient.isOnAllowlist(
+      custom_url,
+      wallet_address,
+    ).then((resp) => {
+      if (resp) {
+        // do something if wallet_address is on the allowlist
+      } else {
+        // do something else if wallet_address isn't on the allowlist
+      }
+}).catch(e => {
+	console.log(e);
+});
+```
+
+
+Get Allowlist Example:
+
+Arguments:<br />
+&emsp;custom_url: string // Custom URL of your project<br />
+&emsp;page_size: number // how many users to include in query result<br />
+&emsp;page: number // which page of users to return, ie set to page to 2 and page size to 1o if you want users 11-20<br />
+
+Response: Array of users on allowlist
+
+
+```ts
+import Refmint from "refmint-sdk"
+
+const custom_url = "refmintsdk";
+const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
+const page = 1;
+const page_size = 1-;
+
+refmintClient.getAllowlist(
+      custom_url,
+      page,
+      page_size
+    ).then((resp) => {
+      if (resp) {
+        // do something with allowlist
+      }
+}).catch(e => {
+	console.log(e);
+});
 ```

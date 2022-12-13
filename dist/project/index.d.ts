@@ -13,4 +13,6 @@ export declare class Project extends Base {
         referral_link: string;
         referral_id: string;
     }>;
+    isOnAllowlist(wallet_address: string, custom_url: string): Promise<boolean>;
+    getAllowlist(custom_url: string, page: number, page_size: number): Promise<boolean>;
 }
