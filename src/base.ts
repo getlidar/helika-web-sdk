@@ -1,29 +1,18 @@
 import axios from "axios";
 import { BaseURLOptions } from "./index"
 
-type Config = {
+export type Config = {
   apiKey: string;
   baseUrlOption?: BaseURLOptions;
 };
 
 export abstract class Base {
   private apiKey: string;
-  private baseUrl: string;
+  baseUrl: string;
 
   constructor(config: Config) {
     this.apiKey = config.apiKey;
-    switch(config.baseUrlOption) {
-      case BaseURLOptions.LOCAL:
-        this.baseUrl = 'http://localhost:3000';
-        return;
-      case BaseURLOptions.MAINNET:
-        this.baseUrl = 'https://nft.helika.io'
-        return;
-      case BaseURLOptions.TESTNET:
-      default:
-        this.baseUrl = 'https://test.nft.helika.io'
-        return;
-    }
+		this.baseUrl = 'http://localhost:3000';
   }
 
   protected getRequest<T>(endpoint: string, options?: any): Promise<T> {
@@ -39,7 +28,7 @@ export abstract class Base {
     return new Promise((resolve, reject) => {
       axios
         .get(`${url}`,config)
-        .then((resp) => {
+        .then((resp: any) => {
           resolve(resp.data);
         })
         .catch(reject);
@@ -59,7 +48,7 @@ export abstract class Base {
     return new Promise((resolve, reject) => {
       axios
         .post(`${url}`,options,config)
-        .then((resp) => {
+        .then((resp: any) => {
           resolve(resp.data);
         })
         .catch(reject);

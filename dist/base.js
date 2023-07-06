@@ -5,22 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Base = void 0;
 const axios_1 = __importDefault(require("axios"));
-const index_1 = require("./index");
 class Base {
     constructor(config) {
         this.apiKey = config.apiKey;
-        switch (config.baseUrlOption) {
-            case index_1.BaseURLOptions.LOCAL:
-                this.baseUrl = 'http://localhost:3000';
-                return;
-            case index_1.BaseURLOptions.MAINNET:
-                this.baseUrl = 'https://app.refmint.xyz';
-                return;
-            case index_1.BaseURLOptions.TESTNET:
-            default:
-                this.baseUrl = 'https://test.refmint.xyz';
-                return;
-        }
+        this.baseUrl = 'http://localhost:3000';
     }
     getRequest(endpoint, options) {
         const url = `${this.baseUrl}${endpoint}`;

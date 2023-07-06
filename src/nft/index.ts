@@ -1,6 +1,24 @@
-import { Base } from "../base";
+import { BaseURLOptions } from "..";
+import { Base, Config } from "../base";
 
 export class NFT extends Base {
+
+  constructor(config: Config) {
+		super(config);
+		
+    switch(config.baseUrlOption) {
+      case BaseURLOptions.LOCAL:
+        this.baseUrl = 'http://localhost:3000';
+        return;
+      case BaseURLOptions.MAINNET:
+        this.baseUrl = 'https://nft.helika.io'
+        return;
+      case BaseURLOptions.TESTNET:
+      default:
+        this.baseUrl = 'https://test.nft.helika.io'
+        return;
+    }
+  }
   
   logView(
     custom_url:string,

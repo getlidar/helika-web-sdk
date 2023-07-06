@@ -1,8 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NFT = void 0;
+const __1 = require("..");
 const base_1 = require("../base");
 class NFT extends base_1.Base {
+    constructor(config) {
+        super(config);
+        switch (config.baseUrlOption) {
+            case __1.BaseURLOptions.LOCAL:
+                this.baseUrl = 'http://localhost:3000';
+                return;
+            case __1.BaseURLOptions.MAINNET:
+                this.baseUrl = 'https://nft.helika.io';
+                return;
+            case __1.BaseURLOptions.TESTNET:
+            default:
+                this.baseUrl = 'https://test.nft.helika.io';
+                return;
+        }
+    }
     logView(custom_url, link_id) {
         var params = {
             custom_url: custom_url,
