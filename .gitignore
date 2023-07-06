@@ -8,9 +8,6 @@
 # dependencies
 /node_modules
 
-#refmint-example
-/example/node_modules
-
 # misc
 .DS_Store
 .env.local

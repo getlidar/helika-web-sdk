@@ -17,11 +17,11 @@ export abstract class Base {
         this.baseUrl = 'http://localhost:3000';
         return;
       case BaseURLOptions.MAINNET:
-        this.baseUrl = 'https://app.refmint.xyz'
+        this.baseUrl = 'https://nft.helika.io'
         return;
       case BaseURLOptions.TESTNET:
       default:
-        this.baseUrl = 'https://test.refmint.xyz'
+        this.baseUrl = 'https://test.nft.helika.io'
         return;
     }
   }
