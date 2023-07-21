@@ -1,6 +1,6 @@
 # Helika User Acquisition SDK
 
-SDK for use with https://nft.helika.io or https://test.nft.helika.io
+SDK for use with https://ua-api.helika.io or https://ua-api-dev.helika.io
 
 The Helika UA SDK is for developers to be able to make API calls to the Helika UA Mainnet and Testnet endpoints.
 The following pages will describe how to make calls to the Helika UA API. Developers will need to install the helika-ua-sdk to their project. This can be done using npm or by cloning the github project.
@@ -169,7 +169,7 @@ helikaUA.affiliateLink(
       //     "type":"LIVE",
       //     "is_on_allow_list":false,
       //     "link_id":"toRMyGkK",
-      //     "affiliate_link":"https://test.nft.helika.io/p/helikasdk/toRMyGkK"
+      //     "affiliate_link":"https://ua-dev.helika.io/p/helikasdk/toRMyGkK"
       //}
       
       // console.log(resp.clicks) // returns 0
