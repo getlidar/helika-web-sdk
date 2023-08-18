@@ -8,14 +8,14 @@ class NFT extends base_1.Base {
         super(config);
         switch (config.baseUrlOption) {
             case __1.BaseURLOptions.LOCAL:
-                this.baseUrl = 'http://localhost:3000';
+                this.baseUrl = 'https://api-stage.helika.io/v1';
                 return;
             case __1.BaseURLOptions.MAINNET:
-                this.baseUrl = 'https://ua-api.helika.io';
+                this.baseUrl = 'https://api-stage.helika.io/v1';
                 return;
             case __1.BaseURLOptions.TESTNET:
             default:
-                this.baseUrl = 'https://ua-api-dev.helika.io';
+                this.baseUrl = 'https://api-stage.helika.io/v1';
                 return;
         }
     }

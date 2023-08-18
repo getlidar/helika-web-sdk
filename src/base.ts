@@ -12,7 +12,18 @@ export abstract class Base {
 
   constructor(config: Config) {
     this.apiKey = config.apiKey;
-		this.baseUrl = 'http://localhost:3000';
+    switch (config.baseUrlOption) {
+      case BaseURLOptions.LOCAL:
+          this.baseUrl = 'http://localhost:3000';
+          return;
+      case BaseURLOptions.MAINNET:
+          this.baseUrl = 'https://api-stage.helika.io/v2';
+          return;
+      case BaseURLOptions.TESTNET:
+      default:
+          this.baseUrl = 'https://api-stage.helika.io/v1';
+          return;
+    }
   }
 
   protected getRequest<T>(endpoint: string, options?: any): Promise<T> {

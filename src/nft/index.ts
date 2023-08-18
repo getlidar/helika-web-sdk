@@ -8,15 +8,15 @@ export class NFT extends Base {
 		
     switch(config.baseUrlOption) {
       case BaseURLOptions.LOCAL:
-        this.baseUrl = 'http://localhost:3000';
-        return;
+          this.baseUrl = 'http://localhost:3000';
+          return;
       case BaseURLOptions.MAINNET:
-        this.baseUrl = 'https://ua-api.helika.io'
-        return;
+          this.baseUrl = 'https://api-stage.helika.io/v2';
+          return;
       case BaseURLOptions.TESTNET:
       default:
-        this.baseUrl = 'https://ua-api-dev.helika.io'
-        return;
+          this.baseUrl = 'https://api-stage.helika.io/v1';
+          return;
     }
   }
   
