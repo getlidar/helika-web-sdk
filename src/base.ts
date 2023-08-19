@@ -13,15 +13,24 @@ export abstract class Base {
   constructor(config: Config) {
     this.apiKey = config.apiKey;
     switch (config.baseUrlOption) {
-      case BaseURLOptions.LOCAL:
+      case BaseURLOptions.EVENTS_LOCAL:
+          this.baseUrl = 'http://localhost:8181/v1';
+          return;
+      case BaseURLOptions.EVENTS_MAINNET:
+          this.baseUrl = 'https://api.helika.io/v1';
+          return;
+      case BaseURLOptions.EVENTS_TESTNET:
+          this.baseUrl = 'http://api-stage:3000/v1';
+          return;
+      case BaseURLOptions.UA_LOCAL:
           this.baseUrl = 'http://localhost:3000';
           return;
-      case BaseURLOptions.MAINNET:
-          this.baseUrl = 'https://api-stage.helika.io/v2';
+      case BaseURLOptions.UA_MAINNET:
+          this.baseUrl = 'https://ua-api.helika.io';
           return;
-      case BaseURLOptions.TESTNET:
+      case BaseURLOptions.UA_TESTNET:
       default:
-          this.baseUrl = 'https://api-stage.helika.io/v1';
+          this.baseUrl = 'https://ua-api-dev.helika.io';
           return;
     }
   }

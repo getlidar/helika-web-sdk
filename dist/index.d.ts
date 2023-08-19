@@ -1,15 +1,24 @@
 import { Base } from "./base";
-import { NFT } from "./nft";
-declare class NFTInternal extends Base {
+import { UA } from "./ua";
+import { EVENTS } from "./events";
+declare class UA_INTERNAL extends Base {
 }
-interface NFTInternal extends NFT {
+interface UA_INTERNAL extends UA {
+}
+declare class EVENTS_INTERNAL extends Base {
+}
+interface EVENTS_INTERNAL extends EVENTS {
 }
 declare const _default: {
-    NFT: typeof NFTInternal;
+    EVENTS: typeof EVENTS_INTERNAL;
+    UA: typeof UA_INTERNAL;
 };
 export default _default;
 export declare enum BaseURLOptions {
-    LOCAL = 0,
-    TESTNET = 1,
-    MAINNET = 2
+    UA_LOCAL = 0,
+    UA_TESTNET = 1,
+    UA_MAINNET = 2,
+    EVENTS_LOCAL = 3,
+    EVENTS_TESTNET = 4,
+    EVENTS_MAINNET = 5
 }

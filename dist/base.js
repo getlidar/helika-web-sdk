@@ -10,15 +10,24 @@ class Base {
     constructor(config) {
         this.apiKey = config.apiKey;
         switch (config.baseUrlOption) {
-            case index_1.BaseURLOptions.LOCAL:
-                this.baseUrl = 'https://api-stage.helika.io/v1';
+            case index_1.BaseURLOptions.EVENTS_LOCAL:
+                this.baseUrl = 'http://localhost:8181/v1';
                 return;
-            case index_1.BaseURLOptions.MAINNET:
-                this.baseUrl = 'https://api-stage.helika.io/v1';
+            case index_1.BaseURLOptions.EVENTS_MAINNET:
+                this.baseUrl = 'https://api.helika.io/v1';
                 return;
-            case index_1.BaseURLOptions.TESTNET:
+            case index_1.BaseURLOptions.EVENTS_TESTNET:
+                this.baseUrl = 'http://api-stage:3000/v1';
+                return;
+            case index_1.BaseURLOptions.UA_LOCAL:
+                this.baseUrl = 'http://localhost:3000';
+                return;
+            case index_1.BaseURLOptions.UA_MAINNET:
+                this.baseUrl = 'https://ua-api.helika.io';
+                return;
+            case index_1.BaseURLOptions.UA_TESTNET:
             default:
-                this.baseUrl = 'https://api-stage.helika.io/v1';
+                this.baseUrl = 'https://ua-api-dev.helika.io';
                 return;
         }
     }

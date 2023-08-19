@@ -1,15 +1,23 @@
 import { Base } from "./base";
-import { NFT } from "./nft";
+import { UA } from "./ua";
+import { EVENTS } from "./events";
 import { applyMixins } from "./utils";
 
-class NFTInternal extends Base {}
-interface NFTInternal extends NFT {}
-applyMixins(NFTInternal, [NFT]);
+class UA_INTERNAL extends Base {}
+interface UA_INTERNAL extends UA {}
+applyMixins(UA_INTERNAL, [UA]);
 
-export default { NFT: NFTInternal }
+class EVENTS_INTERNAL extends Base {}
+interface EVENTS_INTERNAL extends EVENTS {}
+applyMixins(EVENTS_INTERNAL, [EVENTS]);
+
+export default { EVENTS: EVENTS_INTERNAL, UA: UA_INTERNAL }
 
 export enum BaseURLOptions {
-  LOCAL,
-  TESTNET,
-  MAINNET,
+  UA_LOCAL,
+  UA_TESTNET,
+  UA_MAINNET,
+  EVENTS_LOCAL,
+  EVENTS_TESTNET,
+  EVENTS_MAINNET,
 }

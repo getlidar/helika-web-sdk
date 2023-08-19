@@ -1,6 +1,6 @@
 {
-  "name": "helika-ua-sdk",
-  "version": "1.0.0",
+  "name": "helika-sdk",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.m.js",
