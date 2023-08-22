@@ -17,7 +17,7 @@ class Base {
                 this.baseUrl = 'https://api.helika.io/v1';
                 return;
             case index_1.BaseURLOptions.EVENTS_TESTNET:
-                this.baseUrl = 'http://api-stage:3000/v1';
+                this.baseUrl = 'https://api-stage.helika.io/v1';
                 return;
             case index_1.BaseURLOptions.UA_LOCAL:
                 this.baseUrl = 'http://localhost:3000';
