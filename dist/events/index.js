@@ -1,19 +1,27 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EVENTS = void 0;
 const base_1 = require("../base");
 class EVENTS extends base_1.Base {
     constructor(config) {
         super(config);
-        //switch(config.baseUrlOption) {
-        //  case BaseURLOptions.EVENTS_LOCAL:
-        //    this.baseUrl = 'http://localhost:8181/v1';
-        //  case BaseURLOptions.EVENTS_MAINNET:
-        //    this.baseUrl = 'https://api.helika.io/v1';
-        //  case BaseURLOptions.EVENTS_TESTNET:
-        //  default:
-        //    this.baseUrl = 'https://api-stage.helika.io/v1';
-        //}
+    }
+    fingerprint() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let func = yield this.getFP();
+            let loaded = yield func.load();
+            let fingerprintData = yield loaded.get();
+            return fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId;
+        });
     }
     createEvent(id, events) {
         let created_at = new Date().toISOString();

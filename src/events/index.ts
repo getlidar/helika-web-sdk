@@ -1,19 +1,16 @@
-import { BaseURLOptions } from "..";
 import { Base, Config } from "../base";
 
 export class EVENTS extends Base {
 
   constructor(config: Config) {
 		super(config);
-    //switch(config.baseUrlOption) {
-    //  case BaseURLOptions.EVENTS_LOCAL:
-    //    this.baseUrl = 'http://localhost:8181/v1';
-    //  case BaseURLOptions.EVENTS_MAINNET:
-    //    this.baseUrl = 'https://api.helika.io/v1';
-    //  case BaseURLOptions.EVENTS_TESTNET:
-    //  default:
-    //    this.baseUrl = 'https://api-stage.helika.io/v1';
-    //}
+  }
+
+  async fingerprint(): Promise<any> {
+    let func = await this.getFP();
+    let loaded = await func.load();
+    let fingerprintData = await loaded.get();
+    return fingerprintData?.visitorId;
   }
 
 

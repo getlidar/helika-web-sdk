@@ -9,7 +9,7 @@ The following pages will describe how to make calls to the Helika UA API. Develo
 
 
 ```ts
-npm i helika-ua-sdk
+npm i helika-sdk
 ```
 
 
