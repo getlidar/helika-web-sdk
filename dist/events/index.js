@@ -20,19 +20,43 @@ class EVENTS extends base_1.Base {
             let func = yield this.getFP();
             let loaded = yield func.load();
             let fingerprintData = yield loaded.get();
-            return fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId;
+            return {
+                fingerprint_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId,
+                request_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.requestId
+            };
         });
     }
     createEvent(id, events) {
-        let created_at = new Date().toISOString();
-        let newEvents = events.map(event => {
-            return Object.assign(Object.assign({}, event), { created_at: created_at });
+        return __awaiter(this, void 0, void 0, function* () {
+            let created_at = new Date().toISOString();
+            let fingerprint_data = yield this.fingerprint();
+            let newEvents = events.map(event => {
+                let givenEvent = event;
+                givenEvent.event.fingerprint = fingerprint_data;
+                return Object.assign(Object.assign({}, event), { created_at: created_at });
+            });
+            var params = {
+                id: id,
+                events: newEvents
+            };
+            return this.postRequest(`/game/game-event`, params);
         });
-        var params = {
-            id: id,
-            events: newEvents
-        };
-        return this.postRequest(`/game/game-event`, params);
+    }
+    createUAEvent(id, events) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let created_at = new Date().toISOString();
+            let fingerprint_data = yield this.fingerprint();
+            let newEvents = events.map(event => {
+                let givenEvent = event;
+                givenEvent.event.fingerprint = fingerprint_data;
+                return Object.assign(Object.assign({}, event), { game_id: 'UA', created_at: created_at });
+            });
+            var params = {
+                id: id,
+                events: newEvents
+            };
+            return this.postRequest(`/game/game-event`, params);
+        });
     }
 }
 exports.EVENTS = EVENTS;

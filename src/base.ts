@@ -8,14 +8,10 @@ export type Config = {
 
 export abstract class Base {
   private apiKey: string;
-  fpModule: any;
   baseUrl: string;
 
   constructor(config: Config) {
     this.apiKey = config.apiKey;
-
-    // @ts-ignore Import moduleconst 
-    this.fpModule = import('https://openfpcdn.io/fingerprintjs/v4');
 
     switch (config.baseUrlOption) {
       case BaseURLOptions.EVENTS_LOCAL:
@@ -46,7 +42,7 @@ export abstract class Base {
   protected getFP():any{
     return new Promise((resolve, reject) => {
       // @ts-ignore Import moduleconst 
-      import('https://openfpcdn.io/fingerprintjs/v4')
+      import('https://fpjscdn.net/v3/1V2jYOavAUDljc9GxEgu')
         .then((respA: any) => {
           let response = respA.default;
           resolve(response)

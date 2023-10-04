@@ -1,4 +1,3 @@
-import { BaseURLOptions } from "..";
 import { Base, Config } from "../base";
 
 export class UA extends Base {
@@ -20,15 +19,15 @@ export class UA extends Base {
   }
   
   logView(
-    custom_url:string,
+    url:string,
     link_id?:string
   ): Promise<string|null> {
 
     var params:{
-      custom_url:string,
+      url:string,
       link_id?:string,
     } = { 
-      custom_url: custom_url,
+      url: url,
     }
     if (link_id) params.link_id = link_id;
 
@@ -36,7 +35,7 @@ export class UA extends Base {
   }
 
   logReferral(
-    custom_url:string,
+    url:string,
     wallet_address: string,
     link_id?:string,
     email?: string,
@@ -46,7 +45,7 @@ export class UA extends Base {
   ): Promise<{referral_link: string, referral_id:string}> {
 
     var params:{
-      custom_url:string,
+      url:string,
       wallet_address: string,
       link_id?:string,
       email?: string,
@@ -54,7 +53,7 @@ export class UA extends Base {
       twitter?: string,
       discord?: string,
     } = { 
-      custom_url: custom_url,
+      url: url,
       wallet_address: wallet_address
     }
     if (link_id) params.link_id = link_id;
@@ -66,36 +65,36 @@ export class UA extends Base {
     return this.postRequest(`/sdk/nft/referral`,params);
   }
 
-  isAffiliate(
-    custom_url:string,
+  isAmbassador(
+    url:string,
     wallet_address: string,
   ): Promise<boolean> {
 
     var params:{
-      custom_url:string,
+      url:string,
       wallet_address: string
     } = { 
-      custom_url: custom_url,
+      url: url,
       wallet_address: wallet_address
     }
 
-    return this.getRequest(`/sdk/nft/is-affiliate`,params);
+    return this.getRequest(`/sdk/nft/is-registered-user`,params);
   }
 
-  affiliateLink(
-    custom_url:string,
+  ambassadorLink(
+    url:string,
     wallet_address: string,
   ): Promise<{referral_link: string, referral_id: string}> {
 
     var params:{
-      custom_url:string,
+      url:string,
       wallet_address: string
     } = { 
-      custom_url: custom_url,
+      url: url,
       wallet_address: wallet_address
     }
 
-    return this.getRequest(`/sdk/nft/affiliate`,params);
+    return this.getRequest(`/sdk/nft/user`,params);
   }
   
 }

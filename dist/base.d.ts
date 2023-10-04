@@ -5,7 +5,6 @@ export declare type Config = {
 };
 export declare abstract class Base {
     private apiKey;
-    fpModule: any;
     baseUrl: string;
     constructor(config: Config);
     protected getFP(): any;

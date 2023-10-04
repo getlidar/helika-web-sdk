@@ -32,8 +32,6 @@ const index_1 = require("./index");
 class Base {
     constructor(config) {
         this.apiKey = config.apiKey;
-        // @ts-ignore Import moduleconst 
-        this.fpModule = Promise.resolve().then(() => __importStar(require('https://openfpcdn.io/fingerprintjs/v4')));
         switch (config.baseUrlOption) {
             case index_1.BaseURLOptions.EVENTS_LOCAL:
                 this.baseUrl = 'http://localhost:8181/v1';
@@ -60,7 +58,7 @@ class Base {
     getFP() {
         return new Promise((resolve, reject) => {
             // @ts-ignore Import moduleconst 
-            Promise.resolve().then(() => __importStar(require('https://openfpcdn.io/fingerprintjs/v4'))).then((respA) => {
+            Promise.resolve().then(() => __importStar(require('https://fpjscdn.net/v3/1V2jYOavAUDljc9GxEgu'))).then((respA) => {
                 let response = respA.default;
                 resolve(response);
             })

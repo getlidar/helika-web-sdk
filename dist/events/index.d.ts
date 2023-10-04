@@ -9,4 +9,10 @@ export declare class EVENTS extends Base {
     }[]): Promise<{
         message: string;
     }>;
+    createUAEvent(id: string, events: {
+        event_type: string;
+        event: Object;
+    }[]): Promise<{
+        message: string;
+    }>;
 }
