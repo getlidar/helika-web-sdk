@@ -23,13 +23,16 @@ This is for sending events to the Helika API in a pre-defined structure. You wil
 2.) Sending User Acquisition calls to the HelikaUA API
 This is for UA calls such as logging UA project referrals or checking ambassadors. You will need to use your UA API Key given to you by Helika (can also be found in the settings page on the Helika UA app).
 
-Helika SDK Use Cases:
+## Helika Events API Use Cases	
 
-Fingerprinting Example:
+# Fingerprinting Example:
 
 Arguments: N/A
 
-Response: string
+Response: {<br />
+&emsp;fingerprint_id: string // user fingerprint id<br />
+&emsp;request_id: string // request fingerprint id<br />
+}
 
 ```ts
 import Refmint from "helika-sdk"
@@ -50,21 +53,21 @@ helikaUA.fingerprint().then((fingerprintData) => {
 ```
 
 
-Event Example:
+# Event Example:
 
 Arguments:<br />
 &emsp;id: string // unique if of event<br />
 &emsp;events: event[] // array of events you want to log<br />
 
-event: {
+event: {<br />
 &emsp;game_id: string // unique id of game<br />
 &emsp;event_type: string // type of event<br />
 &emsp;event: object // event information as an object<br />
 }
 
-Response: {
+Response: {<br />
 &emsp;message: string<br />
-&emsp;status: number // 200 OK<br />
+&emsp;status: number // e.g. 200 OK<br />
 }
 
 ```ts
@@ -98,13 +101,13 @@ helikaUA.createEvent({
 
 ```
 
-UA Event Example:
+# UA Event Example:
 
 Arguments:<br />
 &emsp;id: string // unique if of event<br />
 &emsp;events: event[] // array of events you want to log<br />
 
-event: {
+event: {<br />
 &emsp;event_type: string // type of event<br />
 &emsp;event: object // event information as an object<br />
 }
@@ -144,9 +147,9 @@ helikaUA.createEvent({
 ```
 
 
-Helika UA API Use Cases:
+## HelikaUA API Use Cases:
 
-Log Referral Example:
+# Log Referral Example:
 
 Arguments:<br />
 &emsp;url: string // Custom URL of your project<br />
@@ -185,7 +188,7 @@ helikaUA.logReferral(url,wallet_adress,link_id,email_address,phone_number).then(
 
 ```
 
-Log View Example:
+# Log View Example:
 
 Arguments:<br />
 &emsp;url: string // Custom URL of your project<br />
@@ -214,7 +217,7 @@ helikaUA.logView(url,link_id).then((resp) => {
 });
 ```
 
-Is Ambassador Check Example:
+# Is Ambassador Check Example:
 
 Arguments:<br />
 &emsp;url: string // Custom URL of your project<br />
@@ -250,7 +253,7 @@ helikaUA.isAmbassador(
 ```
 
 
-Ambassador Data Example:
+# Ambassador Data Example:
 
 Arguments:<br />
 &emsp;url: string // Custom URL of your project<br />
