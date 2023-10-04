@@ -25,7 +25,7 @@ This is for UA calls such as logging UA project referrals or checking ambassador
 
 ## Helika Events API Use Cases	
 
-# Fingerprinting Example:
+### Fingerprinting Example:
 
 Arguments: N/A
 
@@ -53,7 +53,7 @@ helikaUA.fingerprint().then((fingerprintData) => {
 ```
 
 
-# Event Example:
+### Event Example:
 
 Arguments:<br />
 &emsp;id: string // unique if of event<br />
@@ -101,7 +101,7 @@ helikaUA.createEvent({
 
 ```
 
-# UA Event Example:
+### UA Event Example:
 
 Arguments:<br />
 &emsp;id: string // unique if of event<br />
@@ -149,7 +149,7 @@ helikaUA.createEvent({
 
 ## HelikaUA API Use Cases:
 
-# Log Referral Example:
+### Log Referral Example:
 
 Arguments:<br />
 &emsp;url: string // Custom URL of your project<br />
@@ -188,7 +188,7 @@ helikaUA.logReferral(url,wallet_adress,link_id,email_address,phone_number).then(
 
 ```
 
-# Log View Example:
+### Log View Example:
 
 Arguments:<br />
 &emsp;url: string // Custom URL of your project<br />
@@ -217,7 +217,7 @@ helikaUA.logView(url,link_id).then((resp) => {
 });
 ```
 
-# Is Ambassador Check Example:
+### Is Ambassador Check Example:
 
 Arguments:<br />
 &emsp;url: string // Custom URL of your project<br />
@@ -253,7 +253,7 @@ helikaUA.isAmbassador(
 ```
 
 
-# Ambassador Data Example:
+### Ambassador Data Example:
 
 Arguments:<br />
 &emsp;url: string // Custom URL of your project<br />
