@@ -16,7 +16,6 @@ export class EVENTS extends Base {
     }
   }
 
-
   async createEvent(
     id: string,
     events: {

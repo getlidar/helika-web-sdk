@@ -35,8 +35,6 @@ export abstract class Base {
           return;
     }
 
-    //init fingerprinting here
-
   }
 
   protected getFP():any{

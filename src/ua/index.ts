@@ -4,18 +4,6 @@ export class UA extends Base {
 
   constructor(config: Config) {
 		super(config);
-    //switch (config.baseUrlOption) {
-    //  case BaseURLOptions.UA_LOCAL:
-    //      this.baseUrl = 'http://localhost:3000';
-    //      return;
-    //  case BaseURLOptions.UA_MAINNET:
-    //      this.baseUrl = 'https://ua-api.helika.io';
-    //      return;
-    //  case BaseURLOptions.UA_TESTNET:
-    //  default:
-    //      this.baseUrl = 'https://ua-api-dev.helika.io';
-    //      return;
-    //}
   }
   
   logView(

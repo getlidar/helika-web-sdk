@@ -53,7 +53,6 @@ class Base {
                 this.baseUrl = 'https://ua-api-dev.helika.io';
                 return;
         }
-        //init fingerprinting here
     }
     getFP() {
         return new Promise((resolve, reject) => {
