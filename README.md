@@ -177,7 +177,7 @@ const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t
 
 var helikaUA = new Helika.UA({
 	apiKey: api_key,
-	baseUrl: BaseURLOptions.TESTNET
+	baseUrl: BaseURLOptions.UA_TESTNET
 });
 
 helikaUA.logReferral(url,wallet_adress,link_id,email_address,phone_number).then((resp) => {
@@ -207,7 +207,7 @@ const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t
 
 var helikaUA = new Helika.UA({
 	apiKey: api_key,
-	baseUrl: BaseURLOptions.TESTNET
+	baseUrl: BaseURLOptions.UA_TESTNET
 });
 
 helikaUA.logView(url,link_id).then((resp) => {
@@ -235,7 +235,7 @@ const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
 
 var helikaUA = new Helika.UA({
 	apiKey: api_key,
-	baseUrl: BaseURLOptions.TESTNET
+	baseUrl: BaseURLOptions.UA_TESTNET
 });
 
 helikaUA.isAmbassador(
@@ -283,7 +283,7 @@ const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
 
 var helikaUA = new Helika.UA({
 	apiKey: api_key,
-	baseUrl: BaseURLOptions.TESTNET
+	baseUrl: BaseURLOptions.UA_TESTNET
 });
 
 helikaUA.ambassadorLink(
