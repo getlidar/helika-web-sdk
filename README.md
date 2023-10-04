@@ -36,7 +36,7 @@ Response: {<br />
 
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-ua-sdk"
+import { BaseURLOptions } from "helika-sdk"
 
 var helikaCaller = new Helika.EVENTS({
 	apiKey: api_key,
@@ -72,7 +72,7 @@ Response: {<br />
 
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-ua-sdk"
+import { BaseURLOptions } from "helika-sdk"
 
 var helikaCaller = new Helika.EVENTS({
 	apiKey: api_key,
@@ -119,7 +119,7 @@ Response: {
 
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-ua-sdk"
+import { BaseURLOptions } from "helika-sdk"
 
 var helikaCaller = new Helika.EVENTS({
 	apiKey: api_key,
@@ -165,8 +165,8 @@ Response:<br />
 &emsp;}<br />
 
 ```ts
-import Helika from "helika-ua-sdk"
-import { BaseURLOptions } from "helika-ua-sdk"
+import Helika from "helika-sdk"
+import { BaseURLOptions } from "helika-sdk"
 
 const url = 'helikausdk'; //example project on testnet
 const wallet_adress = '0x123abc456def'; //insert wallet of referree here
@@ -198,8 +198,8 @@ Response: N/A
 
 
 ```ts
-import Helika from "helika-ua-sdk"
-import { BaseURLOptions } from "helika-ua-sdk"
+import Helika from "helika-sdk"
+import { BaseURLOptions } from "helika-sdk"
 
 const url = 'helikausdk'; //example project on testnet
 const link_id = 'fqOm45Jv'; //example link id for an ambassador on the example project
@@ -227,8 +227,8 @@ Response: boolean
 
 
 ```ts
-import Helika from "helika-ua-sdk"
-import { BaseURLOptions } from "helika-ua-sdk"
+import Helika from "helika-sdk"
+import { BaseURLOptions } from "helika-sdk"
 
 const url = "helikausdk";
 const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
@@ -275,8 +275,8 @@ Response:<br />
 &emsp;}<br />
 
 ```ts
-import Helika from "helika-ua-sdk"
-import { BaseURLOptions } from "helika-ua-sdk"
+import Helika from "helika-sdk"
+import { BaseURLOptions } from "helika-sdk"
 
 const url = "helikausdk";
 const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
