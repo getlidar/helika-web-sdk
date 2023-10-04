@@ -3,7 +3,7 @@
 SDK for use with the UA endpoints (https://ua-api.helika.io or https://ua-api-dev.helika.io) or the Events endpoints (https://api.helika.io/v1 or https://api-stage.helika.io/v1)
 
 The Helika SDK is for developers to be able to make API calls to the Helika Mainnet and Testnet endpoints.
-The following pages will describe how to make calls to the Helika API. Developers will need to install the helika-sdk to their project. This can be done using npm or by cloning the github project.
+The following pages will describe how to make calls to the Helika API. Developers will need to install the helika-sdk to their project.
 
 ## Installation
 
