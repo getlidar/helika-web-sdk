@@ -35,15 +35,15 @@ Response: {<br />
 }
 
 ```ts
-import Refmint from "helika-sdk"
+import Helika from "helika-sdk"
 import { BaseURLOptions } from "helika-ua-sdk"
 
-var refmintCaller = new Refmint.EVENTS({
+var helikaCaller = new Helika.EVENTS({
 	apiKey: api_key,
 	baseUrlOption: BaseURLOptions.EVENTS_TESTNET
 });
 
-helikaUA.fingerprint().then((fingerprintData) => {
+helikaCaller.fingerprint().then((fingerprintData) => {
 	//do something...
 	// console.log(fingerprintData);
 }).catch(e => {
@@ -71,10 +71,10 @@ Response: {<br />
 }
 
 ```ts
-import Refmint from "helika-sdk"
+import Helika from "helika-sdk"
 import { BaseURLOptions } from "helika-ua-sdk"
 
-var refmintCaller = new Refmint.EVENTS({
+var helikaCaller = new Helika.EVENTS({
 	apiKey: api_key,
 	baseUrlOption: BaseURLOptions.EVENTS_TESTNET
 });
@@ -89,7 +89,7 @@ events = [
 	}
 ]
 
-helikaUA.createEvent({
+helikaCaller.createEvent({
 	id: '123abc',
 	events: events
 }).then((resp) => {
@@ -118,10 +118,10 @@ Response: {
 }
 
 ```ts
-import Refmint from "helika-sdk"
+import Helika from "helika-sdk"
 import { BaseURLOptions } from "helika-ua-sdk"
 
-var refmintCaller = new Refmint.EVENTS({
+var helikaCaller = new Helika.EVENTS({
 	apiKey: api_key,
 	baseUrlOption: BaseURLOptions.EVENTS_TESTNET
 });
@@ -134,7 +134,7 @@ events = [
 	}
 ]
 
-helikaUA.createEvent({
+helikaCaller.createEvent({
 	id: '123abc',
 	events: events
 }).then((resp) => {
@@ -165,7 +165,7 @@ Response:<br />
 &emsp;}<br />
 
 ```ts
-import HelikaUA from "helika-ua-sdk"
+import Helika from "helika-ua-sdk"
 import { BaseURLOptions } from "helika-ua-sdk"
 
 const url = 'helikausdk'; //example project on testnet
@@ -175,7 +175,7 @@ const email_address = ''; // (optional) insert referree email here
 const phone_number = '1234567890' // (optional) insert referree phone number here
 const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t1'; //demo api key for testnet
 
-var helikaUA = new HelikaUA({
+var helikaUA = new Helika.UA({
 	apiKey: api_key,
 	baseUrl: BaseURLOptions.TESTNET
 });
@@ -198,14 +198,14 @@ Response: N/A
 
 
 ```ts
-import HelikaUA from "helika-ua-sdk"
+import Helika from "helika-ua-sdk"
 import { BaseURLOptions } from "helika-ua-sdk"
 
 const url = 'helikausdk'; //example project on testnet
 const link_id = 'fqOm45Jv'; //example link id for an ambassador on the example project
 const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t1'; //demo api key for testnet
 
-var helikaUA = new HelikaUA({
+var helikaUA = new Helika.UA({
 	apiKey: api_key,
 	baseUrl: BaseURLOptions.TESTNET
 });
@@ -227,13 +227,13 @@ Response: boolean
 
 
 ```ts
-import HelikaUA from "helika-ua-sdk"
+import Helika from "helika-ua-sdk"
 import { BaseURLOptions } from "helika-ua-sdk"
 
 const url = "helikausdk";
 const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
 
-var helikaUA = new HelikaUA({
+var helikaUA = new Helika.UA({
 	apiKey: api_key,
 	baseUrl: BaseURLOptions.TESTNET
 });
@@ -275,13 +275,13 @@ Response:<br />
 &emsp;}<br />
 
 ```ts
-import HelikaUA from "helika-ua-sdk"
+import Helika from "helika-ua-sdk"
 import { BaseURLOptions } from "helika-ua-sdk"
 
 const url = "helikausdk";
 const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
 
-var helikaUA = new HelikaUA({
+var helikaUA = new Helika.UA({
 	apiKey: api_key,
 	baseUrl: BaseURLOptions.TESTNET
 });
