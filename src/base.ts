@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BaseURLOptions } from "./index";
+import { v4 } from 'uuid';
 
 export type Config = {
   apiKey: string;
@@ -9,9 +10,11 @@ export type Config = {
 export abstract class Base {
   private apiKey: string;
   baseUrl: string;
+  sessionID: string;
 
   constructor(config: Config) {
     this.apiKey = config.apiKey;
+    this.sessionID = v4();
 
     switch (config.baseUrlOption) {
       case BaseURLOptions.EVENTS_LOCAL:
@@ -47,6 +50,37 @@ export abstract class Base {
         })
         .catch(reject);
     });
+  }
+
+  protected async fingerprint(): Promise<any> {
+    let func = await this.getFP();
+    let loaded = await func.load();
+    let fingerprintData = await loaded.get();
+    return {
+      fingerprint_id: fingerprintData?.visitorId,
+      request_id: fingerprintData?.requestId
+    }
+  }
+
+  protected getUrlParam(paramName: string){
+    var urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(paramName);
+  }
+
+  protected getAllUrlParams(){
+    let url = window.location.href;
+
+    if(url.indexOf('?') != -1) {
+        var params = url.split('?')[1].split('&');
+        return params.map(pair => {
+          let values = pair.split('=');
+          return {
+            key: values[0],
+            value: values[1]
+          }
+        });
+    }
+    return [];
   }
 
   protected getRequest<T>(endpoint: string, options?: any): Promise<T> {

@@ -6,16 +6,6 @@ export class EVENTS extends Base {
 		super(config);
   }
 
-  async fingerprint(): Promise<any> {
-    let func = await this.getFP();
-    let loaded = await func.load();
-    let fingerprintData = await loaded.get();
-    return {
-      fingerprint_id: fingerprintData?.visitorId,
-      request_id: fingerprintData?.requestId
-    }
-  }
-
   async createEvent(
     id: string,
     events: {
@@ -27,15 +17,19 @@ export class EVENTS extends Base {
 
     let created_at = new Date().toISOString();
     let fingerprint_data = await this.fingerprint();
+    let helika_referral_link = this.getUrlParam('linkId');
+    let utms = this.getAllUrlParams();
 
     let newEvents = events.map(event =>
       {
         let givenEvent:any = event;
         givenEvent.event.fingerprint = fingerprint_data;
-        return {
-          ...event,
-          created_at: created_at
-        }
+        givenEvent.event.helika_referral_link = helika_referral_link;
+        givenEvent.event.utms = utms;
+        givenEvent.event.sessionID = this.sessionID;
+        return Object.assign({},event,{
+          created_at: created_at,
+        });
       }
     );
 
@@ -65,16 +59,20 @@ export class EVENTS extends Base {
 
     let created_at = new Date().toISOString();
     let fingerprint_data = await this.fingerprint();
+    let helika_referral_link = this.getUrlParam('linkId');
+    let utms = this.getAllUrlParams();
 
     let newEvents = events.map(event =>
       {
         let givenEvent:any = event;
         givenEvent.event.fingerprint = fingerprint_data;
-        return {
-          ...event,
-          game_id: 'UA',
-          created_at: created_at
-        }
+        givenEvent.event.helika_referral_link = helika_referral_link;
+        givenEvent.event.utms = utms;
+        givenEvent.event.sessionID = this.sessionID;
+        return Object.assign({},event,{
+          created_at: created_at,
+          game_id: 'UA'
+        });
       }
     );
 

@@ -7,24 +7,24 @@ export class UA extends Base {
   }
   
   logView(
-    url:string,
+    url?:string,
     link_id?:string
   ): Promise<string|null> {
 
     var params:{
-      url:string,
+      url?:string,
       link_id?:string,
-    } = { 
-      url: url,
-    }
+    } = {};
+
+    if (url) params.url = url;
     if (link_id) params.link_id = link_id;
 
     return this.postRequest(`/sdk/nft/view`,params);
   }
 
   logReferral(
-    url:string,
     wallet_address: string,
+    url?:string,
     link_id?:string,
     email?: string,
     phone?: string,
@@ -33,17 +33,17 @@ export class UA extends Base {
   ): Promise<{referral_link: string, referral_id:string}> {
 
     var params:{
-      url:string,
       wallet_address: string,
+      url?:string,
       link_id?:string,
       email?: string,
       phone?: string,
       twitter?: string,
       discord?: string,
     } = { 
-      url: url,
       wallet_address: wallet_address
     }
+    if (url) params.url = url;
     if (link_id) params.link_id = link_id;
     if (email) params.email = email;
     if (phone) params.phone = phone;

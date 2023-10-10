@@ -7,18 +7,19 @@ class UA extends base_1.Base {
         super(config);
     }
     logView(url, link_id) {
-        var params = {
-            url: url,
-        };
+        var params = {};
+        if (url)
+            params.url = url;
         if (link_id)
             params.link_id = link_id;
         return this.postRequest(`/sdk/nft/view`, params);
     }
-    logReferral(url, wallet_address, link_id, email, phone, twitter, discord) {
+    logReferral(wallet_address, url, link_id, email, phone, twitter, discord) {
         var params = {
-            url: url,
             wallet_address: wallet_address
         };
+        if (url)
+            params.url = url;
         if (link_id)
             params.link_id = link_id;
         if (email)

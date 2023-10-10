@@ -17,22 +17,11 @@ npm i helika-sdk
 
 There are two main uses for the Helika SDK
 
+0.) Creating an instance of the Helika SDK initiates a session. Therefore, each instance will have a session id available through the instance (i.e. helikaCaller.sessionID)
+
 1.) Use with the Helika Events API
-This is for sending events to the Helika API in a pre-defined structure. You will need to use your Events API Key given to you by Helika.
-
-2.) Sending User Acquisition calls to the HelikaUA API
-This is for UA calls such as logging UA project referrals or checking ambassadors. You will need to use your UA API Key given to you by Helika (can also be found in the settings page on the Helika UA app).
-
-## Helika Events API Use Cases	
-
-### Fingerprinting Example:
-
-Arguments: N/A
-
-Response: {<br />
-&emsp;fingerprint_id: string // user fingerprint id<br />
-&emsp;request_id: string // request fingerprint id<br />
-}
+This is for sending events to the Helika API in a pre-defined structure. You will need to use your Events API Key given to you by Helika.<br />
+The session id of the helika sdk instance is passed allong in the event of event calls. If you want to use a new session id, create a new instance of the sdk.
 
 ```ts
 import Helika from "helika-sdk"
@@ -41,17 +30,19 @@ import { BaseURLOptions } from "helika-sdk"
 var helikaCaller = new Helika.EVENTS({
 	apiKey: api_key,
 	baseUrlOption: BaseURLOptions.EVENTS_TESTNET
-});
+}); //session 1
 
-helikaCaller.fingerprint().then((fingerprintData) => {
-	//do something...
-	// console.log(fingerprintData);
-}).catch(e => {
-	console.log(e);
-});
-
+// if you want to create events with a different Session ID, create a new instane of the sdk
+var helikaCaller2 = new Helika.EVENTS({
+	apiKey: api_key,
+	baseUrlOption: BaseURLOptions.EVENTS_TESTNET
+}); //session 2
 ```
 
+2.) Sending User Acquisition calls to the HelikaUA API
+This is for UA calls such as logging UA project referrals or checking ambassadors. You will need to use your UA API Key given to you by Helika (can also be found in the settings page on the Helika UA app).
+
+## Helika Events API Use Cases	
 
 ### Event Example:
 
@@ -152,11 +143,11 @@ helikaCaller.createEvent({
 ### Log Referral Example:
 
 Arguments:<br />
-&emsp;url: string // Custom URL of your project<br />
 &emsp;wallet_adress: string // wallet_adress of the new user being referred<br />
-&emsp;link_id: string // ambassador referral_id of the referrer<br />
-&emsp;email_address (optional): string // email address of the referred new user<br />
-&emsp;phone_number (optional): string // phone number of the referred new user<br />
+&emsp;url: string (optional)// Custom URL of your project<br />
+&emsp;link_id: string (optional)// ambassador referral_id of the referrer<br />
+&emsp;email_address: string (optional)// email address of the referred new user<br />
+&emsp;phone_number: string (optional)// phone number of the referred new user<br />
 
 Response:<br />
 &emsp;{<br />
@@ -168,9 +159,9 @@ Response:<br />
 import Helika from "helika-sdk"
 import { BaseURLOptions } from "helika-sdk"
 
-const url = 'helikausdk'; //example project on testnet
 const wallet_adress = '0x123abc456def'; //insert wallet of referree here
-const link_id = 'fqOm45Jv'; //example link id for an ambassador on the example project
+const url = 'helikausdk'; //(optional) example project on testnet
+const link_id = 'fqOm45Jv'; //(optional) example link id for an ambassador on the example project
 const email_address = ''; // (optional) insert referree email here
 const phone_number = '1234567890' // (optional) insert referree phone number here
 const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t1'; //demo api key for testnet
@@ -180,7 +171,7 @@ var helikaUA = new Helika.UA({
 	baseUrl: BaseURLOptions.UA_TESTNET
 });
 
-helikaUA.logReferral(url,wallet_adress,link_id,email_address,phone_number).then((resp) => {
+helikaUA.logReferral(wallet_adress,url,link_id,email_address,phone_number).then((resp) => {
 	//do something...
 }).catch(e => {
 	console.log(e);
@@ -191,7 +182,7 @@ helikaUA.logReferral(url,wallet_adress,link_id,email_address,phone_number).then(
 ### Log View Example:
 
 Arguments:<br />
-&emsp;url: string // Custom URL of your project<br />
+&emsp;url: string (optional)// Custom URL of your project<br />
 &emsp;link_id: string // ambassador referral_id of the referrer<br />
 
 Response: N/A
@@ -201,7 +192,7 @@ Response: N/A
 import Helika from "helika-sdk"
 import { BaseURLOptions } from "helika-sdk"
 
-const url = 'helikausdk'; //example project on testnet
+const url = 'helikausdk'; // (optional) example project on testnet
 const link_id = 'fqOm45Jv'; //example link id for an ambassador on the example project
 const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t1'; //demo api key for testnet
 

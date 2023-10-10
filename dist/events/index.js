@@ -15,25 +15,21 @@ class EVENTS extends base_1.Base {
     constructor(config) {
         super(config);
     }
-    fingerprint() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let func = yield this.getFP();
-            let loaded = yield func.load();
-            let fingerprintData = yield loaded.get();
-            return {
-                fingerprint_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId,
-                request_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.requestId
-            };
-        });
-    }
     createEvent(id, events) {
         return __awaiter(this, void 0, void 0, function* () {
             let created_at = new Date().toISOString();
             let fingerprint_data = yield this.fingerprint();
+            let helika_referral_link = this.getUrlParam('linkId');
+            let utms = this.getAllUrlParams();
             let newEvents = events.map(event => {
                 let givenEvent = event;
                 givenEvent.event.fingerprint = fingerprint_data;
-                return Object.assign(Object.assign({}, event), { created_at: created_at });
+                givenEvent.event.helika_referral_link = helika_referral_link;
+                givenEvent.event.utms = utms;
+                givenEvent.event.sessionID = this.sessionID;
+                return Object.assign({}, event, {
+                    created_at: created_at,
+                });
             });
             var params = {
                 id: id,
@@ -46,10 +42,18 @@ class EVENTS extends base_1.Base {
         return __awaiter(this, void 0, void 0, function* () {
             let created_at = new Date().toISOString();
             let fingerprint_data = yield this.fingerprint();
+            let helika_referral_link = this.getUrlParam('linkId');
+            let utms = this.getAllUrlParams();
             let newEvents = events.map(event => {
                 let givenEvent = event;
                 givenEvent.event.fingerprint = fingerprint_data;
-                return Object.assign(Object.assign({}, event), { game_id: 'UA', created_at: created_at });
+                givenEvent.event.helika_referral_link = helika_referral_link;
+                givenEvent.event.utms = utms;
+                givenEvent.event.sessionID = this.sessionID;
+                return Object.assign({}, event, {
+                    created_at: created_at,
+                    game_id: 'UA'
+                });
             });
             var params = {
                 id: id,
