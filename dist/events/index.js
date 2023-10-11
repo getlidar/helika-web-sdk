@@ -22,12 +22,12 @@ class EVENTS extends base_1.Base {
             let helika_referral_link = this.getUrlParam('linkId');
             let utms = this.getAllUrlParams();
             let newEvents = events.map(event => {
-                let givenEvent = event;
+                let givenEvent = Object.assign({}, event);
                 givenEvent.event.fingerprint = fingerprint_data;
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
                 givenEvent.event.sessionID = this.sessionID;
-                return Object.assign({}, event, {
+                return Object.assign({}, givenEvent, {
                     created_at: created_at,
                 });
             });
@@ -45,12 +45,12 @@ class EVENTS extends base_1.Base {
             let helika_referral_link = this.getUrlParam('linkId');
             let utms = this.getAllUrlParams();
             let newEvents = events.map(event => {
-                let givenEvent = event;
+                let givenEvent = Object.assign({}, event);
                 givenEvent.event.fingerprint = fingerprint_data;
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
                 givenEvent.event.sessionID = this.sessionID;
-                return Object.assign({}, event, {
+                return Object.assign({}, givenEvent, {
                     created_at: created_at,
                     game_id: 'UA'
                 });
