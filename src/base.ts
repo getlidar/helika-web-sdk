@@ -41,7 +41,7 @@ export abstract class Base {
           this.baseUrl = 'https://ua-api-dev.helika.io';
           break;
     }
-    this.sendEvent({
+    this.onSessionCreated({
       projectType: projectType
     });
 
@@ -138,7 +138,7 @@ export abstract class Base {
     });
   }
 
-  protected async sendEvent<T>(params?: any): Promise<T> {
+  protected async onSessionCreated<T>(params?: any): Promise<T> {
 
     let fpData = await this.fullFingerprint();
 

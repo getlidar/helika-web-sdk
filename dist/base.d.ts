@@ -18,5 +18,5 @@ export declare abstract class Base {
     }[];
     protected getRequest<T>(endpoint: string, options?: any): Promise<T>;
     protected postRequest<T>(endpoint: string, options?: any): Promise<T>;
-    protected sendEvent<T>(params?: any): Promise<T>;
+    protected onSessionCreated<T>(params?: any): Promise<T>;
 }

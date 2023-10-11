@@ -68,7 +68,7 @@ class Base {
                 this.baseUrl = 'https://ua-api-dev.helika.io';
                 break;
         }
-        this.sendEvent({
+        this.onSessionCreated({
             projectType: projectType
         });
     }
@@ -157,7 +157,7 @@ class Base {
                 .catch(reject);
         });
     }
-    sendEvent(params) {
+    onSessionCreated(params) {
         return __awaiter(this, void 0, void 0, function* () {
             let fpData = yield this.fullFingerprint();
             //send event to initiate session
