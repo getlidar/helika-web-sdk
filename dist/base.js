@@ -68,9 +68,9 @@ class Base {
         var initevent = {
             created_at: new Date().toISOString(),
             game_id: 'HELIKA_SDK',
-            event_type: 'SESSION_START',
+            event_type: 'SESSION_CREATED',
             event: {
-                message: 'Session start',
+                message: 'Session created',
                 sdk_type: 'Event'
             }
         };
