@@ -19,24 +19,40 @@ export abstract class Base {
     switch (config.baseUrlOption) {
       case BaseURLOptions.EVENTS_LOCAL:
           this.baseUrl = 'http://localhost:8181/v1';
-          return;
+          break;
       case BaseURLOptions.EVENTS_MAINNET:
           this.baseUrl = 'https://api.helika.io/v1';
-          return;
+          break;
       case BaseURLOptions.EVENTS_TESTNET:
           this.baseUrl = 'https://api-stage.helika.io/v1';
-          return;
+          break;
       case BaseURLOptions.UA_LOCAL:
           this.baseUrl = 'http://localhost:3000';
-          return;
+          break;
       case BaseURLOptions.UA_MAINNET:
           this.baseUrl = 'https://ua-api.helika.io';
-          return;
+          break;
       case BaseURLOptions.UA_TESTNET:
       default:
           this.baseUrl = 'https://ua-api-dev.helika.io';
-          return;
+          break;
     }
+
+    //send event to initiate session
+    var initevent = {
+      created_at: new Date().toISOString(),
+      game_id: 'HELIKA_SDK',
+      event_type: 'SESSION_START',
+      event: {
+        message: 'Session start',
+        sdk_type: 'Event'
+      }
+    };
+    let params = {
+      id: this.sessionID,
+      events: [initevent]
+    }
+    this.postRequest(`/game/game-event`,params);
 
   }
 
