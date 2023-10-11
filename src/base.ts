@@ -16,15 +16,19 @@ export abstract class Base {
     this.apiKey = config.apiKey;
     this.sessionID = v4();
 
+    var projectType = "UA";
     switch (config.baseUrlOption) {
       case BaseURLOptions.EVENTS_LOCAL:
           this.baseUrl = 'http://localhost:8181/v1';
+          projectType = "Events";
           break;
       case BaseURLOptions.EVENTS_MAINNET:
           this.baseUrl = 'https://api.helika.io/v1';
+          projectType = "Events";
           break;
       case BaseURLOptions.EVENTS_TESTNET:
           this.baseUrl = 'https://api-stage.helika.io/v1';
+          projectType = "Events";
           break;
       case BaseURLOptions.UA_LOCAL:
           this.baseUrl = 'http://localhost:3000';
@@ -45,7 +49,8 @@ export abstract class Base {
       event_type: 'SESSION_CREATED',
       event: {
         message: 'Session created',
-        sdk_type: 'Event'
+        sdk_type: 'Event',
+        project_type: projectType
       }
     };
     let params = {
