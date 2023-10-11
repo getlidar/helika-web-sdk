@@ -193,7 +193,7 @@ import Helika from "helika-sdk"
 import { BaseURLOptions } from "helika-sdk"
 
 const url = 'helikausdk'; // (optional) example project on testnet
-const link_id = 'fqOm45Jv'; //example link id for an ambassador on the example project
+const link_id = 'fqOm45Jv'; // (optional) example link id for an ambassador on the example project
 const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t1'; //demo api key for testnet
 
 var helikaUA = new Helika.UA({
