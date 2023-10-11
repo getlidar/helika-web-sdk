@@ -43,19 +43,19 @@ class Base {
     constructor(config) {
         this.apiKey = config.apiKey;
         this.sessionID = (0, uuid_1.v4)();
-        var projectType = "UA";
+        var sdk_type = "UA";
         switch (config.baseUrlOption) {
             case index_1.BaseURLOptions.EVENTS_LOCAL:
                 this.baseUrl = 'http://localhost:8181/v1';
-                projectType = "Events";
+                sdk_type = "Events";
                 break;
             case index_1.BaseURLOptions.EVENTS_MAINNET:
                 this.baseUrl = 'https://api.helika.io/v1';
-                projectType = "Events";
+                sdk_type = "Events";
                 break;
             case index_1.BaseURLOptions.EVENTS_TESTNET:
                 this.baseUrl = 'https://api-stage.helika.io/v1';
-                projectType = "Events";
+                sdk_type = "Events";
                 break;
             case index_1.BaseURLOptions.UA_LOCAL:
                 this.baseUrl = 'http://localhost:3000';
@@ -69,7 +69,7 @@ class Base {
                 break;
         }
         this.onSessionCreated({
-            projectType: projectType
+            sdk_type: sdk_type
         });
     }
     getFP() {
@@ -167,8 +167,7 @@ class Base {
                 event_type: 'SESSION_CREATED',
                 event: {
                     message: 'Session created',
-                    sdk_type: 'Event',
-                    project_type: params.projectType,
+                    sdk_type: params.sdk_type,
                     fp_data: fpData
                 }
             };
