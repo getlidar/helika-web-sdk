@@ -43,15 +43,19 @@ class Base {
     constructor(config) {
         this.apiKey = config.apiKey;
         this.sessionID = (0, uuid_1.v4)();
+        var projectType = "UA";
         switch (config.baseUrlOption) {
             case index_1.BaseURLOptions.EVENTS_LOCAL:
                 this.baseUrl = 'http://localhost:8181/v1';
+                projectType = "Events";
                 break;
             case index_1.BaseURLOptions.EVENTS_MAINNET:
                 this.baseUrl = 'https://api.helika.io/v1';
+                projectType = "Events";
                 break;
             case index_1.BaseURLOptions.EVENTS_TESTNET:
                 this.baseUrl = 'https://api-stage.helika.io/v1';
+                projectType = "Events";
                 break;
             case index_1.BaseURLOptions.UA_LOCAL:
                 this.baseUrl = 'http://localhost:3000';
@@ -64,21 +68,9 @@ class Base {
                 this.baseUrl = 'https://ua-api-dev.helika.io';
                 break;
         }
-        //send event to initiate session
-        var initevent = {
-            created_at: new Date().toISOString(),
-            game_id: 'HELIKA_SDK',
-            event_type: 'SESSION_CREATED',
-            event: {
-                message: 'Session created',
-                sdk_type: 'Event'
-            }
-        };
-        let params = {
-            id: this.sessionID,
-            events: [initevent]
-        };
-        this.postRequest(`/game/game-event`, params);
+        this.sendEvent({
+            projectType: projectType
+        });
     }
     getFP() {
         return new Promise((resolve, reject) => {
@@ -99,6 +91,15 @@ class Base {
                 fingerprint_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId,
                 request_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.requestId
             };
+        });
+    }
+    fullFingerprint() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let func = yield this.getFP();
+            let loaded = yield func.load();
+            return yield loaded.get({
+                extendedResult: true
+            });
         });
     }
     getUrlParam(paramName) {
@@ -154,6 +155,28 @@ class Base {
                 resolve(resp.data);
             })
                 .catch(reject);
+        });
+    }
+    sendEvent(params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let fpData = yield this.fullFingerprint();
+            //send event to initiate session
+            var initevent = {
+                created_at: new Date().toISOString(),
+                game_id: 'HELIKA_SDK',
+                event_type: 'SESSION_CREATED',
+                event: {
+                    message: 'Session created',
+                    sdk_type: 'Event',
+                    project_type: params.projectType,
+                    fp_data: fpData
+                }
+            };
+            let event_params = {
+                id: this.sessionID,
+                events: [initevent]
+            };
+            return this.postRequest(`/game/game-event`, event_params);
         });
     }
 }

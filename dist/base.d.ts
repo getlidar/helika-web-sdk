@@ -10,6 +10,7 @@ export declare abstract class Base {
     constructor(config: Config);
     protected getFP(): any;
     protected fingerprint(): Promise<any>;
+    protected fullFingerprint(): Promise<any>;
     protected getUrlParam(paramName: string): string | null;
     protected getAllUrlParams(): {
         key: string;
@@ -17,4 +18,5 @@ export declare abstract class Base {
     }[];
     protected getRequest<T>(endpoint: string, options?: any): Promise<T>;
     protected postRequest<T>(endpoint: string, options?: any): Promise<T>;
+    protected sendEvent<T>(params?: any): Promise<T>;
 }
