@@ -16,6 +16,7 @@ exports.Base = void 0;
 const axios_1 = __importDefault(require("axios"));
 const index_1 = require("./index");
 const uuid_1 = require("uuid");
+const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 class Base {
     constructor(config) {
         this.apiKey = config.apiKey;
@@ -52,7 +53,7 @@ class Base {
     fingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
             let loadOptions = {
-                apiKey: '1V2jYOavAUDljc9GxEgu'
+                apiKey: fpApiKey
             };
             let loaded = yield index_1.fingerprint.load(loadOptions);
             let fingerprintData = yield loaded.get();
@@ -65,7 +66,7 @@ class Base {
     fullFingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
             let loadOptions = {
-                apiKey: '1V2jYOavAUDljc9GxEgu'
+                apiKey: fpApiKey
             };
             let loaded = yield index_1.fingerprint.load(loadOptions);
             return yield loaded.get({

@@ -7,6 +7,8 @@ export type Config = {
   baseUrlOption?: BaseURLOptions;
 };
 
+const fpApiKey = '1V2jYOavAUDljc9GxEgu';
+
 export abstract class Base {
   private apiKey: string;
   baseUrl: string;
@@ -49,7 +51,7 @@ export abstract class Base {
 
   protected async fingerprint(): Promise<any> {
     let loadOptions = {
-      apiKey: '1V2jYOavAUDljc9GxEgu'
+      apiKey: fpApiKey
     }
     let loaded = await fingerprint.load(loadOptions);
     let fingerprintData = await loaded.get();
@@ -61,7 +63,7 @@ export abstract class Base {
 
   protected async fullFingerprint(): Promise<any> {
     let loadOptions = {
-      apiKey: '1V2jYOavAUDljc9GxEgu'
+      apiKey: fpApiKey
     }
     let loaded = await fingerprint.load(loadOptions);
     return await loaded.get({
