@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseURLOptions = void 0;
+exports.fingerprint = exports.BaseURLOptions = void 0;
 const base_1 = require("./base");
 const ua_1 = require("./ua");
 const events_1 = require("./events");
 const utils_1 = require("./utils");
+const fingerprintjs_pro_react_1 = require("@fingerprintjs/fingerprintjs-pro-react");
 class UA_INTERNAL extends base_1.Base {
 }
 (0, utils_1.applyMixins)(UA_INTERNAL, [ua_1.UA]);
@@ -21,3 +22,4 @@ var BaseURLOptions;
     BaseURLOptions[BaseURLOptions["EVENTS_TESTNET"] = 4] = "EVENTS_TESTNET";
     BaseURLOptions[BaseURLOptions["EVENTS_MAINNET"] = 5] = "EVENTS_MAINNET";
 })(BaseURLOptions = exports.BaseURLOptions || (exports.BaseURLOptions = {}));
+exports.fingerprint = fingerprintjs_pro_react_1.FingerprintJSPro;

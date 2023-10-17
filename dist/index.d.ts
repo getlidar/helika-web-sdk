@@ -1,6 +1,7 @@
 import { Base } from "./base";
 import { UA } from "./ua";
 import { EVENTS } from "./events";
+import { FingerprintJSPro } from "@fingerprintjs/fingerprintjs-pro-react";
 declare class UA_INTERNAL extends Base {
 }
 interface UA_INTERNAL extends UA {
@@ -22,3 +23,4 @@ export declare enum BaseURLOptions {
     EVENTS_TESTNET = 4,
     EVENTS_MAINNET = 5
 }
+export declare const fingerprint: typeof FingerprintJSPro;

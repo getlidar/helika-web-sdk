@@ -8,7 +8,6 @@ export declare abstract class Base {
     baseUrl: string;
     sessionID: string;
     constructor(config: Config);
-    protected getFP(): any;
     protected fingerprint(): Promise<any>;
     protected fullFingerprint(): Promise<any>;
     protected getUrlParam(paramName: string): string | null;

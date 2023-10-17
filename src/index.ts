@@ -2,6 +2,7 @@ import { Base } from "./base";
 import { UA } from "./ua";
 import { EVENTS } from "./events";
 import { applyMixins } from "./utils";
+import { FingerprintJSPro } from "@fingerprintjs/fingerprintjs-pro-react";
 
 class UA_INTERNAL extends Base {}
 interface UA_INTERNAL extends UA {}
@@ -21,3 +22,5 @@ export enum BaseURLOptions {
   EVENTS_TESTNET,
   EVENTS_MAINNET,
 }
+
+export const fingerprint = FingerprintJSPro;

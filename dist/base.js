@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -72,20 +49,12 @@ class Base {
             sdk_type: sdk_type
         });
     }
-    getFP() {
-        return new Promise((resolve, reject) => {
-            // @ts-ignore Import moduleconst 
-            Promise.resolve().then(() => __importStar(require('https://fpjscdn.net/v3/1V2jYOavAUDljc9GxEgu'))).then((respA) => {
-                let response = respA.default;
-                resolve(response);
-            })
-                .catch(reject);
-        });
-    }
     fingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
-            let func = yield this.getFP();
-            let loaded = yield func.load();
+            let loadOptions = {
+                apiKey: '1V2jYOavAUDljc9GxEgu'
+            };
+            let loaded = yield index_1.fingerprint.load(loadOptions);
             let fingerprintData = yield loaded.get();
             return {
                 fingerprint_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId,
@@ -95,8 +64,10 @@ class Base {
     }
     fullFingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
-            let func = yield this.getFP();
-            let loaded = yield func.load();
+            let loadOptions = {
+                apiKey: '1V2jYOavAUDljc9GxEgu'
+            };
+            let loaded = yield index_1.fingerprint.load(loadOptions);
             return yield loaded.get({
                 extendedResult: true
             });
