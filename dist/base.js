@@ -55,12 +55,19 @@ class Base {
             let loadOptions = {
                 apiKey: fpApiKey
             };
-            let loaded = yield index_1.fingerprint.load(loadOptions);
-            let fingerprintData = yield loaded.get();
-            return {
-                fingerprint_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId,
-                request_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.requestId
-            };
+            let fingerprintData = null;
+            try {
+                let loaded = yield index_1.fingerprint.load(loadOptions);
+                fingerprintData = yield loaded.get();
+                return {
+                    fingerprint_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId,
+                    request_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.requestId
+                };
+            }
+            catch (e) {
+                console.error('Error loading fingerprint data');
+                return {};
+            }
         });
     }
     fullFingerprint() {
@@ -68,10 +75,17 @@ class Base {
             let loadOptions = {
                 apiKey: fpApiKey
             };
-            let loaded = yield index_1.fingerprint.load(loadOptions);
-            return yield loaded.get({
-                extendedResult: true
-            });
+            try {
+                let loaded = yield index_1.fingerprint.load(loadOptions);
+                let resp = yield loaded.get({
+                    extendedResult: true
+                });
+                return resp;
+            }
+            catch (e) {
+                console.error('Error loading fingerprint data');
+                return {};
+            }
         });
     }
     getUrlParam(paramName) {

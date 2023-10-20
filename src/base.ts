@@ -52,23 +52,35 @@ export abstract class Base {
   protected async fingerprint(): Promise<any> {
     let loadOptions = {
       apiKey: fpApiKey
-    }
-    let loaded = await fingerprint.load(loadOptions);
-    let fingerprintData = await loaded.get();
-    return {
-      fingerprint_id: fingerprintData?.visitorId,
-      request_id: fingerprintData?.requestId
+    };
+    let fingerprintData = null;
+    try {
+      let loaded = await fingerprint.load(loadOptions);
+      fingerprintData = await loaded.get();
+      return {
+        fingerprint_id: fingerprintData?.visitorId,
+        request_id: fingerprintData?.requestId
+      }
+    } catch(e){
+      console.error('Error loading fingerprint data');
+      return {};
     }
   }
 
   protected async fullFingerprint(): Promise<any> {
     let loadOptions = {
       apiKey: fpApiKey
+    };
+    try {
+      let loaded = await fingerprint.load(loadOptions);
+      let resp =  await loaded.get({
+        extendedResult: true
+      });
+      return resp;
+    } catch(e){
+      console.error('Error loading fingerprint data');
+      return {};
     }
-    let loaded = await fingerprint.load(loadOptions);
-    return await loaded.get({
-      extendedResult: true
-    });
   }
 
   protected getUrlParam(paramName: string){
