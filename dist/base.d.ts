@@ -1,13 +1,8 @@
-import { BaseURLOptions } from "./index";
-export declare type Config = {
-    apiKey: string;
-    baseUrlOption?: BaseURLOptions;
-};
 export declare abstract class Base {
     private apiKey;
     baseUrl: string;
     sessionID: string;
-    constructor(config: Config);
+    constructor(apiKey: string);
     protected fingerprint(): Promise<any>;
     protected fullFingerprint(): Promise<any>;
     protected getUrlParam(paramName: string): string | null;

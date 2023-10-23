@@ -15,10 +15,12 @@ declare const _default: {
     UA: typeof UA_INTERNAL;
 };
 export default _default;
-export declare enum BaseURLOptions {
+export declare enum UABaseURL {
     UA_DEV = 0,
-    UA_PROD = 1,
-    EVENTS_DEV = 2,
-    EVENTS_PROD = 3
+    UA_PROD = 1
+}
+export declare enum EventsBaseURL {
+    EVENTS_DEV = 0,
+    EVENTS_PROD = 1
 }
 export declare const fingerprint: typeof FingerprintJSPro;

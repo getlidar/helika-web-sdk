@@ -1,11 +1,6 @@
 import axios from "axios";
-import { BaseURLOptions, fingerprint } from "./index";
+import { fingerprint } from "./index";
 import { v4 } from 'uuid';
-
-export type Config = {
-  apiKey: string;
-  baseUrlOption?: BaseURLOptions;
-};
 
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 
@@ -14,42 +9,10 @@ export abstract class Base {
   baseUrl: string;
   sessionID: string;
 
-  constructor(config: Config) {
-    this.apiKey = config.apiKey;
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
     this.sessionID = v4();
-
-    var sdk_type = "UA";
-    switch (config.baseUrlOption) {
-      //case BaseURLOptions.EVENTS_LOCAL:
-      //    this.baseUrl = 'http://localhost:8181/v1';
-      //    sdk_type = "Events";
-      //    break;
-      case BaseURLOptions.EVENTS_PROD:
-          this.baseUrl = 'https://api.helika.io/v1';
-          sdk_type = "Events";
-          break;
-      case BaseURLOptions.EVENTS_DEV:
-          this.baseUrl = 'https://api-stage.helika.io/v1';
-          sdk_type = "Events";
-          break;
-      //case BaseURLOptions.UA_LOCAL:
-      //    this.baseUrl = 'http://localhost:3000';
-      //    break;
-      case BaseURLOptions.UA_PROD:
-          this.baseUrl = 'https://ua-api.helika.io';
-          break;
-      case BaseURLOptions.UA_DEV:
-      default:
-          this.baseUrl = 'https://ua-api-dev.helika.io';
-          break;
-    }
-
-    if (sdk_type === 'Events') {
-      this.onSessionCreated({
-        sdk_type: sdk_type
-      });
-    }
-
+    this.baseUrl = "http://localhost:3000";
   }
 
   protected async fingerprint(): Promise<any> {
@@ -64,7 +27,7 @@ export abstract class Base {
         fingerprint_id: fingerprintData?.visitorId,
         request_id: fingerprintData?.requestId
       }
-    } catch(e){
+    } catch (e) {
       console.error('Error loading fingerprint data');
       return {};
     }
@@ -76,33 +39,33 @@ export abstract class Base {
     };
     try {
       let loaded = await fingerprint.load(loadOptions);
-      let resp =  await loaded.get({
+      let resp = await loaded.get({
         extendedResult: true
       });
       return resp;
-    } catch(e){
+    } catch (e) {
       console.error('Error loading fingerprint data');
       return {};
     }
   }
 
-  protected getUrlParam(paramName: string){
+  protected getUrlParam(paramName: string) {
     var urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(paramName);
   }
 
-  protected getAllUrlParams(){
+  protected getAllUrlParams() {
     let url = window.location.href;
 
-    if(url.indexOf('?') != -1) {
-        var params = url.split('?')[1].split('&');
-        return params.map(pair => {
-          let values = pair.split('=');
-          return {
-            key: values[0],
-            value: values[1]
-          }
-        });
+    if (url.indexOf('?') != -1) {
+      var params = url.split('?')[1].split('&');
+      return params.map(pair => {
+        let values = pair.split('=');
+        return {
+          key: values[0],
+          value: values[1]
+        }
+      });
     }
     return [];
   }
@@ -119,7 +82,7 @@ export abstract class Base {
     };
     return new Promise((resolve, reject) => {
       axios
-        .get(`${url}`,config)
+        .get(`${url}`, config)
         .then((resp: any) => {
           resolve(resp.data);
         })
@@ -139,7 +102,7 @@ export abstract class Base {
 
     return new Promise((resolve, reject) => {
       axios
-        .post(`${url}`,options,config)
+        .post(`${url}`, options, config)
         .then((resp: any) => {
           resolve(resp.data);
         })
@@ -158,7 +121,7 @@ export abstract class Base {
       event_type: 'SESSION_CREATED',
       event: {
         message: 'Session created',
-        sdk_type: params.sdk_type,
+        sdk_class: params.sdk_class,
         fp_data: fpData
       }
     };
@@ -167,7 +130,7 @@ export abstract class Base {
       events: [initevent]
     }
 
-    return this.postRequest(`/game/game-event`,event_params);
+    return this.postRequest(`/game/game-event`, event_params);
   }
-  
+
 }

@@ -18,39 +18,10 @@ const index_1 = require("./index");
 const uuid_1 = require("uuid");
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 class Base {
-    constructor(config) {
-        this.apiKey = config.apiKey;
+    constructor(apiKey) {
+        this.apiKey = apiKey;
         this.sessionID = (0, uuid_1.v4)();
-        var sdk_type = "UA";
-        switch (config.baseUrlOption) {
-            //case BaseURLOptions.EVENTS_LOCAL:
-            //    this.baseUrl = 'http://localhost:8181/v1';
-            //    sdk_type = "Events";
-            //    break;
-            case index_1.BaseURLOptions.EVENTS_PROD:
-                this.baseUrl = 'https://api.helika.io/v1';
-                sdk_type = "Events";
-                break;
-            case index_1.BaseURLOptions.EVENTS_DEV:
-                this.baseUrl = 'https://api-stage.helika.io/v1';
-                sdk_type = "Events";
-                break;
-            //case BaseURLOptions.UA_LOCAL:
-            //    this.baseUrl = 'http://localhost:3000';
-            //    break;
-            case index_1.BaseURLOptions.UA_PROD:
-                this.baseUrl = 'https://ua-api.helika.io';
-                break;
-            case index_1.BaseURLOptions.UA_DEV:
-            default:
-                this.baseUrl = 'https://ua-api-dev.helika.io';
-                break;
-        }
-        if (sdk_type === 'Events') {
-            this.onSessionCreated({
-                sdk_type: sdk_type
-            });
-        }
+        this.baseUrl = "http://localhost:3000";
     }
     fingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -155,7 +126,7 @@ class Base {
                 event_type: 'SESSION_CREATED',
                 event: {
                     message: 'Session created',
-                    sdk_type: params.sdk_type,
+                    sdk_class: params.sdk_class,
                     fp_data: fpData
                 }
             };

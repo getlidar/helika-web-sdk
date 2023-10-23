@@ -11,11 +11,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EVENTS = void 0;
 const base_1 = require("../base");
+const index_1 = require("../index");
 class EVENTS extends base_1.Base {
-    constructor(config) {
-        super(config);
+    constructor(apiKey, baseUrl) {
+        super(apiKey);
+        switch (baseUrl) {
+            // case EventsBaseURL.LOCAL: {
+            //   this.baseUrl = 'http://localhost:3000';
+            //   break;
+            // }
+            case index_1.EventsBaseURL.EVENTS_PROD: {
+                this.baseUrl = "https://api.helika.io/v1";
+                break;
+            }
+            case index_1.EventsBaseURL.EVENTS_DEV:
+            default: {
+                this.baseUrl = "https://api-stage.helika.io/v1";
+                break;
+            }
+        }
+        // Todo: Move this into the Base Class once Users have been consolidated
+        this.onSessionCreated({
+            sdk_class: "Events"
+        });
     }
-    createEvent(id, events) {
+    createEvent(events) {
         return __awaiter(this, void 0, void 0, function* () {
             let created_at = new Date().toISOString();
             let fingerprint_data = yield this.fingerprint();
@@ -27,18 +47,17 @@ class EVENTS extends base_1.Base {
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
                 givenEvent.event.sessionID = this.sessionID;
-                return Object.assign({}, givenEvent, {
-                    created_at: created_at,
-                });
+                givenEvent.created_at = created_at;
+                return givenEvent;
             });
             var params = {
-                id: id,
+                id: this.sessionID,
                 events: newEvents
             };
             return this.postRequest(`/game/game-event`, params);
         });
     }
-    createUAEvent(id, events) {
+    createUAEvent(events) {
         return __awaiter(this, void 0, void 0, function* () {
             let created_at = new Date().toISOString();
             let fingerprint_data = yield this.fingerprint();
@@ -50,13 +69,12 @@ class EVENTS extends base_1.Base {
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
                 givenEvent.event.sessionID = this.sessionID;
-                return Object.assign({}, givenEvent, {
-                    created_at: created_at,
-                    game_id: 'UA'
-                });
+                givenEvent.created_at = created_at;
+                givenEvent.game_id = 'UA';
+                return givenEvent;
             });
             var params = {
-                id: id,
+                id: this.sessionID,
                 events: newEvents
             };
             return this.postRequest(`/game/game-event`, params);

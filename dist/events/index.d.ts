@@ -1,14 +1,15 @@
-import { Base, Config } from "../base";
+import { Base } from "../base";
+import { EventsBaseURL } from "../index";
 export declare class EVENTS extends Base {
-    constructor(config: Config);
-    createEvent(id: string, events: {
+    constructor(apiKey: string, baseUrl: EventsBaseURL);
+    createEvent(events: {
         game_id: string;
         event_type: string;
         event: Object;
     }[]): Promise<{
         message: string;
     }>;
-    createUAEvent(id: string, events: {
+    createUAEvent(events: {
         event_type: string;
         event: Object;
     }[]): Promise<{

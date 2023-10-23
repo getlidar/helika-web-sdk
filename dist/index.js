@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fingerprint = exports.BaseURLOptions = void 0;
+exports.fingerprint = exports.EventsBaseURL = exports.UABaseURL = void 0;
 const base_1 = require("./base");
 const ua_1 = require("./ua");
 const events_1 = require("./events");
@@ -13,13 +13,16 @@ class EVENTS_INTERNAL extends base_1.Base {
 }
 (0, utils_1.applyMixins)(EVENTS_INTERNAL, [events_1.EVENTS]);
 exports.default = { EVENTS: EVENTS_INTERNAL, UA: UA_INTERNAL };
-var BaseURLOptions;
-(function (BaseURLOptions) {
-    //UA_LOCAL,
-    BaseURLOptions[BaseURLOptions["UA_DEV"] = 0] = "UA_DEV";
-    BaseURLOptions[BaseURLOptions["UA_PROD"] = 1] = "UA_PROD";
-    //EVENTS_LOCAL,
-    BaseURLOptions[BaseURLOptions["EVENTS_DEV"] = 2] = "EVENTS_DEV";
-    BaseURLOptions[BaseURLOptions["EVENTS_PROD"] = 3] = "EVENTS_PROD";
-})(BaseURLOptions = exports.BaseURLOptions || (exports.BaseURLOptions = {}));
+var UABaseURL;
+(function (UABaseURL) {
+    //LOCAL,
+    UABaseURL[UABaseURL["UA_DEV"] = 0] = "UA_DEV";
+    UABaseURL[UABaseURL["UA_PROD"] = 1] = "UA_PROD";
+})(UABaseURL = exports.UABaseURL || (exports.UABaseURL = {}));
+var EventsBaseURL;
+(function (EventsBaseURL) {
+    //LOCAL,
+    EventsBaseURL[EventsBaseURL["EVENTS_DEV"] = 0] = "EVENTS_DEV";
+    EventsBaseURL[EventsBaseURL["EVENTS_PROD"] = 1] = "EVENTS_PROD";
+})(EventsBaseURL = exports.EventsBaseURL || (exports.EventsBaseURL = {}));
 exports.fingerprint = fingerprintjs_pro_react_1.FingerprintJSPro;

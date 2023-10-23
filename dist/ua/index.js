@@ -2,9 +2,25 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UA = void 0;
 const base_1 = require("../base");
+const index_1 = require("../index");
 class UA extends base_1.Base {
-    constructor(config) {
-        super(config);
+    constructor(apiKey, baseUrl) {
+        super(apiKey);
+        switch (baseUrl) {
+            // case UABaseURL.LOCAL: {
+            //   this.baseUrl = "http://localhost:3000";
+            //   break;
+            // }
+            case index_1.UABaseURL.UA_PROD: {
+                this.baseUrl = "https://ua-api.helika.io";
+                break;
+            }
+            case index_1.UABaseURL.UA_DEV:
+            default: {
+                this.baseUrl = "https://ua-api-dev.helika.io";
+                break;
+            }
+        }
     }
     logView(url, link_id) {
         var params = {};

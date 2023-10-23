@@ -27,13 +27,15 @@ For an Events SDK Instance, an API Key from Helika is required. Please reach out
 
 The SDK can send to DEV or PROD endpoints depending on the baseUrlOption option to the sdk on instance creation (see step 1 in Instance Creation section).
 
-For a UA SDK Instance, you can send to endpoints using these options:
+#### baseUrlOption
+- UA_DEV
+- UA_PROD
+- EVENTS_DEV
+- EVENTS_PROD
 
-  UA_DEV,
-  UA_PROD,
+For Development, use **UA_DEV** or **EVENT_DEV**. This sends the events and queries to the develop environments. 
 
-DEV Endpoint: https://ua-api.helika.io (for DEVELOPMENT testing) -> by using BaseURLOptions.UA_DEV in instance creation
-PROD Endpoint: https://ua-api-dev.helika.io (for PRODUCTION testing) -> by using BaseURLOptions.UA_PROD in instance creation
+For Production, use **UA_PROD** or **EVENT_PROD**. This sends the events and queries to the production environments. Please 
 
 For a Events SDK Instance, you can send to endpoints using these options:
 
