@@ -23,86 +23,63 @@ For a UA SDK instance, a UA SDK Key is required. This can be obtained by going t
 
 For an Events SDK Instance, an API Key from Helika is required. Please reach out to your Helika contact or inquiring through https://www.helika.io/contact/ .
 
-### baseUrlOption
+### Base URL 
 
-The SDK can send to DEV or PROD endpoints depending on the baseUrlOption option to the sdk on instance creation (see step 1 in Instance Creation section).
+The SDK can send to DEV or PROD endpoints depending on the Base URLs to the sdk on instance creation (see step 1 in Instance Creation section). 
 
-#### baseUrlOption
+#### UABaseURL
 - UA_DEV
 - UA_PROD
+
+Use the UABaseURL enum for `Helika.UA`
+
+#### EventsBaseURL
 - EVENTS_DEV
 - EVENTS_PROD
 
+Use the EventsBaseURL enum for `Helika.Events`
+
 For Development, use **UA_DEV** or **EVENT_DEV**. This sends the events and queries to the develop environments. 
 
-For Production, use **UA_PROD** or **EVENT_PROD**. This sends the events and queries to the production environments. Please 
+For Production, use **UA_PROD** or **EVENT_PROD**. This sends the events and queries to the production environments. 
 
-For a Events SDK Instance, you can send to endpoints using these options:
-
-  EVENTS_DEV,
-  EVENTS_PROD,
-
-DEV Endpoint: https://api-stage.helika.io/v1 (for DEVELOPMENT testing) -> by using BaseURLOptions.EVENTS_DEV in instance creation
-PROD Endpoint: https://api.helika.io/v1 (for PRODUCTION testing) -> by using BaseURLOptions.EVENTS_PROD in instance creation
 
 ### Instance Creation
 
 There are two main uses for the Helika SDK
 
-0.) Creating an instance of the Helika SDK initiates a session. Therefore, each instance will have a session id available through the instance (i.e. helikaCaller.sessionID)
-
-1.) Use with the Helika Events API
+1. Use with the Helika Events API
 This is for sending events to the Helika API in a pre-defined structure. You will need to use your Events API Key given to you by Helika.<br />
-The session id of the helika sdk instance is passed allong in the event of event calls. If you want to use a new session id, create a new instance of the sdk.
 
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-sdk"
+import { EventsBaseURL } from "helika-sdk"
 
-var helikaCaller = new Helika.EVENTS({
-	apiKey: api_key,
-	baseUrlOption: BaseURLOptions.EVENTS_DEV
-}); //session 1
+// Helika SDK session 1
+const helikaSDK = new Helika.EVENTS(api_key, EventsBaseURL.EVENTS_DEV);
 
 // if you want to create events with a different Session ID, create a new instane of the sdk
-var helikaCaller2 = new Helika.EVENTS({
-	apiKey: api_key,
-	baseUrlOption: BaseURLOptions.EVENTS_DEV
-}); //session 2
+// Helika SDK session 2
+const helikaSDK2 = new Helika.EVENTS(api_key, EventsBaseURL.EVENTS_DEV);
 ```
 
-2.) Sending User Acquisition calls to the HelikaUA API
-This is for UA calls such as logging UA project referrals or checking ambassadors. You will need to use your UA API Key given to you by Helika (can also be found in the settings page on the Helika UA app).
+> [!NOTE]
+> Creating an instance of the Helika SDK initiates a session. Therefore, each instance will have a session id available through the instance (i.e. helikaCaller.sessionID)
 
-## Helika Events API Use Cases	
+2. Sending User Acquisition calls to the HelikaUA API
+This is for UA calls such as logging UA project referrals or checking ambassadors/affiliates. You will need to use your UA API Key given to you by Helika (can also be found in the settings page on the Helika UA app).
+
+## Helika Events API
 
 ### Event Example:
 
-Arguments:<br />
-&emsp;id: string // unique if of event<br />
-&emsp;events: event[] // array of events you want to log<br />
-
-event: {<br />
-&emsp;game_id: string // unique id of game<br />
-&emsp;event_type: string // type of event<br />
-&emsp;event: object // event information as an object<br />
-}
-
-Response: {<br />
-&emsp;message: string<br />
-&emsp;status: number // e.g. 200 OK<br />
-}
-
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-sdk"
+import { EventsBaseURL } from "helika-sdk"
 
-var helikaCaller = new Helika.EVENTS({
-	apiKey: api_key,
-	baseUrlOption: BaseURLOptions.EVENTS_DEV
-});
+const helikaSDK = new Helika.EVENTS(api_key, EventsBaseURL.EVENTS_DEV);
 
-events = [
+events = [{
 	game_id: 'my_game',
 	event_type: 'win_event',
 	event: {
@@ -110,12 +87,13 @@ events = [
 		win_number: 1,
 		wallet: '0x4kd....'
 	}
-]
+}]
 
-helikaCaller.createEvent({
-	id: '123abc',
-	events: events
-}).then((resp) => {
+// Asynchronously
+// await helikaSDK.createEvent(events);
+
+helikaSDK.createEvent(events)
+.then((resp) => {
 	//do something...
 	// console.log(resp);
 }).catch(e => {
@@ -123,52 +101,6 @@ helikaCaller.createEvent({
 });
 
 ```
-
-### UA Event Example:
-
-Arguments:<br />
-&emsp;id: string // unique if of event<br />
-&emsp;events: event[] // array of events you want to log<br />
-
-event: {<br />
-&emsp;event_type: string // type of event<br />
-&emsp;event: object // event information as an object<br />
-}
-
-Response: {
-&emsp;message: string<br />
-&emsp;status: number // 200 OK<br />
-}
-
-```ts
-import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-sdk"
-
-var helikaCaller = new Helika.EVENTS({
-	apiKey: api_key,
-	baseUrlOption: BaseURLOptions.EVENTS_DEV
-});
-
-events = [
-	event_type: 'REFERRAL',
-	event: {
-		project: 'MY_AMBASSADOR_PROJECT',
-		wallet: '0x4kd....'
-	}
-]
-
-helikaCaller.createEvent({
-	id: '123abc',
-	events: events
-}).then((resp) => {
-	//do something...
-	// console.log(resp);
-}).catch(e => {
-	console.log(e);
-});
-
-```
-
 
 ## HelikaUA API Use Cases:
 
@@ -189,7 +121,7 @@ Response:<br />
 
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-sdk"
+import { UABaseURL } from "helika-sdk"
 
 const wallet_adress = '0x123abc456def'; //insert wallet of referree here
 const url = 'helikausdk'; //(optional) example project on DEV
@@ -198,10 +130,7 @@ const email_address = ''; // (optional) insert referree email here
 const phone_number = '1234567890' // (optional) insert referree phone number here
 const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t1'; //demo api key for DEV
 
-var helikaUA = new Helika.UA({
-	apiKey: api_key,
-	baseUrl: BaseURLOptions.UA_DEV
-});
+const helikaUA = new Helika.UA(api_key, UABaseURL.UA_DEV);
 
 helikaUA.logReferral(wallet_adress,url,link_id,email_address,phone_number).then((resp) => {
 	//do something...
@@ -222,16 +151,13 @@ Response: N/A
 
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-sdk"
+import { UABaseURL } from "helika-sdk"
 
 const url = 'helikausdk'; // (optional) example project on DEV
 const link_id = 'fqOm45Jv'; // (optional) example link id for an ambassador on the example project
 const api_key = 'reYam27iBtMqeGuEhR2ywSV6440wo3gx2CcIC5IK6RNHRCvBoKAHdsNx3FyLz2t1'; //demo api key for DEV
 
-var helikaUA = new Helika.UA({
-	apiKey: api_key,
-	baseUrl: BaseURLOptions.UA_DEV
-});
+var helikaUA = new Helika.UA(api_key, UABaseURL.UA_DEV);
 
 helikaUA.logView(url,link_id).then((resp) => {
 	//do something...
@@ -251,15 +177,12 @@ Response: boolean
 
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-sdk"
+import { UABaseURL } from "helika-sdk"
 
 const url = "helikausdk";
 const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
 
-var helikaUA = new Helika.UA({
-	apiKey: api_key,
-	baseUrl: BaseURLOptions.UA_DEV
-});
+const helikaUA = new Helika.UA(api_key, UABaseURL.UA_DEV);
 
 helikaUA.isAmbassador(
       url,
@@ -299,15 +222,12 @@ Response:<br />
 
 ```ts
 import Helika from "helika-sdk"
-import { BaseURLOptions } from "helika-sdk"
+import { UABaseURL } from "helika-sdk"
 
 const url = "helikausdk";
 const wallet_address = "0xE7bb679Fa033517393001e1E43b3d326016E0A0c";
 
-var helikaUA = new Helika.UA({
-	apiKey: api_key,
-	baseUrl: BaseURLOptions.UA_DEV
-});
+const helikaUA = new Helika.UA(api_key, UABaseURL.UA_DEV);
 
 helikaUA.ambassadorLink(
       url,
