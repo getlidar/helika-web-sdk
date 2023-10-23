@@ -46,9 +46,11 @@ class Base {
                 this.baseUrl = 'https://ua-api-dev.helika.io';
                 break;
         }
-        this.onSessionCreated({
-            sdk_type: sdk_type
-        });
+        if (sdk_type === 'Events') {
+            this.onSessionCreated({
+                sdk_type: sdk_type
+            });
+        }
     }
     fingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
