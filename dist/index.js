@@ -1,18 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fingerprint = exports.EventsBaseURL = exports.UABaseURL = void 0;
-const base_1 = require("./base");
 const ua_1 = require("./ua");
 const events_1 = require("./events");
-const utils_1 = require("./utils");
 const fingerprintjs_pro_react_1 = require("@fingerprintjs/fingerprintjs-pro-react");
-class UA_INTERNAL extends base_1.Base {
-}
-(0, utils_1.applyMixins)(UA_INTERNAL, [ua_1.UA]);
-class EVENTS_INTERNAL extends base_1.Base {
-}
-(0, utils_1.applyMixins)(EVENTS_INTERNAL, [events_1.EVENTS]);
-exports.default = { EVENTS: EVENTS_INTERNAL, UA: UA_INTERNAL };
+exports.default = { EVENTS: events_1.EVENTS, UA: ua_1.UA };
 var UABaseURL;
 (function (UABaseURL) {
     //LOCAL,
