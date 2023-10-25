@@ -1,7 +1,7 @@
 export declare abstract class Base {
     private apiKey;
     baseUrl: string;
-    sessionID: string;
+    sessionID: string | null;
     constructor(apiKey: string);
     protected fingerprint(): Promise<any>;
     protected fullFingerprint(): Promise<any>;
@@ -12,5 +12,7 @@ export declare abstract class Base {
     }[];
     protected getRequest<T>(endpoint: string, options?: any): Promise<T>;
     protected postRequest<T>(endpoint: string, options?: any): Promise<T>;
-    protected onSessionCreated<T>(params?: any): Promise<T>;
+    protected sessionCreate<T>(params?: any): Promise<{
+        message: string;
+    }>;
 }

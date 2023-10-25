@@ -1,9 +1,10 @@
 import { Base } from "../base";
 import { EventsBaseURL } from "../index";
+import ExecutionEnvironment from 'exenv';
 
 export class EVENTS extends Base {
 
-  constructor(apiKey: string, baseUrl: EventsBaseURL) {
+  constructor(apiKey: string, baseUrl: EventsBaseURL, newSessionId?: boolean) {
     super(apiKey);
 
     switch (baseUrl) {
@@ -22,10 +23,15 @@ export class EVENTS extends Base {
       }
     }
 
-    // Todo: Move this into the Base Class once Users have been consolidated
-    this.onSessionCreated({
-      sdk_class: "Events"
-    });
+  }
+
+  async startSession(): Promise<any> {
+    if (ExecutionEnvironment.canUseDOM) {
+      // Todo: Move this into the Base Class once Users have been consolidated
+      return await this.sessionCreate({
+        sdk_class: "Events"
+      });
+    }
   }
 
   async createEvent(
@@ -35,6 +41,18 @@ export class EVENTS extends Base {
       event: Object
     }[],
   ): Promise<{ message: string }> {
+
+    let id = this.sessionID;
+    if (ExecutionEnvironment.canUseDOM) {
+      let local_storage_id = localStorage.getItem('sessionID');
+      if (local_storage_id) {
+        id = local_storage_id;
+      } else if (this.sessionID) {
+        localStorage.setItem('sessionID',this.sessionID)
+      }
+    }
+
+    if (!id) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
     let created_at = new Date().toISOString();
     let fingerprint_data = await this.fingerprint();
@@ -61,7 +79,7 @@ export class EVENTS extends Base {
         event: Object
       }[]
     } = {
-      id: this.sessionID,
+      id: id,
       events: newEvents
     }
 
@@ -74,6 +92,18 @@ export class EVENTS extends Base {
       event: Object
     }[],
   ): Promise<{ message: string }> {
+
+    let id = this.sessionID;
+    if (ExecutionEnvironment.canUseDOM) {
+      let local_storage_id = localStorage.getItem('sessionID');
+      if (local_storage_id) {
+        id = local_storage_id;
+      } else if (this.sessionID) {
+        localStorage.setItem('sessionID',this.sessionID)
+      }
+    }
+
+    if (!id) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
     let created_at = new Date().toISOString();
     let fingerprint_data = await this.fingerprint();
@@ -101,7 +131,7 @@ export class EVENTS extends Base {
         event: Object
       }[]
     } = {
-      id: this.sessionID,
+      id: id,
       events: newEvents
     }
 

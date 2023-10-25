@@ -1,17 +1,18 @@
 import axios from "axios";
 import { fingerprint } from "./index";
 import { v4 } from 'uuid';
+import ExecutionEnvironment from 'exenv';
 
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 
 export abstract class Base {
   private apiKey: string;
   baseUrl: string;
-  sessionID: string;
+  sessionID: string | null;
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
-    this.sessionID = v4();
+    this.sessionID = null;
     this.baseUrl = "http://localhost:3000";
   }
 
@@ -110,7 +111,12 @@ export abstract class Base {
     });
   }
 
-  protected async onSessionCreated<T>(params?: any): Promise<T> {
+  protected async sessionCreate<T>(params?: any): Promise<{ message: string }> {
+
+    this.sessionID = v4();
+    if (ExecutionEnvironment.canUseDOM) {
+      localStorage.setItem('sessionID',this.sessionID)
+    }
 
     let fpData = await this.fullFingerprint();
 
@@ -130,7 +136,7 @@ export abstract class Base {
       events: [initevent]
     }
 
-    return this.postRequest(`/game/game-event`, event_params);
+    return await this.postRequest(`/game/game-event`, event_params);
   }
 
 }

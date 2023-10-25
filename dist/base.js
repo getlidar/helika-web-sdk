@@ -16,11 +16,12 @@ exports.Base = void 0;
 const axios_1 = __importDefault(require("axios"));
 const index_1 = require("./index");
 const uuid_1 = require("uuid");
+const exenv_1 = __importDefault(require("exenv"));
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 class Base {
     constructor(apiKey) {
         this.apiKey = apiKey;
-        this.sessionID = (0, uuid_1.v4)();
+        this.sessionID = null;
         this.baseUrl = "http://localhost:3000";
     }
     fingerprint() {
@@ -116,8 +117,12 @@ class Base {
                 .catch(reject);
         });
     }
-    onSessionCreated(params) {
+    sessionCreate(params) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.sessionID = (0, uuid_1.v4)();
+            if (exenv_1.default.canUseDOM) {
+                localStorage.setItem('sessionID', this.sessionID);
+            }
             let fpData = yield this.fullFingerprint();
             //send event to initiate session
             var initevent = {
@@ -134,7 +139,7 @@ class Base {
                 id: this.sessionID,
                 events: [initevent]
             };
-            return this.postRequest(`/game/game-event`, event_params);
+            return yield this.postRequest(`/game/game-event`, event_params);
         });
     }
 }

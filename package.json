@@ -32,7 +32,9 @@
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs-pro-react": "^2.6.0",
+    "@types/exenv": "^1.2.1",
     "axios": "^0.27.2",
+    "exenv": "^1.2.2",
     "react": "^18.2.0",
     "react-router-dom": "^6.16.0",
     "uuid": "^9.0.1"
