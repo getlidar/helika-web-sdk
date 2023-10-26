@@ -115,10 +115,12 @@ export abstract class Base {
 
     this.sessionID = v4();
     const sessionExpiry = this.addHours(new Date(), 1);
+    let fpData = {};
     let utms = null;
     let helika_referral_link = null;
-    if (ExecutionEnvironment.canUseDOM) {
-      try {
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        fpData = await this.fullFingerprint();
         localStorage.setItem('sessionID',this.sessionID);
         localStorage.setItem('sessionExpiry',sessionExpiry);
         utms = this.getAllUrlParams();
@@ -129,12 +131,10 @@ export abstract class Base {
         if (helika_referral_link) {
           localStorage.setItem('helika_referral_link',helika_referral_link);
         }
-      } catch(e) {
-        console.log(e);
       }
+    } catch(e) {
+      console.log(e);
     }
-
-    let fpData = await this.fullFingerprint();
 
     //send event to initiate session
     var initevent = {

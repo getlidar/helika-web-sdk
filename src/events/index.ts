@@ -61,10 +61,14 @@ export class EVENTS extends Base {
     let fingerprint_data:any = {};
     let helika_referral_link:any = null;
     let utms:any = null;
-    if (ExecutionEnvironment.canUseDOM) {
-      fingerprint_data = await this.fingerprint();
-      helika_referral_link = localStorage.getItem('helika_referral_link');
-      utms = localStorage.getItem('helika_utms');
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        fingerprint_data = await this.fingerprint();
+        helika_referral_link = localStorage.getItem('helika_referral_link');
+        utms = localStorage.getItem('helika_utms');
+      }
+    } catch(e){
+      console.log(e);
     }
 
     let newEvents = events.map(event => {
@@ -109,10 +113,14 @@ export class EVENTS extends Base {
     let fingerprint_data:any = {};
     let helika_referral_link:any = null;
     let utms:any = null;
-    if (ExecutionEnvironment.canUseDOM) {
-      fingerprint_data = await this.fingerprint();
-      helika_referral_link = localStorage.getItem('helika_referral_link');
-      utms = localStorage.getItem('helika_utms');
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        fingerprint_data = await this.fingerprint();
+        helika_referral_link = localStorage.getItem('helika_referral_link');
+        utms = localStorage.getItem('helika_utms');
+      }
+    } catch(e){
+      console.log(e);
     }
 
     let newEvents = events.map(event => {

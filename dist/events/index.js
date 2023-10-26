@@ -66,10 +66,15 @@ class EVENTS extends base_1.Base {
             let fingerprint_data = {};
             let helika_referral_link = null;
             let utms = null;
-            if (exenv_1.default.canUseDOM) {
-                fingerprint_data = yield this.fingerprint();
-                helika_referral_link = localStorage.getItem('helika_referral_link');
-                utms = localStorage.getItem('helika_utms');
+            try {
+                if (exenv_1.default.canUseDOM) {
+                    fingerprint_data = yield this.fingerprint();
+                    helika_referral_link = localStorage.getItem('helika_referral_link');
+                    utms = localStorage.getItem('helika_utms');
+                }
+            }
+            catch (e) {
+                console.log(e);
             }
             let newEvents = events.map(event => {
                 let givenEvent = Object.assign({}, event);
@@ -96,10 +101,15 @@ class EVENTS extends base_1.Base {
             let fingerprint_data = {};
             let helika_referral_link = null;
             let utms = null;
-            if (exenv_1.default.canUseDOM) {
-                fingerprint_data = yield this.fingerprint();
-                helika_referral_link = localStorage.getItem('helika_referral_link');
-                utms = localStorage.getItem('helika_utms');
+            try {
+                if (exenv_1.default.canUseDOM) {
+                    fingerprint_data = yield this.fingerprint();
+                    helika_referral_link = localStorage.getItem('helika_referral_link');
+                    utms = localStorage.getItem('helika_utms');
+                }
+            }
+            catch (e) {
+                console.log(e);
             }
             let newEvents = events.map(event => {
                 let givenEvent = Object.assign({}, event);

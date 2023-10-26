@@ -121,10 +121,12 @@ class Base {
         return __awaiter(this, void 0, void 0, function* () {
             this.sessionID = (0, uuid_1.v4)();
             const sessionExpiry = this.addHours(new Date(), 1);
+            let fpData = {};
             let utms = null;
             let helika_referral_link = null;
-            if (exenv_1.default.canUseDOM) {
-                try {
+            try {
+                if (exenv_1.default.canUseDOM) {
+                    fpData = yield this.fullFingerprint();
                     localStorage.setItem('sessionID', this.sessionID);
                     localStorage.setItem('sessionExpiry', sessionExpiry);
                     utms = this.getAllUrlParams();
@@ -136,11 +138,10 @@ class Base {
                         localStorage.setItem('helika_referral_link', helika_referral_link);
                     }
                 }
-                catch (e) {
-                    console.log(e);
-                }
             }
-            let fpData = yield this.fullFingerprint();
+            catch (e) {
+                console.log(e);
+            }
             //send event to initiate session
             var initevent = {
                 created_at: new Date().toISOString(),
