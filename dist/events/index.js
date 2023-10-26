@@ -63,9 +63,14 @@ class EVENTS extends base_1.Base {
             if (!this.sessionID)
                 throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
             let created_at = new Date().toISOString();
-            let fingerprint_data = yield this.fingerprint();
-            let helika_referral_link = this.getUrlParam('linkId');
-            let utms = this.getAllUrlParams();
+            let fingerprint_data = {};
+            let helika_referral_link = null;
+            let utms = null;
+            if (exenv_1.default.canUseDOM) {
+                fingerprint_data = yield this.fingerprint();
+                helika_referral_link = localStorage.getItem('helika_referral_link');
+                utms = localStorage.getItem('helika_utms');
+            }
             let newEvents = events.map(event => {
                 let givenEvent = Object.assign({}, event);
                 givenEvent.event.fingerprint = fingerprint_data;
@@ -88,9 +93,14 @@ class EVENTS extends base_1.Base {
             if (!this.sessionID)
                 throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
             let created_at = new Date().toISOString();
-            let fingerprint_data = yield this.fingerprint();
-            let helika_referral_link = this.getUrlParam('linkId');
-            let utms = this.getAllUrlParams();
+            let fingerprint_data = {};
+            let helika_referral_link = null;
+            let utms = null;
+            if (exenv_1.default.canUseDOM) {
+                fingerprint_data = yield this.fingerprint();
+                helika_referral_link = localStorage.getItem('helika_referral_link');
+                utms = localStorage.getItem('helika_utms');
+            }
             let newEvents = events.map(event => {
                 let givenEvent = Object.assign({}, event);
                 givenEvent.event.fingerprint = fingerprint_data;

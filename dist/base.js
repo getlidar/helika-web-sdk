@@ -121,9 +121,24 @@ class Base {
         return __awaiter(this, void 0, void 0, function* () {
             this.sessionID = (0, uuid_1.v4)();
             const sessionExpiry = this.addHours(new Date(), 1);
+            let utms = null;
+            let helika_referral_link = null;
             if (exenv_1.default.canUseDOM) {
-                localStorage.setItem('sessionID', this.sessionID);
-                localStorage.setItem('sessionExpiry', sessionExpiry);
+                try {
+                    localStorage.setItem('sessionID', this.sessionID);
+                    localStorage.setItem('sessionExpiry', sessionExpiry);
+                    utms = this.getAllUrlParams();
+                    helika_referral_link = this.getUrlParam('linkId');
+                    if (utms) {
+                        localStorage.setItem('helika_utms', utms === null || utms === void 0 ? void 0 : utms.toString());
+                    }
+                    if (helika_referral_link) {
+                        localStorage.setItem('helika_referral_link', helika_referral_link);
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                }
             }
             let fpData = yield this.fullFingerprint();
             //send event to initiate session
@@ -132,9 +147,11 @@ class Base {
                 game_id: 'HELIKA_SDK',
                 event_type: 'SESSION_CREATED',
                 event: {
-                    message: params.type,
+                    type: params.type,
                     sdk_class: params.sdk_class,
-                    fp_data: fpData
+                    fp_data: fpData,
+                    helika_referral_link: helika_referral_link,
+                    utms: utms
                 }
             };
             let event_params = {

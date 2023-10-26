@@ -35,7 +35,7 @@ export class EVENTS extends Base {
     }
   }
 
-  async refreshSession(): Promise<any> {
+  protected async refreshSession(): Promise<any> {
     if (ExecutionEnvironment.canUseDOM) {
       // Todo: Move this into the Base Class once Users have been consolidated
       return await this.sessionCreate({
@@ -58,9 +58,14 @@ export class EVENTS extends Base {
     if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
     let created_at = new Date().toISOString();
-    let fingerprint_data = await this.fingerprint();
-    let helika_referral_link = this.getUrlParam('linkId');
-    let utms = this.getAllUrlParams();
+    let fingerprint_data:any = {};
+    let helika_referral_link:any = null;
+    let utms:any = null;
+    if (ExecutionEnvironment.canUseDOM) {
+      fingerprint_data = await this.fingerprint();
+      helika_referral_link = localStorage.getItem('helika_referral_link');
+      utms = localStorage.getItem('helika_utms');
+    }
 
     let newEvents = events.map(event => {
       let givenEvent: any = Object.assign({}, event);
@@ -101,9 +106,14 @@ export class EVENTS extends Base {
     if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
     let created_at = new Date().toISOString();
-    let fingerprint_data = await this.fingerprint();
-    let helika_referral_link = this.getUrlParam('linkId');
-    let utms = this.getAllUrlParams();
+    let fingerprint_data:any = {};
+    let helika_referral_link:any = null;
+    let utms:any = null;
+    if (ExecutionEnvironment.canUseDOM) {
+      fingerprint_data = await this.fingerprint();
+      helika_referral_link = localStorage.getItem('helika_referral_link');
+      utms = localStorage.getItem('helika_utms');
+    }
 
     let newEvents = events.map(event => {
       let givenEvent: any = Object.assign({}, event);
@@ -133,7 +143,7 @@ export class EVENTS extends Base {
     return this.postRequest(`/game/game-event`, params);
   }
 
-  async updateSessionIdAndStorage(){
+  protected async updateSessionIdAndStorage(){
     if (ExecutionEnvironment.canUseDOM) {
       let local_storage_id = localStorage.getItem('sessionID');
       let expiry = localStorage.getItem('sessionExpiry');
