@@ -29,7 +29,18 @@ export class EVENTS extends Base {
     if (ExecutionEnvironment.canUseDOM) {
       // Todo: Move this into the Base Class once Users have been consolidated
       return await this.sessionCreate({
-        sdk_class: "Events"
+        sdk_class: "Events",
+        type: 'Session Start'
+      });
+    }
+  }
+
+  async refreshSession(): Promise<any> {
+    if (ExecutionEnvironment.canUseDOM) {
+      // Todo: Move this into the Base Class once Users have been consolidated
+      return await this.sessionCreate({
+        sdk_class: "Events",
+        type: 'Session Refresh'
       });
     }
   }
@@ -42,17 +53,9 @@ export class EVENTS extends Base {
     }[],
   ): Promise<{ message: string }> {
 
-    let id = this.sessionID;
-    if (ExecutionEnvironment.canUseDOM) {
-      let local_storage_id = localStorage.getItem('sessionID');
-      if (local_storage_id) {
-        id = local_storage_id;
-      } else if (this.sessionID) {
-        localStorage.setItem('sessionID',this.sessionID)
-      }
-    }
+    await this.updateSessionIdAndStorage();
 
-    if (!id) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
+    if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
     let created_at = new Date().toISOString();
     let fingerprint_data = await this.fingerprint();
@@ -79,7 +82,7 @@ export class EVENTS extends Base {
         event: Object
       }[]
     } = {
-      id: id,
+      id: this.sessionID,
       events: newEvents
     }
 
@@ -93,17 +96,9 @@ export class EVENTS extends Base {
     }[],
   ): Promise<{ message: string }> {
 
-    let id = this.sessionID;
-    if (ExecutionEnvironment.canUseDOM) {
-      let local_storage_id = localStorage.getItem('sessionID');
-      if (local_storage_id) {
-        id = local_storage_id;
-      } else if (this.sessionID) {
-        localStorage.setItem('sessionID',this.sessionID)
-      }
-    }
+    await this.updateSessionIdAndStorage();
 
-    if (!id) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
+    if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
     let created_at = new Date().toISOString();
     let fingerprint_data = await this.fingerprint();
@@ -131,11 +126,29 @@ export class EVENTS extends Base {
         event: Object
       }[]
     } = {
-      id: id,
+      id: this.sessionID,
       events: newEvents
     }
 
     return this.postRequest(`/game/game-event`, params);
+  }
+
+  async updateSessionIdAndStorage(){
+    if (ExecutionEnvironment.canUseDOM) {
+      let local_storage_id = localStorage.getItem('sessionID');
+      let expiry = localStorage.getItem('sessionExpiry');
+      if (local_storage_id) {
+        if (!expiry || (new Date(expiry) < new Date())) {
+          await this.refreshSession();
+        }  else {
+          this.sessionID = local_storage_id;
+        }
+      } else if (this.sessionID) { // edge case where localstorage was cleared
+        localStorage.setItem('sessionID',this.sessionID);
+        const sessionExpiry = this.addHours(new Date(), 1);
+        localStorage.setItem('sessionExpiry',sessionExpiry);
+      }
+    }
   }
 
 }

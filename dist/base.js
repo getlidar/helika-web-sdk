@@ -120,8 +120,10 @@ class Base {
     sessionCreate(params) {
         return __awaiter(this, void 0, void 0, function* () {
             this.sessionID = (0, uuid_1.v4)();
+            const sessionExpiry = this.addHours(new Date(), 1);
             if (exenv_1.default.canUseDOM) {
                 localStorage.setItem('sessionID', this.sessionID);
+                localStorage.setItem('sessionExpiry', sessionExpiry);
             }
             let fpData = yield this.fullFingerprint();
             //send event to initiate session
@@ -130,7 +132,7 @@ class Base {
                 game_id: 'HELIKA_SDK',
                 event_type: 'SESSION_CREATED',
                 event: {
-                    message: 'Session created',
+                    message: params.type,
                     sdk_class: params.sdk_class,
                     fp_data: fpData
                 }
@@ -141,6 +143,10 @@ class Base {
             };
             return yield this.postRequest(`/game/game-event`, event_params);
         });
+    }
+    addHours(date, hours) {
+        date.setHours(date.getHours() + hours);
+        return date.toString();
     }
 }
 exports.Base = Base;

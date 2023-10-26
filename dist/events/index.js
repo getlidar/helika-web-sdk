@@ -40,24 +40,27 @@ class EVENTS extends base_1.Base {
             if (exenv_1.default.canUseDOM) {
                 // Todo: Move this into the Base Class once Users have been consolidated
                 return yield this.sessionCreate({
-                    sdk_class: "Events"
+                    sdk_class: "Events",
+                    type: 'Session Start'
+                });
+            }
+        });
+    }
+    refreshSession() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (exenv_1.default.canUseDOM) {
+                // Todo: Move this into the Base Class once Users have been consolidated
+                return yield this.sessionCreate({
+                    sdk_class: "Events",
+                    type: 'Session Refresh'
                 });
             }
         });
     }
     createEvent(events) {
         return __awaiter(this, void 0, void 0, function* () {
-            let id = this.sessionID;
-            if (exenv_1.default.canUseDOM) {
-                let local_storage_id = localStorage.getItem('sessionID');
-                if (local_storage_id) {
-                    id = local_storage_id;
-                }
-                else if (this.sessionID) {
-                    localStorage.setItem('sessionID', this.sessionID);
-                }
-            }
-            if (!id)
+            yield this.updateSessionIdAndStorage();
+            if (!this.sessionID)
                 throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
             let created_at = new Date().toISOString();
             let fingerprint_data = yield this.fingerprint();
@@ -73,7 +76,7 @@ class EVENTS extends base_1.Base {
                 return givenEvent;
             });
             var params = {
-                id: id,
+                id: this.sessionID,
                 events: newEvents
             };
             return this.postRequest(`/game/game-event`, params);
@@ -81,17 +84,8 @@ class EVENTS extends base_1.Base {
     }
     createUAEvent(events) {
         return __awaiter(this, void 0, void 0, function* () {
-            let id = this.sessionID;
-            if (exenv_1.default.canUseDOM) {
-                let local_storage_id = localStorage.getItem('sessionID');
-                if (local_storage_id) {
-                    id = local_storage_id;
-                }
-                else if (this.sessionID) {
-                    localStorage.setItem('sessionID', this.sessionID);
-                }
-            }
-            if (!id)
+            yield this.updateSessionIdAndStorage();
+            if (!this.sessionID)
                 throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
             let created_at = new Date().toISOString();
             let fingerprint_data = yield this.fingerprint();
@@ -108,10 +102,31 @@ class EVENTS extends base_1.Base {
                 return givenEvent;
             });
             var params = {
-                id: id,
+                id: this.sessionID,
                 events: newEvents
             };
             return this.postRequest(`/game/game-event`, params);
+        });
+    }
+    updateSessionIdAndStorage() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (exenv_1.default.canUseDOM) {
+                let local_storage_id = localStorage.getItem('sessionID');
+                let expiry = localStorage.getItem('sessionExpiry');
+                if (local_storage_id) {
+                    if (!expiry || (new Date(expiry) < new Date())) {
+                        yield this.refreshSession();
+                    }
+                    else {
+                        this.sessionID = local_storage_id;
+                    }
+                }
+                else if (this.sessionID) { // edge case where localstorage was cleared
+                    localStorage.setItem('sessionID', this.sessionID);
+                    const sessionExpiry = this.addHours(new Date(), 1);
+                    localStorage.setItem('sessionExpiry', sessionExpiry);
+                }
+            }
         });
     }
 }

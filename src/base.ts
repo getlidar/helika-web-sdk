@@ -114,8 +114,10 @@ export abstract class Base {
   protected async sessionCreate<T>(params?: any): Promise<{ message: string }> {
 
     this.sessionID = v4();
+    const sessionExpiry = this.addHours(new Date(), 1);
     if (ExecutionEnvironment.canUseDOM) {
-      localStorage.setItem('sessionID',this.sessionID)
+      localStorage.setItem('sessionID',this.sessionID);
+      localStorage.setItem('sessionExpiry',sessionExpiry);
     }
 
     let fpData = await this.fullFingerprint();
@@ -126,7 +128,7 @@ export abstract class Base {
       game_id: 'HELIKA_SDK',
       event_type: 'SESSION_CREATED',
       event: {
-        message: 'Session created',
+        message: params.type,
         sdk_class: params.sdk_class,
         fp_data: fpData
       }
@@ -137,6 +139,11 @@ export abstract class Base {
     }
 
     return await this.postRequest(`/game/game-event`, event_params);
+  }
+
+  protected addHours(date:Date, hours:number) {
+    date.setHours(date.getHours() + hours);
+    return date.toString();
   }
 
 }

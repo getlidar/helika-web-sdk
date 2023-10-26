@@ -15,4 +15,5 @@ export declare abstract class Base {
     protected sessionCreate<T>(params?: any): Promise<{
         message: string;
     }>;
+    protected addHours(date: Date, hours: number): string;
 }
