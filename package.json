@@ -40,6 +40,7 @@
     "uuid": "^9.0.1"
   },
   "peerDependencies": {
-    "@fingerprintjs/fingerprintjs-pro-react": "^2.6.0"
+    "@fingerprintjs/fingerprintjs-pro-react": "^2.6.0",
+    "@types/exenv": "^1.2.1"
   }
 }

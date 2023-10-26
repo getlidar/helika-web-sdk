@@ -22,10 +22,14 @@ class Base {
     constructor(apiKey) {
         this.apiKey = apiKey;
         this.sessionID = null;
+        this.sessionExpiry = new Date();
         this.baseUrl = "http://localhost:3000";
     }
     fingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (new Date() > this.sessionExpiry) {
+                return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
+            }
             let loadOptions = {
                 apiKey: fpApiKey
             };
@@ -46,6 +50,9 @@ class Base {
     }
     fullFingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (new Date() > this.sessionExpiry) {
+                return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
+            }
             let loadOptions = {
                 apiKey: fpApiKey
             };
@@ -120,7 +127,7 @@ class Base {
     sessionCreate(params) {
         return __awaiter(this, void 0, void 0, function* () {
             this.sessionID = (0, uuid_1.v4)();
-            const sessionExpiry = this.addHours(new Date(), 1);
+            this.sessionExpiry = this.addHours(new Date(), 1);
             let fpData = {};
             let utms = null;
             let helika_referral_link = null;
@@ -128,7 +135,7 @@ class Base {
                 if (exenv_1.default.canUseDOM) {
                     fpData = yield this.fullFingerprint();
                     localStorage.setItem('sessionID', this.sessionID);
-                    localStorage.setItem('sessionExpiry', sessionExpiry);
+                    localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
                     utms = this.getAllUrlParams();
                     helika_referral_link = this.getUrlParam('linkId');
                     if (utms) {

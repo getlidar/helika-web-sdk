@@ -133,12 +133,13 @@ class EVENTS extends base_1.Base {
             if (exenv_1.default.canUseDOM) {
                 let local_storage_id = localStorage.getItem('sessionID');
                 let expiry = localStorage.getItem('sessionExpiry');
-                if (local_storage_id) {
-                    if (!expiry || (new Date(expiry) < new Date())) {
+                if (local_storage_id && expiry) {
+                    if (new Date(expiry) < new Date()) {
                         yield this.refreshSession();
                     }
                     else {
                         this.sessionID = local_storage_id;
+                        this.sessionExpiry = new Date(expiry);
                     }
                 }
                 else if (this.sessionID) { // edge case where localstorage was cleared

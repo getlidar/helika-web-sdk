@@ -2,6 +2,7 @@ export declare abstract class Base {
     private apiKey;
     baseUrl: string;
     sessionID: string | null;
+    sessionExpiry: any;
     constructor(apiKey: string);
     protected fingerprint(): Promise<any>;
     protected fullFingerprint(): Promise<any>;
