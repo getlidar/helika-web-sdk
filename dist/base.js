@@ -27,7 +27,7 @@ class Base {
     }
     fingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (new Date() > this.sessionExpiry) {
+            if (new Date() < this.sessionExpiry) {
                 return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
             }
             let loadOptions = {
@@ -50,7 +50,7 @@ class Base {
     }
     fullFingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (new Date() > this.sessionExpiry) {
+            if (new Date() < this.sessionExpiry) {
                 return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
             }
             let loadOptions = {

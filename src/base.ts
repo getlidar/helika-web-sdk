@@ -20,7 +20,7 @@ export abstract class Base {
 
   protected async fingerprint(): Promise<any> {
 
-    if (new Date() > this.sessionExpiry) {
+    if (new Date() < this.sessionExpiry) {
       return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
     }
 
@@ -43,7 +43,7 @@ export abstract class Base {
 
   protected async fullFingerprint(): Promise<any> {
 
-    if (new Date() > this.sessionExpiry) {
+    if (new Date() < this.sessionExpiry) {
       return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
     }
 
