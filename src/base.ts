@@ -20,10 +20,6 @@ export abstract class Base {
 
   protected async fingerprint(): Promise<any> {
 
-    if (new Date() < this.sessionExpiry) {
-      return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
-    }
-
     let loadOptions = {
       apiKey: fpApiKey,
       scriptUrlPattern: [
@@ -50,10 +46,6 @@ export abstract class Base {
   }
 
   protected async fullFingerprint(): Promise<any> {
-
-    if (new Date() < this.sessionExpiry) {
-      return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
-    }
     try {
 
       let loadOptions = {
@@ -142,7 +134,7 @@ export abstract class Base {
   protected async sessionCreate<T>(params?: any): Promise<{ message: string }> {
 
     this.sessionID = v4();
-    this.sessionExpiry = this.addHours(new Date(), 1);
+    this.sessionExpiry = this.addHours(new Date(), 6);
     let fpData = {};
     let utms = null;
     let helika_referral_link = null;
@@ -190,4 +182,10 @@ export abstract class Base {
     return date.toString();
   }
 
+  protected extendSession(){
+    this.sessionExpiry = this.addHours(new Date(), 6);
+    if (ExecutionEnvironment.canUseDOM) {
+      localStorage.setItem('sessionExpiry',this.sessionExpiry);
+    };
+  } 
 }

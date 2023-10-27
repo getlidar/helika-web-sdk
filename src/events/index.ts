@@ -58,12 +58,10 @@ export class EVENTS extends Base {
     if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
     let created_at = new Date().toISOString();
-    let fingerprint_data: any = {};
     let helika_referral_link: any = null;
     let utms: any = null;
     try {
       if (ExecutionEnvironment.canUseDOM) {
-        fingerprint_data = await this.fingerprint();
         helika_referral_link = localStorage.getItem('helika_referral_link');
         utms = localStorage.getItem('helika_utms');
       }
@@ -73,14 +71,12 @@ export class EVENTS extends Base {
 
     let newEvents = events.map(event => {
       let givenEvent: any = Object.assign({}, event);
-      givenEvent.event.fingerprint = fingerprint_data;
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
       givenEvent.event.sessionID = this.sessionID;
       givenEvent.created_at = created_at;
       return givenEvent;
-    }
-    );
+    });
 
     var params: {
       id: string,
@@ -94,6 +90,8 @@ export class EVENTS extends Base {
       id: this.sessionID,
       events: newEvents
     }
+
+    this.extendSession();
 
     return this.postRequest(`/game/game-event`, params);
   }
@@ -110,12 +108,10 @@ export class EVENTS extends Base {
     if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
     let created_at = new Date().toISOString();
-    let fingerprint_data: any = {};
     let helika_referral_link: any = null;
     let utms: any = null;
     try {
       if (ExecutionEnvironment.canUseDOM) {
-        fingerprint_data = await this.fingerprint();
         helika_referral_link = localStorage.getItem('helika_referral_link');
         utms = localStorage.getItem('helika_utms');
       }
@@ -125,15 +121,13 @@ export class EVENTS extends Base {
 
     let newEvents = events.map(event => {
       let givenEvent: any = Object.assign({}, event);
-      givenEvent.event.fingerprint = fingerprint_data;
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
       givenEvent.event.sessionID = this.sessionID;
       givenEvent.created_at = created_at;
       givenEvent.game_id = 'UA';
       return givenEvent;
-    }
-    );
+    });
 
     var params: {
       id: string,
@@ -147,6 +141,8 @@ export class EVENTS extends Base {
       id: this.sessionID,
       events: newEvents
     }
+
+    this.extendSession();
 
     return this.postRequest(`/game/game-event`, params);
   }
@@ -164,8 +160,6 @@ export class EVENTS extends Base {
         }
       } else if (this.sessionID) { // edge case where localstorage was cleared
         localStorage.setItem('sessionID', this.sessionID);
-        const sessionExpiry = this.addHours(new Date(), 1);
-        localStorage.setItem('sessionExpiry', sessionExpiry);
       }
     }
   }
