@@ -1,7 +1,7 @@
 import { Base } from "../base";
 import { EventsBaseURL } from "../index";
 export declare class EVENTS extends Base {
-    constructor(apiKey: string, baseUrl: EventsBaseURL, newSessionId?: boolean);
+    constructor(apiKey: string, baseUrl: EventsBaseURL);
     startSession(): Promise<any>;
     protected refreshSession(): Promise<any>;
     createEvent(events: {

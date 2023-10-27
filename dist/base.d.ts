@@ -17,4 +17,5 @@ export declare abstract class Base {
         message: string;
     }>;
     protected addHours(date: Date, hours: number): string;
+    protected extendSession(): void;
 }

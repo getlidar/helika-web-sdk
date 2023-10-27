@@ -140,6 +140,14 @@ export abstract class Base {
     let helika_referral_link = null;
     try {
       if (ExecutionEnvironment.canUseDOM) {
+        if (params.type === 'Session Start') {
+          let local_session_id = localStorage.getItem('sessionID');
+          let expiry = localStorage.getItem('sessionExpiry');
+          if (local_session_id && expiry && (new Date(expiry) > new Date())) {
+            this.sessionID = local_session_id;
+          }
+        }
+
         fpData = await this.fullFingerprint();
         localStorage.setItem('sessionID',this.sessionID);
         localStorage.setItem('sessionExpiry',this.sessionExpiry.toString());
