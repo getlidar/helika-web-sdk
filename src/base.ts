@@ -25,7 +25,15 @@ export abstract class Base {
     }
 
     let loadOptions = {
-      apiKey: fpApiKey
+      apiKey: fpApiKey,
+      scriptUrlPattern: [
+        `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=3&loaderVersion=3.8.6`,
+        fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
+      ],
+      endpoint: [
+        'https://yard.helika.io/8nc7wiyuwhncrhw3/o9wn3zvyblw3v8yi8?region=us',
+        fingerprint.defaultEndpoint // Fallback to default endpoint in case of error
+      ],
     };
     let fingerprintData = null;
     try {
@@ -46,11 +54,19 @@ export abstract class Base {
     if (new Date() < this.sessionExpiry) {
       return { data: 'FP data from session start/refresh is still fresh. Fingerprinting not executed.' };
     }
-
-    let loadOptions = {
-      apiKey: fpApiKey
-    };
     try {
+
+      let loadOptions = {
+        apiKey: fpApiKey,
+        scriptUrlPattern: [
+          `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=3&loaderVersion=3.8.6`,
+          fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
+        ],
+        endpoint: [
+          'https://yard.helika.io/8nc7wiyuwhncrhw3/o9wn3zvyblw3v8yi8?region=us',
+          fingerprint.defaultEndpoint // Fallback to default endpoint in case of error
+        ],
+      };
       let loaded = await fingerprint.load(loadOptions);
       let resp = await loaded.get({
         extendedResult: true
