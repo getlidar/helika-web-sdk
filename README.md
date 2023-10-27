@@ -45,7 +45,10 @@ import { EventsBaseURL } from "helika-sdk"
 
 const helikaSDK = new Helika.EVENTS(api_key, EventsBaseURL.EVENTS_DEV);
 
-// Start a session
+// Start a session/create a new session which initiates the SDK instance with a
+// sessionId which is required to fire events. This should only be called when 
+// the user lands on the page. We store and re-use the session_id from the local
+// storage, if present.
 await helikaSDK.startSession();
 
 events = [{
