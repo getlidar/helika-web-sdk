@@ -64,9 +64,10 @@ export class EVENTS extends Base {
       if (ExecutionEnvironment.canUseDOM) {
         helika_referral_link = localStorage.getItem('helika_referral_link');
         utms = localStorage.getItem('helika_utms');
+        utms = utms ? JSON.parse(utms) : null;
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
 
     let newEvents = events.map(event => {
@@ -114,9 +115,10 @@ export class EVENTS extends Base {
       if (ExecutionEnvironment.canUseDOM) {
         helika_referral_link = localStorage.getItem('helika_referral_link');
         utms = localStorage.getItem('helika_utms');
+        utms = utms ? JSON.parse(utms) : null;
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
 
     let newEvents = events.map(event => {

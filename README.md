@@ -69,7 +69,7 @@ helikaSDK.createEvent(events)
 	//do something...
 	// console.log(resp);
 }).catch(e => {
-	console.log(e);
+  console.error(e);
 });
 
 ```
