@@ -45,6 +45,10 @@ export class EVENTS extends Base {
     }
   }
 
+  updateUtmRecords() {
+    this.grabAndStoreUtms();
+  }
+
   async createEvent(
     events: {
       game_id: string,

@@ -148,17 +148,11 @@ export abstract class Base {
           }
         }
 
+
         fpData = await this.fullFingerprint();
         localStorage.setItem('sessionID', this.sessionID);
         localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
-        utms = this.getAllUrlParams();
-        helika_referral_link = this.getUrlParam('linkId');
-        if (utms) {
-          localStorage.setItem('helika_utms', JSON.stringify(utms))
-        }
-        if (helika_referral_link) {
-          localStorage.setItem('helika_referral_link', helika_referral_link);
-        }
+        [utms, helika_referral_link] = this.grabAndStoreUtms();
       }
     } catch (e) {
       console.error(e);
@@ -183,6 +177,22 @@ export abstract class Base {
     }
 
     return await this.postRequest(`/game/game-event`, event_params);
+  }
+
+  protected grabAndStoreUtms() {
+    let utms = null;
+    let helika_referral_link = null;
+    if (ExecutionEnvironment.canUseDOM) {
+      utms = this.getAllUrlParams();
+      helika_referral_link = this.getUrlParam('linkId');
+      if (utms) {
+        localStorage.setItem('helika_utms', JSON.stringify(utms))
+      }
+      if (helika_referral_link) {
+        localStorage.setItem('helika_referral_link', helika_referral_link);
+      }
+    }
+    return [utms, helika_referral_link]
   }
 
   protected addHours(date: Date, hours: number) {
