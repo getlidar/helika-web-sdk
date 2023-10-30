@@ -30,7 +30,7 @@ class Base {
             let loadOptions = {
                 apiKey: fpApiKey,
                 scriptUrlPattern: [
-                    `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=3&loaderVersion=3.8.6`,
+                    `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=<version>&loaderVersion=<loaderVersion>`,
                     index_1.fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
                 ],
                 endpoint: [
@@ -156,7 +156,7 @@ class Base {
                     utms = this.getAllUrlParams();
                     helika_referral_link = this.getUrlParam('linkId');
                     if (utms) {
-                        localStorage.setItem('helika_utms', utms === null || utms === void 0 ? void 0 : utms.toString());
+                        localStorage.setItem('helika_utms', JSON.stringify(utms));
                     }
                     if (helika_referral_link) {
                         localStorage.setItem('helika_referral_link', helika_referral_link);
@@ -164,7 +164,7 @@ class Base {
                 }
             }
             catch (e) {
-                console.log(e);
+                console.error(e);
             }
             //send event to initiate session
             var initevent = {

@@ -69,10 +69,11 @@ class EVENTS extends base_1.Base {
                 if (exenv_1.default.canUseDOM) {
                     helika_referral_link = localStorage.getItem('helika_referral_link');
                     utms = localStorage.getItem('helika_utms');
+                    utms = utms ? JSON.parse(utms) : null;
                 }
             }
             catch (e) {
-                console.log(e);
+                console.error(e);
             }
             let newEvents = events.map(event => {
                 let givenEvent = Object.assign({}, event);
@@ -102,10 +103,11 @@ class EVENTS extends base_1.Base {
                 if (exenv_1.default.canUseDOM) {
                     helika_referral_link = localStorage.getItem('helika_referral_link');
                     utms = localStorage.getItem('helika_utms');
+                    utms = utms ? JSON.parse(utms) : null;
                 }
             }
             catch (e) {
-                console.log(e);
+                console.error(e);
             }
             let newEvents = events.map(event => {
                 let givenEvent = Object.assign({}, event);

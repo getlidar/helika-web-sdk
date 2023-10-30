@@ -23,7 +23,7 @@ export abstract class Base {
     let loadOptions = {
       apiKey: fpApiKey,
       scriptUrlPattern: [
-        `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=3&loaderVersion=3.8.6`,
+        `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=<version>&loaderVersion=<loaderVersion>`,
         fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
       ],
       endpoint: [
