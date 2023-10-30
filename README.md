@@ -75,4 +75,4 @@ helikaSDK.createEvent(events)
 ```
 
 ## Full docs
-For the full documentation, please head to [official docs](https://helika.notion.site/Helika-SDK-Docs-bec1480e28744ccfb48c71fb4434991d?pvs=4).
+For the full documentation, please head to [official docs](https://dash.readme.com/project/helika/v1.0/refs/add_collection_v1_collections__chain___address__patch).
