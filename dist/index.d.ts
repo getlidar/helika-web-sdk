@@ -14,4 +14,13 @@ export declare enum EventsBaseURL {
     EVENTS_DEV = 0,
     EVENTS_PROD = 1
 }
+export declare enum DisableDataSettings {
+    None = 0,
+    BrowserInfo = 1,
+    DeviceInfo = 2,
+    IpInfo = 4,
+    OsInfo = 8,
+    VpnInfo = 16,
+    All = 2147483647
+}
 export declare const fingerprint: typeof FingerprintJSPro;

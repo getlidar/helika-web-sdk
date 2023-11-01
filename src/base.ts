@@ -1,5 +1,5 @@
 import axios from "axios";
-import { fingerprint } from "./index";
+import { DisableDataSettings, fingerprint } from "./index";
 import { v4 } from 'uuid';
 import ExecutionEnvironment from 'exenv';
 
@@ -7,15 +7,17 @@ const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 
 export abstract class Base {
   private apiKey: string;
-  baseUrl: string;
-  sessionID: string | null;
-  sessionExpiry: any;
+  protected baseUrl: string;
+  protected sessionID: string | null;
+  protected sessionExpiry: any;
+  protected disabledDataSettings: DisableDataSettings;
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
     this.sessionID = null;
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
+    this.disabledDataSettings = DisableDataSettings.None;
   }
 
   protected async fingerprint(): Promise<any> {
@@ -60,10 +62,35 @@ export abstract class Base {
         ],
       };
       let loaded = await fingerprint.load(loadOptions);
-      let resp = await loaded.get({
+      let fingerprintData = await loaded.get({
         extendedResult: true
       });
-      return resp;
+
+      if (this.disabledDataSettings & DisableDataSettings.BrowserInfo) {
+        fingerprintData.browserName = "";
+        fingerprintData.browserVersion = "";
+        fingerprintData.incognito = false;
+      }
+
+      if (this.disabledDataSettings & DisableDataSettings.DeviceInfo) {
+        fingerprintData.device = "";
+      }
+
+      if (this.disabledDataSettings & DisableDataSettings.IpInfo) {
+        fingerprintData.ip = "";
+        delete fingerprintData?.ipLocation;
+      }
+
+      if (this.disabledDataSettings & DisableDataSettings.OsInfo) {
+        fingerprintData.os = "";
+        fingerprintData.osVersion = "";
+      }
+
+      // if (this.disabledDataSettings & DisableDataSettings.VpnInfo) {
+      //   // Not here
+      // }
+
+      return fingerprintData;
     } catch (e) {
       console.error('Error loading fingerprint data');
       return {};
@@ -145,10 +172,12 @@ export abstract class Base {
           let expiry = localStorage.getItem('sessionExpiry');
           if (local_session_id && expiry && (new Date(expiry) > new Date())) {
             this.sessionID = local_session_id;
+
+            // Only grab fingerprint data if it's a new session
+            fpData = await this.fullFingerprint();
           }
         }
 
-        fpData = await this.fullFingerprint();
         localStorage.setItem('sessionID', this.sessionID);
         localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
         utms = this.getAllUrlParams();
@@ -195,5 +224,9 @@ export abstract class Base {
     if (ExecutionEnvironment.canUseDOM) {
       localStorage.setItem('sessionExpiry', this.sessionExpiry);
     };
+  }
+
+  public setDataSettings(settings: DisableDataSettings) {
+    this.disabledDataSettings = settings;
   }
 }

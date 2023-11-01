@@ -24,6 +24,7 @@ class Base {
         this.sessionID = null;
         this.sessionExpiry = new Date();
         this.baseUrl = "http://localhost:3000";
+        this.disabledDataSettings = index_1.DisableDataSettings.None;
     }
     fingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -68,10 +69,29 @@ class Base {
                     ],
                 };
                 let loaded = yield index_1.fingerprint.load(loadOptions);
-                let resp = yield loaded.get({
+                let fingerprintData = yield loaded.get({
                     extendedResult: true
                 });
-                return resp;
+                if (this.disabledDataSettings & index_1.DisableDataSettings.BrowserInfo) {
+                    fingerprintData.browserName = "";
+                    fingerprintData.browserVersion = "";
+                    fingerprintData.incognito = false;
+                }
+                if (this.disabledDataSettings & index_1.DisableDataSettings.DeviceInfo) {
+                    fingerprintData.device = "";
+                }
+                if (this.disabledDataSettings & index_1.DisableDataSettings.IpInfo) {
+                    fingerprintData.ip = "";
+                    fingerprintData === null || fingerprintData === void 0 ? true : delete fingerprintData.ipLocation;
+                }
+                if (this.disabledDataSettings & index_1.DisableDataSettings.OsInfo) {
+                    fingerprintData.os = "";
+                    fingerprintData.osVersion = "";
+                }
+                // if (this.disabledDataSettings & DisableDataSettings.VpnInfo) {
+                //   // Not here
+                // }
+                return fingerprintData;
             }
             catch (e) {
                 console.error('Error loading fingerprint data');
@@ -148,9 +168,10 @@ class Base {
                         let expiry = localStorage.getItem('sessionExpiry');
                         if (local_session_id && expiry && (new Date(expiry) > new Date())) {
                             this.sessionID = local_session_id;
+                            // Only grab fingerprint data if it's a new session
+                            fpData = yield this.fullFingerprint();
                         }
                     }
-                    fpData = yield this.fullFingerprint();
                     localStorage.setItem('sessionID', this.sessionID);
                     localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
                     utms = this.getAllUrlParams();
@@ -196,6 +217,9 @@ class Base {
             localStorage.setItem('sessionExpiry', this.sessionExpiry);
         }
         ;
+    }
+    setDataSettings(settings) {
+        this.disabledDataSettings = settings;
     }
 }
 exports.Base = Base;
