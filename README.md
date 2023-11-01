@@ -41,9 +41,12 @@ For Production, use **EVENT_PROD**. This sends the events and queries to the pro
 
 ```ts
 import Helika from "helika-sdk"
-import { EventsBaseURL } from "helika-sdk"
+import { DisableDataSettings, EventsBaseURL } from "helika-sdk"
 
 const helikaSDK = new Helika.EVENTS(api_key, EventsBaseURL.EVENTS_DEV);
+
+// Optional - if you want to disable some data from getting stored due to compliance
+await helikaSDK.setDataSettings(DisableDataSettings.None);
 
 // Start a session/create a new session which initiates the SDK instance with a
 // sessionId which is required to fire events. This should only be called when 
