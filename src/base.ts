@@ -172,7 +172,7 @@ export abstract class Base {
           let expiry = localStorage.getItem('sessionExpiry');
           if (local_session_id && expiry && (new Date(expiry) > new Date())) {
             this.sessionID = local_session_id;
-
+          } else {
             // Only grab fingerprint data if it's a new session
             fpData = await this.fullFingerprint();
           }
