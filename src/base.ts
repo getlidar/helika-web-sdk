@@ -2,7 +2,7 @@ import axios from "axios";
 import { DisableDataSettings, fingerprint } from "./index";
 import { v4 } from 'uuid';
 import ExecutionEnvironment from 'exenv';
-import { version } from '../package.json';
+import { version } from './version'
 
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 

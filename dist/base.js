@@ -17,6 +17,7 @@ const axios_1 = __importDefault(require("axios"));
 const index_1 = require("./index");
 const uuid_1 = require("uuid");
 const exenv_1 = __importDefault(require("exenv"));
+const version_1 = require("./version");
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 class Base {
     constructor(apiKey) {
@@ -168,6 +169,8 @@ class Base {
                         let expiry = localStorage.getItem('sessionExpiry');
                         if (local_session_id && expiry && (new Date(expiry) > new Date())) {
                             this.sessionID = local_session_id;
+                        }
+                        else {
                             // Only grab fingerprint data if it's a new session
                             fpData = yield this.fullFingerprint();
                         }
@@ -194,6 +197,7 @@ class Base {
                 event_type: 'SESSION_CREATED',
                 event: {
                     type: params.type,
+                    sdk_version: version_1.version,
                     sdk_class: params.sdk_class,
                     fp_data: fpData,
                     helika_referral_link: helika_referral_link,
