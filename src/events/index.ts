@@ -60,11 +60,13 @@ export class EVENTS extends Base {
     let created_at = new Date().toISOString();
     let helika_referral_link: any = null;
     let utms: any = null;
+    let current_url: string = "";
     try {
       if (ExecutionEnvironment.canUseDOM) {
         helika_referral_link = localStorage.getItem('helika_referral_link');
         utms = localStorage.getItem('helika_utms');
         utms = utms ? JSON.parse(utms) : null;
+        current_url = window.location.href;
       }
     } catch (e) {
       console.error(e);
@@ -74,6 +76,7 @@ export class EVENTS extends Base {
       let givenEvent: any = Object.assign({}, event);
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
+      givenEvent.event.url = current_url;
       givenEvent.event.sessionID = this.sessionID;
       givenEvent.created_at = created_at;
       return givenEvent;

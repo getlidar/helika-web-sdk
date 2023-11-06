@@ -2,6 +2,7 @@ import axios from "axios";
 import { DisableDataSettings, fingerprint } from "./index";
 import { v4 } from 'uuid';
 import ExecutionEnvironment from 'exenv';
+import { version } from '../package.json';
 
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 
@@ -200,6 +201,7 @@ export abstract class Base {
       event_type: 'SESSION_CREATED',
       event: {
         type: params.type,
+        sdk_version: version,
         sdk_class: params.sdk_class,
         fp_data: fpData,
         helika_referral_link: helika_referral_link,
