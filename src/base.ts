@@ -12,6 +12,7 @@ export abstract class Base {
   protected sessionID: string | null;
   protected sessionExpiry: any;
   protected disabledDataSettings: DisableDataSettings;
+  protected enabled: boolean;
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
@@ -19,6 +20,15 @@ export abstract class Base {
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
     this.disabledDataSettings = DisableDataSettings.None;
+    this.enabled = true;
+  }
+
+  public isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  public setEnabled(enabled: boolean) {
+    this.enabled = enabled;
   }
 
   protected async fingerprint(): Promise<any> {
@@ -149,6 +159,10 @@ export abstract class Base {
       headers,
     };
 
+    if (!this.enabled) {
+      console.log("Body: ", options);
+      // Todo: return here
+    }
     return new Promise((resolve, reject) => {
       axios
         .post(`${url}`, options, config)
