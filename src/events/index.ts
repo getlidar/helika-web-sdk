@@ -3,9 +3,11 @@ import { EventsBaseURL } from "../index";
 import ExecutionEnvironment from 'exenv';
 
 export class EVENTS extends Base {
+  protected playerId: string;
 
   constructor(apiKey: string, baseUrl: EventsBaseURL) {
     super(apiKey);
+    this.playerId = "";
 
     switch (baseUrl) {
       // case EventsBaseURL.LOCAL: {
@@ -22,7 +24,14 @@ export class EVENTS extends Base {
         break;
       }
     }
+  }
 
+  public getPlayerId(): string {
+    return this.playerId;
+  }
+
+  public setPlayerId(playerId: string) {
+    this.playerId = playerId;
   }
 
   async startSession(): Promise<any> {
@@ -78,6 +87,7 @@ export class EVENTS extends Base {
       givenEvent.event.utms = utms;
       givenEvent.event.url = current_url;
       givenEvent.event.sessionID = this.sessionID;
+      givenEvent.event.player_id = this.playerId;
       givenEvent.created_at = created_at;
       return givenEvent;
     });
