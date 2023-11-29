@@ -201,10 +201,12 @@ export abstract class Base {
       event_type: 'SESSION_CREATED',
       event: {
         type: params.type,
+        sdk_name: "Web",
         sdk_version: version,
         sdk_class: params.sdk_class,
         fp_data: fpData,
         helika_referral_link: helika_referral_link,
+        sessionID: this.sessionID,
         utms: utms
       }
     };
