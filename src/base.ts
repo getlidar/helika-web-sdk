@@ -149,7 +149,7 @@ export abstract class Base {
     });
   }
 
-  protected postRequest<T>(endpoint: string, options?: any): Promise<T> {
+  protected postRequest<T>(endpoint: string, options?: any): Promise<any> {
     const url = `${this.baseUrl}${endpoint}`;
     const headers = {
       "Content-Type": "application/json",
@@ -159,17 +159,18 @@ export abstract class Base {
       headers,
     };
 
-    if (!this.enabled) {
-      console.log("Body: ", options);
-      // Todo: return here
-    }
     return new Promise((resolve, reject) => {
-      axios
-        .post(`${url}`, options, config)
-        .then((resp: any) => {
-          resolve(resp.data);
-        })
-        .catch(reject);
+      if (!this.enabled) {
+        console.log("Body: ", options);
+        resolve({ message: 'Logged event' });
+      } else {
+        axios
+          .post(`${url}`, options, config)
+          .then((resp: any) => {
+            resolve(resp.data);
+          })
+          .catch(reject);
+      }
     });
   }
 
