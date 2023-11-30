@@ -5,7 +5,10 @@ export declare abstract class Base {
     protected sessionID: string | null;
     protected sessionExpiry: any;
     protected disabledDataSettings: DisableDataSettings;
+    protected enabled: boolean;
     constructor(apiKey: string);
+    isEnabled(): boolean;
+    setEnabled(enabled: boolean): void;
     protected fingerprint(): Promise<any>;
     protected fullFingerprint(): Promise<any>;
     protected getUrlParam(paramName: string): string | null;
@@ -14,7 +17,7 @@ export declare abstract class Base {
         value: string;
     }[];
     protected getRequest<T>(endpoint: string, options?: any): Promise<T>;
-    protected postRequest<T>(endpoint: string, options?: any): Promise<T>;
+    protected postRequest<T>(endpoint: string, options?: any): Promise<any>;
     protected sessionCreate<T>(params?: any): Promise<{
         message: string;
     }>;
