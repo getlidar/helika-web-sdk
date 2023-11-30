@@ -10,10 +10,12 @@ export class EVENTS extends Base {
     this.playerId = "";
 
     switch (baseUrl) {
-      // case EventsBaseURL.LOCAL: {
-      //   this.baseUrl = 'http://localhost:3000';
-      //   break;
-      // }
+      case EventsBaseURL.EVENTS_LOCAL: {
+        // this.baseUrl = 'http://localhost:3000';
+        this.baseUrl = "https://api-stage.helika.io/v1";
+        this.enabled = false;
+        break;
+      }
       case EventsBaseURL.EVENTS_PROD: {
         this.baseUrl = "https://api.helika.io/v1";
         break;
