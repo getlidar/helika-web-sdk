@@ -12,6 +12,7 @@ export abstract class Base {
   protected sessionID: string | null;
   protected sessionExpiry: any;
   protected disabledDataSettings: DisableDataSettings;
+  protected enabled: boolean;
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
@@ -19,6 +20,15 @@ export abstract class Base {
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
     this.disabledDataSettings = DisableDataSettings.None;
+    this.enabled = true;
+  }
+
+  public isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  public setEnabled(enabled: boolean) {
+    this.enabled = enabled;
   }
 
   protected async fingerprint(): Promise<any> {
@@ -139,7 +149,7 @@ export abstract class Base {
     });
   }
 
-  protected postRequest<T>(endpoint: string, options?: any): Promise<T> {
+  protected postRequest<T>(endpoint: string, options?: any): Promise<any> {
     const url = `${this.baseUrl}${endpoint}`;
     const headers = {
       "Content-Type": "application/json",
@@ -150,12 +160,17 @@ export abstract class Base {
     };
 
     return new Promise((resolve, reject) => {
-      axios
-        .post(`${url}`, options, config)
-        .then((resp: any) => {
-          resolve(resp.data);
-        })
-        .catch(reject);
+      if (!this.enabled) {
+        console.log("Body: ", options);
+        resolve({ message: 'Logged event' });
+      } else {
+        axios
+          .post(`${url}`, options, config)
+          .then((resp: any) => {
+            resolve(resp.data);
+          })
+          .catch(reject);
+      }
     });
   }
 
@@ -201,10 +216,12 @@ export abstract class Base {
       event_type: 'SESSION_CREATED',
       event: {
         type: params.type,
+        sdk_name: "Web",
         sdk_version: version,
         sdk_class: params.sdk_class,
         fp_data: fpData,
         helika_referral_link: helika_referral_link,
+        sessionID: this.sessionID,
         utms: utms
       }
     };

@@ -19,6 +19,7 @@ const exenv_1 = __importDefault(require("exenv"));
 class EVENTS extends base_1.Base {
     constructor(apiKey, baseUrl) {
         super(apiKey);
+        this.playerId = "";
         switch (baseUrl) {
             // case EventsBaseURL.LOCAL: {
             //   this.baseUrl = 'http://localhost:3000';
@@ -34,6 +35,12 @@ class EVENTS extends base_1.Base {
                 break;
             }
         }
+    }
+    getPlayerId() {
+        return this.playerId;
+    }
+    setPlayerId(playerId) {
+        this.playerId = playerId;
     }
     startSession() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -83,6 +90,7 @@ class EVENTS extends base_1.Base {
                 givenEvent.event.utms = utms;
                 givenEvent.event.url = current_url;
                 givenEvent.event.sessionID = this.sessionID;
+                givenEvent.event.player_id = this.playerId;
                 givenEvent.created_at = created_at;
                 return givenEvent;
             });

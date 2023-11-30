@@ -13,7 +13,7 @@ export enum UABaseURL {
 }
 
 export enum EventsBaseURL {
-  //LOCAL,
+  EVENTS_LOCAL,
   EVENTS_DEV,
   EVENTS_PROD
 }

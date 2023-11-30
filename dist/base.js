@@ -26,6 +26,13 @@ class Base {
         this.sessionExpiry = new Date();
         this.baseUrl = "http://localhost:3000";
         this.disabledDataSettings = index_1.DisableDataSettings.None;
+        this.enabled = true;
+    }
+    isEnabled() {
+        return this.enabled;
+    }
+    setEnabled(enabled) {
+        this.enabled = enabled;
     }
     fingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -146,13 +153,24 @@ class Base {
         const config = {
             headers,
         };
+        function emptyPromise() {
+            return __awaiter(this, void 0, void 0, function* () {
+                return { data: { message: 'NO-OP' } };
+            });
+        }
         return new Promise((resolve, reject) => {
-            axios_1.default
-                .post(`${url}`, options, config)
-                .then((resp) => {
-                resolve(resp.data);
-            })
-                .catch(reject);
+            if (!this.enabled) {
+                console.log("Body: ", options);
+                resolve({ message: 'NO-OP' });
+            }
+            else {
+                axios_1.default
+                    .post(`${url}`, options, config)
+                    .then((resp) => {
+                    resolve(resp.data);
+                })
+                    .catch(reject);
+            }
         });
     }
     sessionCreate(params) {
@@ -197,10 +215,12 @@ class Base {
                 event_type: 'SESSION_CREATED',
                 event: {
                     type: params.type,
+                    sdk_name: "Web",
                     sdk_version: version_1.version,
                     sdk_class: params.sdk_class,
                     fp_data: fpData,
                     helika_referral_link: helika_referral_link,
+                    sessionID: this.sessionID,
                     utms: utms
                 }
             };
