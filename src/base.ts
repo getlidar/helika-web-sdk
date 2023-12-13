@@ -213,7 +213,7 @@ export abstract class Base {
     var initevent = {
       created_at: new Date().toISOString(),
       game_id: 'HELIKA_SDK',
-      event_type: 'SESSION_CREATED',
+      event_type: 'session_created',
       event: {
         type: params.type,
         sdk_name: "Web",
