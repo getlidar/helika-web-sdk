@@ -37,22 +37,30 @@ export class EVENTS extends Base {
   }
 
   async startSession(): Promise<any> {
-    if (ExecutionEnvironment.canUseDOM) {
-      // Todo: Move this into the Base Class once Users have been consolidated
-      return await this.sessionCreate({
-        sdk_class: "Events",
-        type: 'Session Start'
-      });
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        // Todo: Move this into the Base Class once Users have been consolidated
+        return await this.sessionCreate({
+          sdk_class: "Events",
+          type: 'Session Start'
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 
   protected async refreshSession(): Promise<any> {
-    if (ExecutionEnvironment.canUseDOM) {
-      // Todo: Move this into the Base Class once Users have been consolidated
-      return await this.sessionCreate({
-        sdk_class: "Events",
-        type: 'Session Refresh'
-      });
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        // Todo: Move this into the Base Class once Users have been consolidated
+        return await this.sessionCreate({
+          sdk_class: "Events",
+          type: 'Session Refresh'
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 
