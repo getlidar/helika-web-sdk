@@ -9,14 +9,16 @@ const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 export abstract class Base {
   private apiKey: string;
   protected baseUrl: string;
+  protected gameId: string;
   protected sessionID: string | null;
   protected sessionExpiry: any;
   protected disabledDataSettings: DisableDataSettings;
   protected enabled: boolean;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, gameId: string) {
     this.apiKey = apiKey;
     this.sessionID = null;
+    this.gameId = gameId;
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
     this.disabledDataSettings = DisableDataSettings.None;

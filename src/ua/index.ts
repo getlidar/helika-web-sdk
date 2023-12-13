@@ -3,7 +3,7 @@ import { UABaseURL } from "../index";
 
 export class UA extends Base {
   constructor(apiKey: string, baseUrl: UABaseURL) {
-    super(apiKey);
+    super(apiKey, 'UA');
 
     switch (baseUrl) {
       // case UABaseURL.LOCAL: {

@@ -5,8 +5,8 @@ import ExecutionEnvironment from 'exenv';
 export class EVENTS extends Base {
   protected playerId: string;
 
-  constructor(apiKey: string, baseUrl: EventsBaseURL) {
-    super(apiKey);
+  constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL) {
+    super(apiKey, gameId);
     this.playerId = "";
 
     switch (baseUrl) {
@@ -58,7 +58,6 @@ export class EVENTS extends Base {
 
   async createEvent(
     events: {
-      game_id: string,
       event_type: string,
       event: Object
     }[],
@@ -91,6 +90,7 @@ export class EVENTS extends Base {
       givenEvent.event.sessionID = this.sessionID;
       givenEvent.event.player_id = this.playerId;
       givenEvent.created_at = created_at;
+      givenEvent.game_id = this.gameId;
       return givenEvent;
     });
 
