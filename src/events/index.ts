@@ -71,9 +71,11 @@ export class EVENTS extends Base {
     }[],
   ): Promise<{ message: string }> {
 
-    await this.updateSessionIdAndStorage();
+    await this.refreshSessionIdFromStorage();
 
-    if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
+    if (!this.sessionID) {
+      throw new Error('Could not initiate session. API Key is invalid. Disabling Sending Messages. Please reach out to Helika Support to request a valid API key.');
+    }
 
     let created_at = new Date().toISOString();
     let helika_referral_link: any = null;
@@ -127,7 +129,7 @@ export class EVENTS extends Base {
     }[],
   ): Promise<{ message: string }> {
 
-    await this.updateSessionIdAndStorage();
+    await this.refreshSessionIdFromStorage();
 
     if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
@@ -172,7 +174,7 @@ export class EVENTS extends Base {
     return this.postRequest(`/game/game-event`, params);
   }
 
-  protected async updateSessionIdAndStorage() {
+  protected async refreshSessionIdFromStorage() {
     if (ExecutionEnvironment.canUseDOM) {
       let local_storage_id = localStorage.getItem('sessionID');
       let expiry = localStorage.getItem('sessionExpiry');
