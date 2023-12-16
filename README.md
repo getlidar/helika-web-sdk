@@ -43,7 +43,8 @@ For Production, use **EVENT_PROD**. This sends the events and queries to the pro
 import Helika from "helika-sdk"
 import { DisableDataSettings, EventsBaseURL } from "helika-sdk"
 
-const helikaSDK = new Helika.EVENTS(api_key, EventsBaseURL.EVENTS_DEV);
+const gameId = 'my_game_name'
+const helikaSDK = new Helika.EVENTS(api_key, gameId, EventsBaseURL.EVENTS_DEV);
 
 // Optional - if you want to disable some data from getting stored due to compliance
 helikaSDK.setDataSettings(DisableDataSettings.None);
@@ -55,7 +56,6 @@ helikaSDK.setDataSettings(DisableDataSettings.None);
 await helikaSDK.startSession();
 
 events = [{
-	game_id: 'my_game',
 	event_type: 'win_event',
 	event: {
 		user: 'user_1',
