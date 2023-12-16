@@ -5,8 +5,8 @@ import ExecutionEnvironment from 'exenv';
 export class EVENTS extends Base {
   protected playerId: string;
 
-  constructor(apiKey: string, baseUrl: EventsBaseURL) {
-    super(apiKey);
+  constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL) {
+    super(apiKey, gameId);
     this.playerId = "";
 
     switch (baseUrl) {
@@ -37,36 +37,45 @@ export class EVENTS extends Base {
   }
 
   async startSession(): Promise<any> {
-    if (ExecutionEnvironment.canUseDOM) {
-      // Todo: Move this into the Base Class once Users have been consolidated
-      return await this.sessionCreate({
-        sdk_class: "Events",
-        type: 'Session Start'
-      });
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        // Todo: Move this into the Base Class once Users have been consolidated
+        return await this.sessionCreate({
+          sdk_class: "Events",
+          type: 'Session Start'
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 
   protected async refreshSession(): Promise<any> {
-    if (ExecutionEnvironment.canUseDOM) {
-      // Todo: Move this into the Base Class once Users have been consolidated
-      return await this.sessionCreate({
-        sdk_class: "Events",
-        type: 'Session Refresh'
-      });
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        // Todo: Move this into the Base Class once Users have been consolidated
+        return await this.sessionCreate({
+          sdk_class: "Events",
+          type: 'Session Refresh'
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 
   async createEvent(
     events: {
-      game_id: string,
       event_type: string,
       event: Object
     }[],
   ): Promise<{ message: string }> {
 
-    await this.updateSessionIdAndStorage();
+    await this.refreshSessionIdFromStorage();
 
-    if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
+    if (!this.sessionID) {
+      throw new Error('Could not initiate session. API Key is invalid. Disabling Sending Messages. Please reach out to Helika Support to request a valid API key.');
+    }
 
     let created_at = new Date().toISOString();
     let helika_referral_link: any = null;
@@ -91,6 +100,7 @@ export class EVENTS extends Base {
       givenEvent.event.sessionID = this.sessionID;
       givenEvent.event.player_id = this.playerId;
       givenEvent.created_at = created_at;
+      givenEvent.game_id = this.gameId;
       return givenEvent;
     });
 
@@ -119,7 +129,7 @@ export class EVENTS extends Base {
     }[],
   ): Promise<{ message: string }> {
 
-    await this.updateSessionIdAndStorage();
+    await this.refreshSessionIdFromStorage();
 
     if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
 
@@ -164,7 +174,7 @@ export class EVENTS extends Base {
     return this.postRequest(`/game/game-event`, params);
   }
 
-  protected async updateSessionIdAndStorage() {
+  protected async refreshSessionIdFromStorage() {
     if (ExecutionEnvironment.canUseDOM) {
       let local_storage_id = localStorage.getItem('sessionID');
       let expiry = localStorage.getItem('sessionExpiry');

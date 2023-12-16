@@ -9,14 +9,22 @@ const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 export abstract class Base {
   private apiKey: string;
   protected baseUrl: string;
+  protected gameId: string;
   protected sessionID: string | null;
   protected sessionExpiry: any;
   protected disabledDataSettings: DisableDataSettings;
   protected enabled: boolean;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, gameId: string) {
+    if (!apiKey || apiKey === '') {
+      throw new Error('API Key is required to initiate Helika SDK instance.');
+    }
+    if (!gameId || gameId === '') {
+      throw new Error('Game ID is required to initiate Helika SDK instance.');
+    }
     this.apiKey = apiKey;
     this.sessionID = null;
+    this.gameId = gameId;
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
     this.disabledDataSettings = DisableDataSettings.None;
@@ -174,7 +182,7 @@ export abstract class Base {
     });
   }
 
-  protected async sessionCreate<T>(params?: any): Promise<{ message: string }> {
+  protected async sessionCreate<T>(params?: any): Promise<any> {
 
     this.sessionID = v4();
     this.sessionExpiry = this.addHours(new Date(), 6);
@@ -212,8 +220,8 @@ export abstract class Base {
     //send event to initiate session
     var initevent = {
       created_at: new Date().toISOString(),
-      game_id: 'HELIKA_SDK',
-      event_type: 'SESSION_CREATED',
+      game_id: 'helika_sdk',
+      event_type: 'session_created',
       event: {
         type: params.type,
         sdk_name: "Web",
@@ -230,7 +238,22 @@ export abstract class Base {
       events: [initevent]
     }
 
-    return await this.postRequest(`/game/game-event`, event_params);
+    try {
+      return await this.postRequest(`/game/game-event`, event_params);
+    } catch (e: any) {
+      if (
+        e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
+        e.response.data.message.startsWith('Internal server error - Invalid API key:')
+      ) {
+        this.sessionID = null;
+        if (ExecutionEnvironment.canUseDOM) {
+          localStorage.removeItem('sessionID');
+        }
+        throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
+      }
+      throw new Error(e.message);
+    }
+
   }
 
   protected addHours(date: Date, hours: number) {
