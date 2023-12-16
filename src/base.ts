@@ -16,6 +16,12 @@ export abstract class Base {
   protected enabled: boolean;
 
   constructor(apiKey: string, gameId: string) {
+    if (!apiKey || apiKey === '') {
+      throw new Error('API Key is required to initiate Helika SDK instance.');
+    }
+    if (!gameId || gameId === '') {
+      throw new Error('Game ID is required to initiate Helika SDK instance.');
+    }
     this.apiKey = apiKey;
     this.sessionID = null;
     this.gameId = gameId;
@@ -214,7 +220,7 @@ export abstract class Base {
     //send event to initiate session
     var initevent = {
       created_at: new Date().toISOString(),
-      game_id: 'HELIKA_SDK',
+      game_id: 'helika_sdk',
       event_type: 'session_created',
       event: {
         type: params.type,
