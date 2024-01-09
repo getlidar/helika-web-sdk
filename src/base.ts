@@ -229,7 +229,7 @@ export abstract class Base {
         sdk_class: params.sdk_class,
         fp_data: fpData,
         helika_referral_link: helika_referral_link,
-        sessionID: this.sessionID,
+        session_id: this.sessionID,
         utms: utms,
         event_sub_type: 'session_created'
       }

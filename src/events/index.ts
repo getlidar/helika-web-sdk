@@ -97,7 +97,7 @@ export class EVENTS extends Base {
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
       givenEvent.event.url = current_url;
-      givenEvent.event.sessionID = this.sessionID;
+      givenEvent.event.session_id = this.sessionID;
       givenEvent.event.player_id = this.playerId;
       givenEvent.created_at = created_at;
       givenEvent.game_id = this.gameId;
@@ -150,7 +150,7 @@ export class EVENTS extends Base {
       let givenEvent: any = Object.assign({}, event);
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
-      givenEvent.event.sessionID = this.sessionID;
+      givenEvent.event.session_id = this.sessionID;
       givenEvent.created_at = created_at;
       givenEvent.game_id = 'UA';
       return givenEvent;
