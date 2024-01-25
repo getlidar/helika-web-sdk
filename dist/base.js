@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DisableDataSettings, fingerprint } from "./index";
+import { DisableDataSettings } from "./index";
 import { v4 } from 'uuid';
 import { version } from './version';
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
@@ -43,14 +43,14 @@ export class Base {
                     apiKey: fpApiKey,
                     scriptUrlPattern: [
                         `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=3&loaderVersion=3.8.6`,
-                        fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
+                        this.fingerprintJS.defaultScriptUrlPattern, // Fallback to default CDN in case of error
                     ],
                     endpoint: [
                         'https://yard.helika.io/8nc7wiyuwhncrhw3/o9wn3zvyblw3v8yi8?region=us',
-                        fingerprint.defaultEndpoint // Fallback to default endpoint in case of error
+                        this.fingerprintJS.defaultEndpoint // Fallback to default endpoint in case of error
                     ],
                 };
-                let loaded = yield fingerprint.load(loadOptions);
+                let loaded = yield this.fingerprintJS.load(loadOptions);
                 let fingerprintData = yield loaded.get({
                     extendedResult: true
                 });

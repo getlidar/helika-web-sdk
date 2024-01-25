@@ -2,7 +2,6 @@ import { Base } from "./base";
 import { UA } from "./ua";
 import { EVENTS } from "./events";
 import { applyMixins } from "./utils";
-import { FingerprintJSPro } from "@fingerprintjs/fingerprintjs-pro-react";
 
 export default { EVENTS: EVENTS, UA: UA }
 
@@ -27,5 +26,3 @@ export enum DisableDataSettings {
   VpnInfo = 1 << 4,     // 100000
   All = ~(~0 << 31)      // 0xFFFF
 }
-
-export const fingerprint = FingerprintJSPro;

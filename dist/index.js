@@ -1,6 +1,5 @@
 import { UA } from "./ua";
 import { EVENTS } from "./events";
-import { FingerprintJSPro } from "@fingerprintjs/fingerprintjs-pro-react";
 export default { EVENTS: EVENTS, UA: UA };
 export var UABaseURL;
 (function (UABaseURL) {
@@ -24,4 +23,3 @@ export var DisableDataSettings;
     DisableDataSettings[DisableDataSettings["VpnInfo"] = 16] = "VpnInfo";
     DisableDataSettings[DisableDataSettings["All"] = 2147483647] = "All"; // 0xFFFF
 })(DisableDataSettings || (DisableDataSettings = {}));
-export const fingerprint = FingerprintJSPro;

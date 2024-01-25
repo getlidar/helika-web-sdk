@@ -1,6 +1,5 @@
 import { UA } from "./ua";
 import { EVENTS } from "./events";
-import { FingerprintJSPro } from "@fingerprintjs/fingerprintjs-pro-react";
 declare const _default: {
     EVENTS: typeof EVENTS;
     UA: typeof UA;
@@ -24,4 +23,3 @@ export declare enum DisableDataSettings {
     VpnInfo = 16,
     All = 2147483647
 }
-export declare const fingerprint: typeof FingerprintJSPro;
