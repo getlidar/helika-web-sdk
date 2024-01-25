@@ -2,8 +2,9 @@ import { Base } from "../base";
 import { UABaseURL } from "../index";
 
 export class UA extends Base {
-  constructor(apiKey: string, baseUrl: UABaseURL) {
-    super(apiKey, 'helika_ua');
+  constructor(apiKey: string, baseUrl: UABaseURL, fingerprintJS: any, ExecutionEnvironment: any, axios: any) {
+    super(apiKey, 'helika_ua', fingerprintJS, ExecutionEnvironment, axios);
+
 
     switch (baseUrl) {
       // case UABaseURL.LOCAL: {

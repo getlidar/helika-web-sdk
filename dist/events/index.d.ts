@@ -2,7 +2,7 @@ import { Base } from "../base";
 import { EventsBaseURL } from "../index";
 export declare class EVENTS extends Base {
     protected playerId: string;
-    constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL);
+    constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL, fingerprintJS: any, ExecutionEnvironment: any, axios: any);
     getPlayerId(): string;
     setPlayerId(playerId: string): void;
     startSession(): Promise<any>;

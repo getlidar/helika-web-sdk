@@ -1,8 +1,8 @@
 import { Base } from "../base";
 import { UABaseURL } from "../index";
 export class UA extends Base {
-    constructor(apiKey, baseUrl) {
-        super(apiKey, 'helika_ua');
+    constructor(apiKey, baseUrl, fingerprintJS, ExecutionEnvironment, axios) {
+        super(apiKey, 'helika_ua', fingerprintJS, ExecutionEnvironment, axios);
         switch (baseUrl) {
             // case UABaseURL.LOCAL: {
             //   this.baseUrl = "http://localhost:3000";

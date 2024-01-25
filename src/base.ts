@@ -1,7 +1,5 @@
-import axios from "axios";
 import { DisableDataSettings, fingerprint } from "./index";
 import { v4 } from 'uuid';
-import ExecutionEnvironment from 'exenv';
 import { version } from './version'
 
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
@@ -14,8 +12,11 @@ export abstract class Base {
   protected sessionExpiry: any;
   protected disabledDataSettings: DisableDataSettings;
   protected enabled: boolean;
+  protected fingerprintJS: any;
+  protected ExecutionEnvironment: any;
+  protected axios: any;
 
-  constructor(apiKey: string, gameId: string) {
+  constructor(apiKey: string, gameId: string, fingerprintJS: any, ExecutionEnvironment: any, axios: any) {
     if (!apiKey || apiKey === '') {
       throw new Error('API Key is required to initiate Helika SDK instance.');
     }
@@ -29,6 +30,9 @@ export abstract class Base {
     this.baseUrl = "http://localhost:3000";
     this.disabledDataSettings = DisableDataSettings.None;
     this.enabled = true;
+    this.fingerprintJS = fingerprintJS;
+    this.ExecutionEnvironment = ExecutionEnvironment;
+    this.axios = axios;
   }
 
   public isEnabled(): boolean {
@@ -37,33 +41,6 @@ export abstract class Base {
 
   public setEnabled(enabled: boolean) {
     this.enabled = enabled;
-  }
-
-  protected async fingerprint(): Promise<any> {
-
-    let loadOptions = {
-      apiKey: fpApiKey,
-      scriptUrlPattern: [
-        `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=<version>&loaderVersion=<loaderVersion>`,
-        fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
-      ],
-      endpoint: [
-        'https://yard.helika.io/8nc7wiyuwhncrhw3/o9wn3zvyblw3v8yi8?region=us',
-        fingerprint.defaultEndpoint // Fallback to default endpoint in case of error
-      ],
-    };
-    let fingerprintData = null;
-    try {
-      let loaded = await fingerprint.load(loadOptions);
-      fingerprintData = await loaded.get();
-      return {
-        fingerprint_id: fingerprintData?.visitorId,
-        request_id: fingerprintData?.requestId
-      }
-    } catch (e) {
-      console.error('Error loading fingerprint data');
-      return {};
-    }
   }
 
   protected async fullFingerprint(): Promise<any> {
@@ -148,7 +125,7 @@ export abstract class Base {
       headers: headers,
     };
     return new Promise((resolve, reject) => {
-      axios
+      this.axios
         .get(`${url}`, config)
         .then((resp: any) => {
           resolve(resp.data);
@@ -172,7 +149,7 @@ export abstract class Base {
         console.log("Body: ", options);
         resolve({ message: 'Logged event' });
       } else {
-        axios
+        this.axios
           .post(`${url}`, options, config)
           .then((resp: any) => {
             resolve(resp.data);
@@ -187,10 +164,10 @@ export abstract class Base {
     this.sessionID = v4();
     this.sessionExpiry = this.addHours(new Date(), 6);
     let fpData = {};
-    let utms = null;
-    let helika_referral_link = null;
+    let utms: any = null;
+    let helika_referral_link: any = null;
     try {
-      if (ExecutionEnvironment.canUseDOM) {
+      if (this.ExecutionEnvironment.canUseDOM) {
         if (params.type === 'Session Start') {
           let local_session_id = localStorage.getItem('sessionID');
           let expiry = localStorage.getItem('sessionExpiry');
@@ -247,7 +224,7 @@ export abstract class Base {
         e.response.data.message.startsWith('Internal server error - Invalid API key:')
       ) {
         this.sessionID = null;
-        if (ExecutionEnvironment.canUseDOM) {
+        if (this.ExecutionEnvironment.canUseDOM) {
           localStorage.removeItem('sessionID');
         }
         throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
@@ -264,7 +241,7 @@ export abstract class Base {
 
   protected extendSession() {
     this.sessionExpiry = this.addHours(new Date(), 6);
-    if (ExecutionEnvironment.canUseDOM) {
+    if (this.ExecutionEnvironment.canUseDOM) {
       localStorage.setItem('sessionExpiry', this.sessionExpiry);
     };
   }

@@ -7,10 +7,12 @@ export declare abstract class Base {
     protected sessionExpiry: any;
     protected disabledDataSettings: DisableDataSettings;
     protected enabled: boolean;
-    constructor(apiKey: string, gameId: string);
+    protected fingerprintJS: any;
+    protected ExecutionEnvironment: any;
+    protected axios: any;
+    constructor(apiKey: string, gameId: string, fingerprintJS: any, ExecutionEnvironment: any, axios: any);
     isEnabled(): boolean;
     setEnabled(enabled: boolean): void;
-    protected fingerprint(): Promise<any>;
     protected fullFingerprint(): Promise<any>;
     protected getUrlParam(paramName: string): string | null;
     protected getAllUrlParams(): {

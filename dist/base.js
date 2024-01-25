@@ -7,14 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from "axios";
 import { DisableDataSettings, fingerprint } from "./index";
 import { v4 } from 'uuid';
-import ExecutionEnvironment from 'exenv';
 import { version } from './version';
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 export class Base {
-    constructor(apiKey, gameId) {
+    constructor(apiKey, gameId, fingerprintJS, ExecutionEnvironment, axios) {
         if (!apiKey || apiKey === '') {
             throw new Error('API Key is required to initiate Helika SDK instance.');
         }
@@ -28,40 +26,15 @@ export class Base {
         this.baseUrl = "http://localhost:3000";
         this.disabledDataSettings = DisableDataSettings.None;
         this.enabled = true;
+        this.fingerprintJS = fingerprintJS;
+        this.ExecutionEnvironment = ExecutionEnvironment;
+        this.axios = axios;
     }
     isEnabled() {
         return this.enabled;
     }
     setEnabled(enabled) {
         this.enabled = enabled;
-    }
-    fingerprint() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let loadOptions = {
-                apiKey: fpApiKey,
-                scriptUrlPattern: [
-                    `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=<version>&loaderVersion=<loaderVersion>`,
-                    fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
-                ],
-                endpoint: [
-                    'https://yard.helika.io/8nc7wiyuwhncrhw3/o9wn3zvyblw3v8yi8?region=us',
-                    fingerprint.defaultEndpoint // Fallback to default endpoint in case of error
-                ],
-            };
-            let fingerprintData = null;
-            try {
-                let loaded = yield fingerprint.load(loadOptions);
-                fingerprintData = yield loaded.get();
-                return {
-                    fingerprint_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.visitorId,
-                    request_id: fingerprintData === null || fingerprintData === void 0 ? void 0 : fingerprintData.requestId
-                };
-            }
-            catch (e) {
-                console.error('Error loading fingerprint data');
-                return {};
-            }
-        });
     }
     fullFingerprint() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -137,7 +110,7 @@ export class Base {
             headers: headers,
         };
         return new Promise((resolve, reject) => {
-            axios
+            this.axios
                 .get(`${url}`, config)
                 .then((resp) => {
                 resolve(resp.data);
@@ -160,7 +133,7 @@ export class Base {
                 resolve({ message: 'Logged event' });
             }
             else {
-                axios
+                this.axios
                     .post(`${url}`, options, config)
                     .then((resp) => {
                     resolve(resp.data);
@@ -177,7 +150,7 @@ export class Base {
             let utms = null;
             let helika_referral_link = null;
             try {
-                if (ExecutionEnvironment.canUseDOM) {
+                if (this.ExecutionEnvironment.canUseDOM) {
                     if (params.type === 'Session Start') {
                         let local_session_id = localStorage.getItem('sessionID');
                         let expiry = localStorage.getItem('sessionExpiry');
@@ -232,7 +205,7 @@ export class Base {
                 if (e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
                     e.response.data.message.startsWith('Internal server error - Invalid API key:')) {
                     this.sessionID = null;
-                    if (ExecutionEnvironment.canUseDOM) {
+                    if (this.ExecutionEnvironment.canUseDOM) {
                         localStorage.removeItem('sessionID');
                     }
                     throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
@@ -247,7 +220,7 @@ export class Base {
     }
     extendSession() {
         this.sessionExpiry = this.addHours(new Date(), 6);
-        if (ExecutionEnvironment.canUseDOM) {
+        if (this.ExecutionEnvironment.canUseDOM) {
             localStorage.setItem('sessionExpiry', this.sessionExpiry);
         }
         ;

@@ -1,12 +1,11 @@
 import { Base } from "../base";
 import { EventsBaseURL } from "../index";
-import ExecutionEnvironment from 'exenv';
 
 export class EVENTS extends Base {
   protected playerId: string;
 
-  constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL) {
-    super(apiKey, gameId);
+  constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL, fingerprintJS: any, ExecutionEnvironment: any, axios: any) {
+    super(apiKey, gameId, fingerprintJS, ExecutionEnvironment, axios);
     this.playerId = "";
 
     switch (baseUrl) {
@@ -38,7 +37,7 @@ export class EVENTS extends Base {
 
   async startSession(): Promise<any> {
     try {
-      if (ExecutionEnvironment.canUseDOM) {
+      if (this.ExecutionEnvironment.canUseDOM) {
         // Todo: Move this into the Base Class once Users have been consolidated
         return await this.sessionCreate({
           sdk_class: "Events",
@@ -52,7 +51,7 @@ export class EVENTS extends Base {
 
   protected async refreshSession(): Promise<any> {
     try {
-      if (ExecutionEnvironment.canUseDOM) {
+      if (this.ExecutionEnvironment.canUseDOM) {
         // Todo: Move this into the Base Class once Users have been consolidated
         return await this.sessionCreate({
           sdk_class: "Events",
@@ -82,7 +81,7 @@ export class EVENTS extends Base {
     let utms: any = null;
     let current_url: string = "";
     try {
-      if (ExecutionEnvironment.canUseDOM) {
+      if (this.ExecutionEnvironment.canUseDOM) {
         helika_referral_link = localStorage.getItem('helika_referral_link');
         utms = localStorage.getItem('helika_utms');
         utms = utms ? JSON.parse(utms) : null;
@@ -137,7 +136,7 @@ export class EVENTS extends Base {
     let helika_referral_link: any = null;
     let utms: any = null;
     try {
-      if (ExecutionEnvironment.canUseDOM) {
+      if (this.ExecutionEnvironment.canUseDOM) {
         helika_referral_link = localStorage.getItem('helika_referral_link');
         utms = localStorage.getItem('helika_utms');
         utms = utms ? JSON.parse(utms) : null;
@@ -175,7 +174,7 @@ export class EVENTS extends Base {
   }
 
   protected async refreshSessionIdFromStorage() {
-    if (ExecutionEnvironment.canUseDOM) {
+    if (this.ExecutionEnvironment.canUseDOM) {
       let local_storage_id = localStorage.getItem('sessionID');
       let expiry = localStorage.getItem('sessionExpiry');
       if (local_storage_id && expiry) {

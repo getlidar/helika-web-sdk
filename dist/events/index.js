@@ -9,10 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Base } from "../base";
 import { EventsBaseURL } from "../index";
-import ExecutionEnvironment from 'exenv';
 export class EVENTS extends Base {
-    constructor(apiKey, gameId, baseUrl) {
-        super(apiKey, gameId);
+    constructor(apiKey, gameId, baseUrl, fingerprintJS, ExecutionEnvironment, axios) {
+        super(apiKey, gameId, fingerprintJS, ExecutionEnvironment, axios);
         this.playerId = "";
         switch (baseUrl) {
             case EventsBaseURL.EVENTS_LOCAL: {
@@ -41,7 +40,7 @@ export class EVENTS extends Base {
     startSession() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (ExecutionEnvironment.canUseDOM) {
+                if (this.ExecutionEnvironment.canUseDOM) {
                     // Todo: Move this into the Base Class once Users have been consolidated
                     return yield this.sessionCreate({
                         sdk_class: "Events",
@@ -57,7 +56,7 @@ export class EVENTS extends Base {
     refreshSession() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (ExecutionEnvironment.canUseDOM) {
+                if (this.ExecutionEnvironment.canUseDOM) {
                     // Todo: Move this into the Base Class once Users have been consolidated
                     return yield this.sessionCreate({
                         sdk_class: "Events",
@@ -81,7 +80,7 @@ export class EVENTS extends Base {
             let utms = null;
             let current_url = "";
             try {
-                if (ExecutionEnvironment.canUseDOM) {
+                if (this.ExecutionEnvironment.canUseDOM) {
                     helika_referral_link = localStorage.getItem('helika_referral_link');
                     utms = localStorage.getItem('helika_utms');
                     utms = utms ? JSON.parse(utms) : null;
@@ -119,7 +118,7 @@ export class EVENTS extends Base {
             let helika_referral_link = null;
             let utms = null;
             try {
-                if (ExecutionEnvironment.canUseDOM) {
+                if (this.ExecutionEnvironment.canUseDOM) {
                     helika_referral_link = localStorage.getItem('helika_referral_link');
                     utms = localStorage.getItem('helika_utms');
                     utms = utms ? JSON.parse(utms) : null;
@@ -147,7 +146,7 @@ export class EVENTS extends Base {
     }
     refreshSessionIdFromStorage() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (ExecutionEnvironment.canUseDOM) {
+            if (this.ExecutionEnvironment.canUseDOM) {
                 let local_storage_id = localStorage.getItem('sessionID');
                 let expiry = localStorage.getItem('sessionExpiry');
                 if (local_storage_id && expiry) {
