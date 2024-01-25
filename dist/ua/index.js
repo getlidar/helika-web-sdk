@@ -1,21 +1,18 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UA = void 0;
-const base_1 = require("../base");
-const index_1 = require("../index");
-class UA extends base_1.Base {
+import { Base } from "../base";
+import { UABaseURL } from "../index";
+export class UA extends Base {
     constructor(apiKey, baseUrl) {
-        super(apiKey);
+        super(apiKey, 'helika_ua');
         switch (baseUrl) {
             // case UABaseURL.LOCAL: {
             //   this.baseUrl = "http://localhost:3000";
             //   break;
             // }
-            case index_1.UABaseURL.UA_PROD: {
+            case UABaseURL.UA_PROD: {
                 this.baseUrl = "https://ua-api.helika.io";
                 break;
             }
-            case index_1.UABaseURL.UA_DEV:
+            case UABaseURL.UA_DEV:
             default: {
                 this.baseUrl = "https://ua-api-dev.helika.io";
                 break;
@@ -63,4 +60,3 @@ class UA extends base_1.Base {
         return this.getRequest(`/sdk/nft/user`, params);
     }
 }
-exports.UA = UA;
