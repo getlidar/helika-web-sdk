@@ -17,14 +17,16 @@ const base_1 = require("../base");
 const index_1 = require("../index");
 const exenv_1 = __importDefault(require("exenv"));
 class EVENTS extends base_1.Base {
-    constructor(apiKey, baseUrl) {
-        super(apiKey);
+    constructor(apiKey, gameId, baseUrl) {
+        super(apiKey, gameId);
         this.playerId = "";
         switch (baseUrl) {
-            // case EventsBaseURL.LOCAL: {
-            //   this.baseUrl = 'http://localhost:3000';
-            //   break;
-            // }
+            case index_1.EventsBaseURL.EVENTS_LOCAL: {
+                // this.baseUrl = 'http://localhost:3000';
+                this.baseUrl = "https://api-stage.helika.io/v1";
+                this.enabled = false;
+                break;
+            }
             case index_1.EventsBaseURL.EVENTS_PROD: {
                 this.baseUrl = "https://api.helika.io/v1";
                 break;
@@ -44,31 +46,42 @@ class EVENTS extends base_1.Base {
     }
     startSession() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (exenv_1.default.canUseDOM) {
-                // Todo: Move this into the Base Class once Users have been consolidated
-                return yield this.sessionCreate({
-                    sdk_class: "Events",
-                    type: 'Session Start'
-                });
+            try {
+                if (exenv_1.default.canUseDOM) {
+                    // Todo: Move this into the Base Class once Users have been consolidated
+                    return yield this.sessionCreate({
+                        sdk_class: "Events",
+                        type: 'Session Start'
+                    });
+                }
+            }
+            catch (e) {
+                console.error(e);
             }
         });
     }
     refreshSession() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (exenv_1.default.canUseDOM) {
-                // Todo: Move this into the Base Class once Users have been consolidated
-                return yield this.sessionCreate({
-                    sdk_class: "Events",
-                    type: 'Session Refresh'
-                });
+            try {
+                if (exenv_1.default.canUseDOM) {
+                    // Todo: Move this into the Base Class once Users have been consolidated
+                    return yield this.sessionCreate({
+                        sdk_class: "Events",
+                        type: 'Session Refresh'
+                    });
+                }
+            }
+            catch (e) {
+                console.error(e);
             }
         });
     }
     createEvent(events) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.updateSessionIdAndStorage();
-            if (!this.sessionID)
-                throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
+            yield this.refreshSessionIdFromStorage();
+            if (!this.sessionID) {
+                throw new Error('Could not initiate session. API Key is invalid. Disabling Sending Messages. Please reach out to Helika Support to request a valid API key.');
+            }
             let created_at = new Date().toISOString();
             let helika_referral_link = null;
             let utms = null;
@@ -89,9 +102,10 @@ class EVENTS extends base_1.Base {
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
                 givenEvent.event.url = current_url;
-                givenEvent.event.sessionID = this.sessionID;
+                givenEvent.event.session_id = this.sessionID;
                 givenEvent.event.player_id = this.playerId;
                 givenEvent.created_at = created_at;
+                givenEvent.game_id = this.gameId;
                 return givenEvent;
             });
             var params = {
@@ -104,7 +118,7 @@ class EVENTS extends base_1.Base {
     }
     createUAEvent(events) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.updateSessionIdAndStorage();
+            yield this.refreshSessionIdFromStorage();
             if (!this.sessionID)
                 throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
             let created_at = new Date().toISOString();
@@ -124,7 +138,7 @@ class EVENTS extends base_1.Base {
                 let givenEvent = Object.assign({}, event);
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
-                givenEvent.event.sessionID = this.sessionID;
+                givenEvent.event.session_id = this.sessionID;
                 givenEvent.created_at = created_at;
                 givenEvent.game_id = 'UA';
                 return givenEvent;
@@ -137,7 +151,7 @@ class EVENTS extends base_1.Base {
             return this.postRequest(`/game/game-event`, params);
         });
     }
-    updateSessionIdAndStorage() {
+    refreshSessionIdFromStorage() {
         return __awaiter(this, void 0, void 0, function* () {
             if (exenv_1.default.canUseDOM) {
                 let local_storage_id = localStorage.getItem('sessionID');

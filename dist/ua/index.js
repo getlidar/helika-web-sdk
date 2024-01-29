@@ -5,7 +5,7 @@ const base_1 = require("../base");
 const index_1 = require("../index");
 class UA extends base_1.Base {
     constructor(apiKey, baseUrl) {
-        super(apiKey);
+        super(apiKey, 'helika_ua');
         switch (baseUrl) {
             // case UABaseURL.LOCAL: {
             //   this.baseUrl = "http://localhost:3000";

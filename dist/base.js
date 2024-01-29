@@ -20,9 +20,16 @@ const exenv_1 = __importDefault(require("exenv"));
 const version_1 = require("./version");
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 class Base {
-    constructor(apiKey) {
+    constructor(apiKey, gameId) {
+        if (!apiKey || apiKey === '') {
+            throw new Error('API Key is required to initiate Helika SDK instance.');
+        }
+        if (!gameId || gameId === '') {
+            throw new Error('Game ID is required to initiate Helika SDK instance.');
+        }
         this.apiKey = apiKey;
         this.sessionID = null;
+        this.gameId = gameId;
         this.sessionExpiry = new Date();
         this.baseUrl = "http://localhost:3000";
         this.disabledDataSettings = index_1.DisableDataSettings.None;
@@ -153,15 +160,10 @@ class Base {
         const config = {
             headers,
         };
-        function emptyPromise() {
-            return __awaiter(this, void 0, void 0, function* () {
-                return { data: { message: 'NO-OP' } };
-            });
-        }
         return new Promise((resolve, reject) => {
             if (!this.enabled) {
                 console.log("Body: ", options);
-                resolve({ message: 'NO-OP' });
+                resolve({ message: 'Logged event' });
             }
             else {
                 axios_1.default
@@ -211,8 +213,8 @@ class Base {
             //send event to initiate session
             var initevent = {
                 created_at: new Date().toISOString(),
-                game_id: 'HELIKA_SDK',
-                event_type: 'SESSION_CREATED',
+                game_id: this.gameId,
+                event_type: 'session_created',
                 event: {
                     type: params.type,
                     sdk_name: "Web",
@@ -220,15 +222,29 @@ class Base {
                     sdk_class: params.sdk_class,
                     fp_data: fpData,
                     helika_referral_link: helika_referral_link,
-                    sessionID: this.sessionID,
-                    utms: utms
+                    session_id: this.sessionID,
+                    utms: utms,
+                    event_sub_type: 'session_created'
                 }
             };
             let event_params = {
                 id: this.sessionID,
                 events: [initevent]
             };
-            return yield this.postRequest(`/game/game-event`, event_params);
+            try {
+                return yield this.postRequest(`/game/game-event`, event_params);
+            }
+            catch (e) {
+                if (e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
+                    e.response.data.message.startsWith('Internal server error - Invalid API key:')) {
+                    this.sessionID = null;
+                    if (exenv_1.default.canUseDOM) {
+                        localStorage.removeItem('sessionID');
+                    }
+                    throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
+                }
+                throw new Error(e.message);
+            }
         });
     }
     addHours(date, hours) {
