@@ -220,7 +220,7 @@ export abstract class Base {
     //send event to initiate session
     var initevent = {
       created_at: new Date().toISOString(),
-      game_id: 'helika_sdk',
+      game_id: this.gameId,
       event_type: 'session_created',
       event: {
         type: params.type,

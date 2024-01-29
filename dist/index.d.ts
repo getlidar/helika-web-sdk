@@ -11,8 +11,9 @@ export declare enum UABaseURL {
     UA_PROD = 1
 }
 export declare enum EventsBaseURL {
-    EVENTS_DEV = 0,
-    EVENTS_PROD = 1
+    EVENTS_LOCAL = 0,
+    EVENTS_DEV = 1,
+    EVENTS_PROD = 2
 }
 export declare enum DisableDataSettings {
     None = 0,
