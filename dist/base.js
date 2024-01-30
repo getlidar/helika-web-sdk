@@ -179,7 +179,6 @@ class Base {
         return __awaiter(this, void 0, void 0, function* () {
             this.sessionID = (0, uuid_1.v4)();
             this.sessionExpiry = this.addMinutes(new Date(), 15);
-            console.log('this.sessionExpiry', this.sessionExpiry);
             let fpData = {};
             let utms = null;
             let helika_referral_link = null;
