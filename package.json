@@ -1,5 +1,5 @@
 {
-  "name": "helika-sdk",
+  "name": "helika-sdk-es6",
   "version": "0.2.8",
   "description": "The Helika SDK is for developers to be able to make API calls to the Helika DEV and PROD endpoints.",
   "main": "dist/index.js",
