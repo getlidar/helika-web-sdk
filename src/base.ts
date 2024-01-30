@@ -186,7 +186,6 @@ export abstract class Base {
 
     this.sessionID = v4();
     this.sessionExpiry = this.addMinutes(new Date(), 15);
-    console.log('this.sessionExpiry', this.sessionExpiry)
     let fpData = {};
     let utms = null;
     let helika_referral_link = null;
