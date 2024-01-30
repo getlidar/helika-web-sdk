@@ -178,7 +178,7 @@ class Base {
     sessionCreate(params) {
         return __awaiter(this, void 0, void 0, function* () {
             this.sessionID = (0, uuid_1.v4)();
-            this.sessionExpiry = this.addHours(new Date(), 6);
+            this.sessionExpiry = this.addMinutes(new Date(), 15);
             let fpData = {};
             let utms = null;
             let helika_referral_link = null;
@@ -189,6 +189,8 @@ class Base {
                         let expiry = localStorage.getItem('sessionExpiry');
                         if (local_session_id && expiry && (new Date(expiry) > new Date())) {
                             this.sessionID = local_session_id;
+                            localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
+                            return;
                         }
                         else {
                             // Only grab fingerprint data if it's a new session
@@ -251,8 +253,12 @@ class Base {
         date.setHours(date.getHours() + hours);
         return date.toString();
     }
+    addMinutes(date, minutes) {
+        date.setMinutes(date.getMinutes() + minutes);
+        return date.toString();
+    }
     extendSession() {
-        this.sessionExpiry = this.addHours(new Date(), 6);
+        this.sessionExpiry = this.addMinutes(new Date(), 15);
         if (exenv_1.default.canUseDOM) {
             localStorage.setItem('sessionExpiry', this.sessionExpiry);
         }
