@@ -185,7 +185,7 @@ export abstract class Base {
   protected async sessionCreate<T>(params?: any): Promise<any> {
 
     this.sessionID = v4();
-    this.sessionExpiry = this.addHours(new Date(), 6);
+    this.sessionExpiry = this.addMinutes(new Date(), 15);
     let fpData = {};
     let utms = null;
     let helika_referral_link = null;
@@ -196,6 +196,8 @@ export abstract class Base {
           let expiry = localStorage.getItem('sessionExpiry');
           if (local_session_id && expiry && (new Date(expiry) > new Date())) {
             this.sessionID = local_session_id;
+            localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
+            return;
           } else {
             // Only grab fingerprint data if it's a new session
             fpData = await this.fullFingerprint();
@@ -262,8 +264,13 @@ export abstract class Base {
     return date.toString();
   }
 
+  protected addMinutes(date: Date, minutes: number) {
+    date.setMinutes(date.getMinutes() + minutes);
+    return date.toString();
+  }
+
   protected extendSession() {
-    this.sessionExpiry = this.addHours(new Date(), 6);
+    this.sessionExpiry = this.addMinutes(new Date(), 15);
     if (ExecutionEnvironment.canUseDOM) {
       localStorage.setItem('sessionExpiry', this.sessionExpiry);
     };
