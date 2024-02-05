@@ -97,13 +97,13 @@ export class EVENTS extends Base {
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
       givenEvent.event.url = current_url;
+      if (event.event.session_id) {
+        givenEvent.event.client_session_id = event.event.session_id
+      }
       givenEvent.event.session_id = this.sessionID;
       givenEvent.event.player_id = this.playerId;
       givenEvent.created_at = created_at;
       givenEvent.game_id = this.gameId;
-      if (event.event.session_id) {
-        givenEvent._session_id = event.session_id
-      }
       return givenEvent;
     });
 
@@ -153,12 +153,12 @@ export class EVENTS extends Base {
       let givenEvent: any = Object.assign({}, event);
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
+      if (event.event.session_id) {
+        givenEvent.event.client_session_id = event.event.session_id
+      }
       givenEvent.event.session_id = this.sessionID;
       givenEvent.created_at = created_at;
       givenEvent.game_id = 'UA';
-      if (event.event.session_id) {
-        givenEvent._session_id = event.session_id
-      }
       return givenEvent;
     });
 
