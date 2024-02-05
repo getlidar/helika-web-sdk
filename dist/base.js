@@ -140,8 +140,8 @@ export class Base {
             axios
                 .get(`${url}`, config)
                 .then((resp) => {
-                    resolve(resp.data);
-                })
+                resolve(resp.data);
+            })
                 .catch(reject);
         });
     }
@@ -163,15 +163,15 @@ export class Base {
                 axios
                     .post(`${url}`, options, config)
                     .then((resp) => {
-                        resolve(resp.data);
-                    })
+                    resolve(resp.data);
+                })
                     .catch(reject);
             }
         });
     }
     sessionCreate(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.sessionID = (0, uuid_1.v4)();
+            this.sessionID = v4();
             this.sessionExpiry = this.addMinutes(new Date(), 15);
             let fpData = {};
             let utms = null;
@@ -253,7 +253,7 @@ export class Base {
     }
     extendSession() {
         this.sessionExpiry = this.addMinutes(new Date(), 15);
-        if (exenv_1.default.canUseDOM) {
+        if (ExecutionEnvironment.canUseDOM) {
             localStorage.setItem('sessionExpiry', this.sessionExpiry);
         }
         ;
