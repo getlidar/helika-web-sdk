@@ -97,7 +97,7 @@ class EVENTS extends base_1.Base {
             catch (e) {
                 console.error(e);
             }
-            let newEvents = events.map(event => {
+            let newEvents = events.map((event) => {
                 let givenEvent = Object.assign({}, event);
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
@@ -106,6 +106,9 @@ class EVENTS extends base_1.Base {
                 givenEvent.event.player_id = this.playerId;
                 givenEvent.created_at = created_at;
                 givenEvent.game_id = this.gameId;
+                if (event.event.session_id) {
+                    givenEvent._session_id = event.session_id;
+                }
                 return givenEvent;
             });
             var params = {
@@ -134,13 +137,16 @@ class EVENTS extends base_1.Base {
             catch (e) {
                 console.error(e);
             }
-            let newEvents = events.map(event => {
+            let newEvents = events.map((event) => {
                 let givenEvent = Object.assign({}, event);
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
                 givenEvent.event.session_id = this.sessionID;
                 givenEvent.created_at = created_at;
                 givenEvent.game_id = 'UA';
+                if (event.event.session_id) {
+                    givenEvent._session_id = event.session_id;
+                }
                 return givenEvent;
             });
             var params = {
