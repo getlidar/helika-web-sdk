@@ -1,9 +1,9 @@
 {
   "name": "helika-sdk",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "The Helika SDK is for developers to be able to make API calls to the Helika DEV and PROD endpoints.",
   "main": "dist/index.js",
-  "module": "dist/index.m.js",
+  "module": "dist/index.js",
   "unpkg": "dist/index.umd.js",
   "types": "dist/index.d.ts",
   "scripts": {
