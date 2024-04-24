@@ -140,8 +140,8 @@ export class Base {
             axios
                 .get(`${url}`, config)
                 .then((resp) => {
-                    resolve(resp.data);
-                })
+                resolve(resp.data);
+            })
                 .catch(reject);
         });
     }
@@ -163,8 +163,8 @@ export class Base {
                 axios
                     .post(`${url}`, options, config)
                     .then((resp) => {
-                        resolve(resp.data);
-                    })
+                    resolve(resp.data);
+                })
                     .catch(reject);
             }
         });
