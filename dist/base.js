@@ -126,6 +126,27 @@ export class Base {
         }
         return [];
     }
+    updateUtms() {
+        let newUtms = this.getAllUrlParams();
+        if (newUtms) {
+            localStorage.setItem('helika_utms', JSON.stringify(newUtms));
+        }
+    }
+    updateLinkId() {
+        let helika_referral_link = this.getUrlParam('linkId');
+        if (helika_referral_link) {
+            localStorage.setItem('helika_referral_link', helika_referral_link ? helika_referral_link : '');
+        }
+    }
+    updateUtmsAndLinkIdIfNecessary() {
+        let storedLinkId = localStorage.getItem('helika_referral_link');
+        let newLinkId = this.getUrlParam('linkId');
+        if (!storedLinkId ||
+            (newLinkId && (newLinkId === null || newLinkId === void 0 ? void 0 : newLinkId.trim().length) > 0 && (storedLinkId === null || storedLinkId === void 0 ? void 0 : storedLinkId.trim()) !== (newLinkId === null || newLinkId === void 0 ? void 0 : newLinkId.trim()))) {
+            this.updateLinkId();
+            this.updateUtms();
+        }
+    }
     getRequest(endpoint, options) {
         const url = `${this.baseUrl}${endpoint}`;
         const headers = {
@@ -184,6 +205,7 @@ export class Base {
                         if (local_session_id && expiry && (new Date(expiry) > new Date())) {
                             this.sessionID = local_session_id;
                             localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
+                            this.updateUtmsAndLinkIdIfNecessary();
                             return;
                         }
                         else {

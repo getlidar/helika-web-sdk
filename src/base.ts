@@ -137,6 +137,32 @@ export abstract class Base {
     return [];
   }
 
+  protected updateUtms() {
+    let newUtms = this.getAllUrlParams();
+    if (newUtms) {
+      localStorage.setItem('helika_utms', JSON.stringify(newUtms))
+    }
+  }
+
+  protected updateLinkId() {
+    let helika_referral_link = this.getUrlParam('linkId');
+    if (helika_referral_link) {
+      localStorage.setItem('helika_referral_link', helika_referral_link ? helika_referral_link : '');
+    }
+  }
+
+  protected updateUtmsAndLinkIdIfNecessary() {
+    let storedLinkId = localStorage.getItem('helika_referral_link')
+    let newLinkId = this.getUrlParam('linkId');
+    if (
+      !storedLinkId ||
+      (newLinkId && newLinkId?.trim().length > 0 && storedLinkId?.trim() !== newLinkId?.trim())
+    ) {
+      this.updateLinkId()
+      this.updateUtms()
+    }
+  }
+
   protected getRequest<T>(endpoint: string, options?: any): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const headers = {
@@ -197,6 +223,7 @@ export abstract class Base {
           if (local_session_id && expiry && (new Date(expiry) > new Date())) {
             this.sessionID = local_session_id;
             localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
+            this.updateUtmsAndLinkIdIfNecessary()
             return;
           } else {
             // Only grab fingerprint data if it's a new session
