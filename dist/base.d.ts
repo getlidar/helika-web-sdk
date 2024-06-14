@@ -17,6 +17,9 @@ export declare abstract class Base {
         key: string;
         value: string;
     }[];
+    protected updateUtms(): void;
+    protected updateLinkId(): void;
+    protected updateUtmsAndLinkIdIfNecessary(): void;
     protected getRequest<T>(endpoint: string, options?: any): Promise<T>;
     protected postRequest<T>(endpoint: string, options?: any): Promise<any>;
     protected sessionCreate<T>(params?: any): Promise<any>;
