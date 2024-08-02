@@ -216,11 +216,11 @@ class Base {
                             return;
                         }
                         else {
-                            // Only grab fingerprint data if it's a new session
-                            let storedFpData = localStorage.getItem('helikaFpData');
+                            // Only grab fingerprint data if it's a new session and fingerprint data not expired yet
+                            let helikaFpData = localStorage.getItem('helikaFpData');
                             let helikaFpExpiry = localStorage.getItem('helikaFpExpiry');
-                            if (storedFpData && helikaFpExpiry && (new Date(helikaFpExpiry) > new Date())) {
-                                fpData = JSON.parse(storedFpData);
+                            if (helikaFpData && helikaFpExpiry && (new Date(helikaFpExpiry) > new Date())) {
+                                fpData = JSON.parse(helikaFpData);
                             }
                             else {
                                 fpData = yield this.fullFingerprint();
