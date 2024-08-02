@@ -191,6 +191,7 @@ export class Base {
         });
     }
     sessionCreate(params) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             this.sessionID = v4();
             this.sessionExpiry = this.addMinutes(new Date(), 15);
@@ -209,8 +210,18 @@ export class Base {
                             return;
                         }
                         else {
-                            // Only grab fingerprint data if it's a new session
-                            fpData = yield this.fullFingerprint();
+                            // Only grab fingerprint data if it's a new session and fingerprint data not expired yet
+                            let helikaFpData = localStorage.getItem('helikaFpData');
+                            let helikaFpExpiry = localStorage.getItem('helikaFpExpiry');
+                            if (helikaFpData && helikaFpExpiry && (new Date(helikaFpExpiry) > new Date())) {
+                                fpData = JSON.parse(helikaFpData);
+                            }
+                            else {
+                                fpData = yield this.fullFingerprint();
+                                let now = new Date();
+                                localStorage.setItem('helikaFpData', JSON.stringify(fpData));
+                                localStorage.setItem('helikaFpExpiry', (_a = new Date(now.setDate(now.getDate() + 7))) === null || _a === void 0 ? void 0 : _a.toString());
+                            }
                         }
                     }
                     localStorage.setItem('sessionID', this.sessionID);
