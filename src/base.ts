@@ -212,7 +212,7 @@ export abstract class Base {
 
     this.sessionID = v4();
     this.sessionExpiry = this.addMinutes(new Date(), 15);
-    let fpData = {};
+    let fpData: any = {};
     let utms = null;
     let helika_referral_link = null;
     try {
@@ -226,8 +226,17 @@ export abstract class Base {
             this.updateUtmsAndLinkIdIfNecessary()
             return;
           } else {
-            // Only grab fingerprint data if it's a new session
-            fpData = await this.fullFingerprint();
+            // Only grab fingerprint data if it's a new session and fingerprint data not expired yet
+            let helikaFpData = localStorage.getItem('helikaFpData');
+            let helikaFpExpiry = localStorage.getItem('helikaFpExpiry');
+            if (helikaFpData && helikaFpExpiry && (new Date(helikaFpExpiry) > new Date())) {
+              fpData = JSON.parse(helikaFpData)
+            } else {
+              fpData = await this.fullFingerprint();
+              let now = new Date()
+              localStorage.setItem('helikaFpData', JSON.stringify(fpData))
+              localStorage.setItem('helikaFpExpiry', now.setDate(now.getDate() + 7)?.toString())
+            }
           }
         }
 
