@@ -226,7 +226,7 @@ class Base {
                                 fpData = yield this.fullFingerprint();
                                 let now = new Date();
                                 localStorage.setItem('helikaFpData', JSON.stringify(fpData));
-                                localStorage.setItem('helikaFpExpiry', (_a = now.setDate(now.getDate() + 7)) === null || _a === void 0 ? void 0 : _a.toString());
+                                localStorage.setItem('helikaFpExpiry', (_a = new Date(now.setDate(now.getDate() + 7))) === null || _a === void 0 ? void 0 : _a.toString());
                             }
                         }
                     }

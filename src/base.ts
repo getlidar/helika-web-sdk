@@ -235,7 +235,7 @@ export abstract class Base {
               fpData = await this.fullFingerprint();
               let now = new Date()
               localStorage.setItem('helikaFpData', JSON.stringify(fpData))
-              localStorage.setItem('helikaFpExpiry', now.setDate(now.getDate() + 7)?.toString())
+              localStorage.setItem('helikaFpExpiry', new Date(now.setDate(now.getDate() + 7))?.toString())
             }
           }
         }
