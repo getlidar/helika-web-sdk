@@ -74,7 +74,7 @@ export class EVENTS extends Base {
     await this.refreshSessionIdFromStorage();
 
     if (!this.sessionID) {
-      throw new Error('Could not initiate session. API Key is invalid. Disabling Sending Messages. Please reach out to Helika Support to request a valid API key.');
+      throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
 
     let created_at = new Date().toISOString();
