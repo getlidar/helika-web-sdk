@@ -279,7 +279,7 @@ export abstract class Base {
       }
     };
     let event_params = {
-      id: this.sessionID,
+      id: v4(),
       events: [initevent]
     }
 

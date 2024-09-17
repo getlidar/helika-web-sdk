@@ -1,6 +1,7 @@
 import { Base } from "../base";
 import { EventsBaseURL } from "../index";
 import ExecutionEnvironment from 'exenv';
+import { v4 } from 'uuid';
 
 export class EVENTS extends Base {
   protected playerId: string;
@@ -114,7 +115,7 @@ export class EVENTS extends Base {
         event: Object
       }[]
     } = {
-      id: this.sessionID,
+      id: v4(),
       events: newEvents
     }
 
@@ -171,7 +172,7 @@ export class EVENTS extends Base {
         event: Object
       }[]
     } = {
-      id: this.sessionID,
+      id: v4(),
       events: newEvents
     }
 
