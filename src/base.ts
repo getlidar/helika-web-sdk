@@ -144,6 +144,7 @@ export abstract class Base {
     }
   }
 
+  // separate updatelink and update utms
   protected updateLinkId() {
     let helika_referral_link = this.getUrlParam('linkId');
     if (helika_referral_link) {
@@ -151,7 +152,13 @@ export abstract class Base {
     }
   }
 
+  // todo: update these to return the newest values
+  // utms = this.updateLinkIds() -> returns either null, the stored link id, or the new link id (after storing it in local storage)
   protected updateUtmsAndLinkIdIfNecessary() {
+
+    // todo: canUSeDOM for grabbing utms and linkid from utms
+    // try {
+    //   if (ExecutionEnvironment.canUseDOM) {
     let storedLinkId = localStorage.getItem('helika_referral_link')
     let newLinkId = this.getUrlParam('linkId');
     if (
@@ -213,8 +220,6 @@ export abstract class Base {
     this.sessionID = v4();
     this.sessionExpiry = this.addMinutes(new Date(), 15);
     let fpData: any = {};
-    let utms = null;
-    let helika_referral_link = null;
     try {
       if (ExecutionEnvironment.canUseDOM) {
         if (params.type === 'Session Start') {
@@ -223,7 +228,6 @@ export abstract class Base {
           if (local_session_id && expiry && (new Date(expiry) > new Date())) {
             this.sessionID = local_session_id;
             localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
-            this.updateUtmsAndLinkIdIfNecessary()
             return;
           } else {
             // Only grab fingerprint data if it's a new session and fingerprint data not expired yet
@@ -242,18 +246,13 @@ export abstract class Base {
 
         localStorage.setItem('sessionID', this.sessionID);
         localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
-        utms = this.getAllUrlParams();
-        helika_referral_link = this.getUrlParam('linkId');
-        if (utms) {
-          localStorage.setItem('helika_utms', JSON.stringify(utms))
-        }
-        if (helika_referral_link) {
-          localStorage.setItem('helika_referral_link', helika_referral_link);
-        }
       }
     } catch (e) {
       console.error(e);
     }
+
+    let utms = this.refreshUtms();
+    let helika_referral_link = this.refreshLinkId();
 
     //send event to initiate session
     var initevent = {

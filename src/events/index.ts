@@ -71,6 +71,10 @@ export class EVENTS extends Base {
     }[],
   ): Promise<{ message: string }> {
 
+    // Todo: always grab helika referral link id, if it exists, overwrite local storage link id. 
+    // Todo: if it doesn't exist, use local storage.
+    // Todo: turn this refreshLinkID() into a helper function in base.ts
+    // Todo: run 'refreshLinkID' here, in createUAEvent, and session_create/refresh
     await this.refreshSessionIdFromStorage();
 
     if (!this.sessionID) {
