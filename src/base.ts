@@ -155,9 +155,8 @@ export abstract class Base {
       }
     } catch (e) {
       console.error(e);
-    } finally {
-      return null;
     }
+    return null;
   }
 
   protected refreshLinkId() {
@@ -165,7 +164,7 @@ export abstract class Base {
       if (ExecutionEnvironment.canUseDOM) {
         let helika_referral_link = this.getUrlParam('linkId');
         if (helika_referral_link) {
-          localStorage.setItem('helika_referral_link', helika_referral_link ? helika_referral_link : '');
+          localStorage.setItem('helika_referral_link', helika_referral_link);
         } else {
           helika_referral_link = localStorage.getItem('helika_referral_link')
         }
@@ -173,9 +172,8 @@ export abstract class Base {
       }
     } catch (e) {
       console.error(e);
-    } finally {
-      return null;
     }
+    return null;
   }
 
   protected getRequest<T>(endpoint: string, options?: any): Promise<T> {

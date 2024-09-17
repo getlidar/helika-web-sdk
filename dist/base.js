@@ -155,16 +155,14 @@ class Base {
         catch (e) {
             console.error(e);
         }
-        finally {
-            return null;
-        }
+        return null;
     }
     refreshLinkId() {
         try {
             if (exenv_1.default.canUseDOM) {
                 let helika_referral_link = this.getUrlParam('linkId');
                 if (helika_referral_link) {
-                    localStorage.setItem('helika_referral_link', helika_referral_link ? helika_referral_link : '');
+                    localStorage.setItem('helika_referral_link', helika_referral_link);
                 }
                 else {
                     helika_referral_link = localStorage.getItem('helika_referral_link');
@@ -175,9 +173,7 @@ class Base {
         catch (e) {
             console.error(e);
         }
-        finally {
-            return null;
-        }
+        return null;
     }
     getRequest(endpoint, options) {
         const url = `${this.baseUrl}${endpoint}`;
