@@ -70,11 +70,6 @@ export class EVENTS extends Base {
       event: Object
     }[],
   ): Promise<{ message: string }> {
-
-    // Todo: always grab helika referral link id, if it exists, overwrite local storage link id. 
-    // Todo: if it doesn't exist, use local storage.
-    // Todo: turn this refreshLinkID() into a helper function in base.ts
-    // Todo: run 'refreshLinkID' here, in createUAEvent, and session_create/refresh
     await this.refreshSessionIdFromStorage();
 
     if (!this.sessionID) {
@@ -87,9 +82,8 @@ export class EVENTS extends Base {
     let current_url: string = "";
     try {
       if (ExecutionEnvironment.canUseDOM) {
-        helika_referral_link = localStorage.getItem('helika_referral_link');
-        utms = localStorage.getItem('helika_utms');
-        utms = utms ? JSON.parse(utms) : null;
+        helika_referral_link = this.refreshLinkId();
+        utms = this.refreshUtms();
         current_url = window.location.href;
       }
     } catch (e) {
@@ -143,11 +137,12 @@ export class EVENTS extends Base {
     let created_at = new Date().toISOString();
     let helika_referral_link: any = null;
     let utms: any = null;
+    let current_url: string = "";
     try {
       if (ExecutionEnvironment.canUseDOM) {
-        helika_referral_link = localStorage.getItem('helika_referral_link');
-        utms = localStorage.getItem('helika_utms');
-        utms = utms ? JSON.parse(utms) : null;
+        helika_referral_link = this.refreshLinkId();
+        utms = this.refreshUtms();
+        current_url = window.location.href;
       }
     } catch (e) {
       console.error(e);
@@ -157,6 +152,7 @@ export class EVENTS extends Base {
       let givenEvent: any = Object.assign({}, event);
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
+      givenEvent.event.url = current_url;
       if (event.event.session_id) {
         givenEvent.event.client_session_id = event.event.session_id
       }

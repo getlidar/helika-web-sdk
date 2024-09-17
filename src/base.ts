@@ -137,36 +137,44 @@ export abstract class Base {
     return [];
   }
 
-  protected updateUtms() {
-    let newUtms = this.getAllUrlParams();
-    if (newUtms) {
-      localStorage.setItem('helika_utms', JSON.stringify(newUtms))
+  protected refreshUtms() {
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        let newUtms: any = this.getAllUrlParams();
+        if (newUtms && newUtms.length > 0) {
+          localStorage.setItem('helika_utms', JSON.stringify(newUtms))
+        } else {
+          let newUtmsUnparsed = localStorage.getItem('helika_utms')
+          if (newUtmsUnparsed && newUtmsUnparsed?.trim()?.length > 0) {
+            newUtms = JSON.parse(newUtmsUnparsed)
+          } else {
+            newUtms = null;
+          }
+        }
+        return newUtms;
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      return null;
     }
   }
 
-  // separate updatelink and update utms
-  protected updateLinkId() {
-    let helika_referral_link = this.getUrlParam('linkId');
-    if (helika_referral_link) {
-      localStorage.setItem('helika_referral_link', helika_referral_link ? helika_referral_link : '');
-    }
-  }
-
-  // todo: update these to return the newest values
-  // utms = this.updateLinkIds() -> returns either null, the stored link id, or the new link id (after storing it in local storage)
-  protected updateUtmsAndLinkIdIfNecessary() {
-
-    // todo: canUSeDOM for grabbing utms and linkid from utms
-    // try {
-    //   if (ExecutionEnvironment.canUseDOM) {
-    let storedLinkId = localStorage.getItem('helika_referral_link')
-    let newLinkId = this.getUrlParam('linkId');
-    if (
-      !storedLinkId ||
-      (newLinkId && newLinkId?.trim().length > 0 && storedLinkId?.trim() !== newLinkId?.trim())
-    ) {
-      this.updateLinkId()
-      this.updateUtms()
+  protected refreshLinkId() {
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        let helika_referral_link = this.getUrlParam('linkId');
+        if (helika_referral_link) {
+          localStorage.setItem('helika_referral_link', helika_referral_link ? helika_referral_link : '');
+        } else {
+          helika_referral_link = localStorage.getItem('helika_referral_link')
+        }
+        return helika_referral_link;
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      return null;
     }
   }
 
@@ -220,6 +228,9 @@ export abstract class Base {
     this.sessionID = v4();
     this.sessionExpiry = this.addMinutes(new Date(), 15);
     let fpData: any = {};
+    let utms = this.refreshUtms();
+    let helika_referral_link = this.refreshLinkId();
+
     try {
       if (ExecutionEnvironment.canUseDOM) {
         if (params.type === 'Session Start') {
@@ -243,16 +254,12 @@ export abstract class Base {
             }
           }
         }
-
         localStorage.setItem('sessionID', this.sessionID);
         localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
       }
     } catch (e) {
       console.error(e);
     }
-
-    let utms = this.refreshUtms();
-    let helika_referral_link = this.refreshLinkId();
 
     //send event to initiate session
     var initevent = {
