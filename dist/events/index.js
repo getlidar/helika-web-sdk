@@ -16,6 +16,7 @@ exports.EVENTS = void 0;
 const base_1 = require("../base");
 const index_1 = require("../index");
 const exenv_1 = __importDefault(require("exenv"));
+const uuid_1 = require("uuid");
 class EVENTS extends base_1.Base {
     constructor(apiKey, gameId, baseUrl) {
         super(apiKey, gameId);
@@ -80,7 +81,7 @@ class EVENTS extends base_1.Base {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.refreshSessionIdFromStorage();
             if (!this.sessionID) {
-                throw new Error('Could not initiate session. API Key is invalid. Disabling Sending Messages. Please reach out to Helika Support to request a valid API key.');
+                throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
             }
             let created_at = new Date().toISOString();
             let helika_referral_link = null;
@@ -88,9 +89,8 @@ class EVENTS extends base_1.Base {
             let current_url = "";
             try {
                 if (exenv_1.default.canUseDOM) {
-                    helika_referral_link = localStorage.getItem('helika_referral_link');
-                    utms = localStorage.getItem('helika_utms');
-                    utms = utms ? JSON.parse(utms) : null;
+                    helika_referral_link = this.refreshLinkId();
+                    utms = this.refreshUtms();
                     current_url = window.location.href;
                 }
             }
@@ -112,7 +112,7 @@ class EVENTS extends base_1.Base {
                 return givenEvent;
             });
             var params = {
-                id: this.sessionID,
+                id: (0, uuid_1.v4)(),
                 events: newEvents
             };
             this.extendSession();
@@ -127,11 +127,12 @@ class EVENTS extends base_1.Base {
             let created_at = new Date().toISOString();
             let helika_referral_link = null;
             let utms = null;
+            let current_url = "";
             try {
                 if (exenv_1.default.canUseDOM) {
-                    helika_referral_link = localStorage.getItem('helika_referral_link');
-                    utms = localStorage.getItem('helika_utms');
-                    utms = utms ? JSON.parse(utms) : null;
+                    helika_referral_link = this.refreshLinkId();
+                    utms = this.refreshUtms();
+                    current_url = window.location.href;
                 }
             }
             catch (e) {
@@ -141,6 +142,7 @@ class EVENTS extends base_1.Base {
                 let givenEvent = Object.assign({}, event);
                 givenEvent.event.helika_referral_link = helika_referral_link;
                 givenEvent.event.utms = utms;
+                givenEvent.event.url = current_url;
                 if (event.event.session_id) {
                     givenEvent.event.client_session_id = event.event.session_id;
                 }
@@ -150,7 +152,7 @@ class EVENTS extends base_1.Base {
                 return givenEvent;
             });
             var params = {
-                id: this.sessionID,
+                id: (0, uuid_1.v4)(),
                 events: newEvents
             };
             this.extendSession();
