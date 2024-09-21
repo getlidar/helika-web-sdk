@@ -299,6 +299,55 @@ export abstract class Base {
 
   }
 
+
+  protected async endSession<T>(params?: any): Promise<any> {
+
+    this.sessionID = v4();
+    this.sessionExpiry = this.addMinutes(new Date(), 15);
+    let fpData: any = {};
+    let utms = this.refreshUtms();
+    let helika_referral_link = this.refreshLinkId();
+
+    //send event to initiate session
+    var initevent = {
+      created_at: new Date().toISOString(),
+      game_id: this.gameId,
+      event_type: "Events",
+      event: {
+        type: 'Session End',
+        sdk_name: "Web",
+        sdk_version: version,
+        sdk_class: "Events",
+        fp_data: fpData,
+        helika_referral_link: helika_referral_link,
+        session_id: this.sessionID,
+        utms: utms,
+        event_sub_type: 'session_end'
+      }
+    };
+    let event_params = {
+      id: v4(),
+      events: [initevent]
+    }
+
+    try {
+      return await this.postRequest(`/game/game-event`, event_params);
+    } catch (e: any) {
+      if (
+        e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
+        e.response.data.message.startsWith('Internal server error - Invalid API key:')
+      ) {
+        this.sessionID = null;
+        if (ExecutionEnvironment.canUseDOM) {
+          localStorage.removeItem('sessionID');
+        }
+        throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
+      }
+      throw new Error(e.message);
+    }
+
+  }
+
   protected addHours(date: Date, hours: number) {
     date.setHours(date.getHours() + hours);
     return date.toString();
