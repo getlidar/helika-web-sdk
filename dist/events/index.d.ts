@@ -7,6 +7,12 @@ export declare class EVENTS extends Base {
     setPlayerId(playerId: string): void;
     startSession(): Promise<any>;
     protected refreshSession(): Promise<any>;
+    createUserEvent(user_id: string, events: {
+        event_type: string;
+        event: Object;
+    }[], user_details: any, event_details: any, store_id?: string, server_version?: string): Promise<{
+        message: string;
+    }>;
     createEvent(events: {
         event_type: string;
         event: Object;

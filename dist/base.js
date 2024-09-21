@@ -295,6 +295,50 @@ class Base {
             }
         });
     }
+    endSession(params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.sessionID = (0, uuid_1.v4)();
+            this.sessionExpiry = this.addMinutes(new Date(), 15);
+            let fpData = {};
+            let utms = this.refreshUtms();
+            let helika_referral_link = this.refreshLinkId();
+            //send event to initiate session
+            var initevent = {
+                created_at: new Date().toISOString(),
+                game_id: this.gameId,
+                event_type: "Events",
+                event: {
+                    type: 'Session End',
+                    sdk_name: "Web",
+                    sdk_version: version_1.version,
+                    sdk_class: "Events",
+                    fp_data: fpData,
+                    helika_referral_link: helika_referral_link,
+                    session_id: this.sessionID,
+                    utms: utms,
+                    event_sub_type: 'session_end'
+                }
+            };
+            let event_params = {
+                id: (0, uuid_1.v4)(),
+                events: [initevent]
+            };
+            try {
+                return yield this.postRequest(`/game/game-event`, event_params);
+            }
+            catch (e) {
+                if (e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
+                    e.response.data.message.startsWith('Internal server error - Invalid API key:')) {
+                    this.sessionID = null;
+                    if (exenv_1.default.canUseDOM) {
+                        localStorage.removeItem('sessionID');
+                    }
+                    throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
+                }
+                throw new Error(e.message);
+            }
+        });
+    }
     addHours(date, hours) {
         date.setHours(date.getHours() + hours);
         return date.toString();

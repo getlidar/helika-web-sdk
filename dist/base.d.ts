@@ -22,6 +22,7 @@ export declare abstract class Base {
     protected getRequest<T>(endpoint: string, options?: any): Promise<T>;
     protected postRequest<T>(endpoint: string, options?: any): Promise<any>;
     protected sessionCreate<T>(params?: any): Promise<any>;
+    protected endSession<T>(params?: any): Promise<any>;
     protected addHours(date: Date, hours: number): string;
     protected addMinutes(date: Date, minutes: number): string;
     protected extendSession(): void;
