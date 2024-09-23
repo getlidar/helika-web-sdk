@@ -67,15 +67,13 @@ export class EVENTS extends Base {
   }
 
   async createUserEvent(
-    user_id: string,
     events: {
       event_type: string,
-      event: Object
+      event: {
+        event_details: Object,
+        [key: string]: any;
+      }
     }[],
-    user_details: any,
-    event_details: any,
-    store_id?: string,
-    server_version?: string,
   ): Promise<{ message: string }> {
     await this.refreshSessionIdFromStorage();
 
@@ -83,54 +81,35 @@ export class EVENTS extends Base {
       throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
 
+    if (!this.userDetails.user_id) {
+      console.error('Cannot create user event without populating user_id using sdk.setUserDetails() function')
+    }
+
     let created_at = new Date().toISOString();
     let helika_referral_link: any = null;
     let utms: any = null;
     let current_url: string = "";
-    let connectionData: any = window.navigator;
-    let device_details: any = {};
     let event_source = 'server';
     try {
       if (ExecutionEnvironment.canUseDOM) {
         helika_referral_link = this.refreshLinkId();
         utms = this.refreshUtms();
         current_url = window.location.href;
-        device_details = {
-          platform_id: connectionData?.userAgentData?.platform,
-          app_version: connectionData?.appVersion,
-          server_version: server_version,
-          store_id: store_id,
-        }
         event_source = 'client'
       }
     } catch (e) {
       console.error(e);
     }
 
+
     let newEvents = events.map((event: any) => {
-      console.log('event', event)
       let givenEvent: any = Object.assign(
         {},
         event,
         {
-          device_details: device_details,
-          user_details: user_details,
-          event_details: event_details,
-          helika_data: {
-            anon_id: v4(),
-            event_source: event_source,
-            taxonomy_ver: 'v1',
-            resolution: ExecutionEnvironment.canUseDOM ? `${window.innerWidth}x${window.innerHeight}` : undefined,
-            touch_support: ExecutionEnvironment.canUseDOM ? (connectionData.maxTouchPoints > 0) : undefined,
-            device_type: (ExecutionEnvironment.canUseDOM && connectionData?.userAgentData && 'mobile' in connectionData?.userAgentData) ? (connectionData?.userAgentData?.mobile ? 'mobile' : connectionData?.userAgentData?.platform) : undefined,
-            os: ExecutionEnvironment.canUseDOM ? connectionData?.userAgentData?.platform : undefined,
-            downlink: ExecutionEnvironment.canUseDOM ? connectionData?.connection?.downlink : undefined,
-            effective_type: ExecutionEnvironment.canUseDOM ? connectionData?.connection?.effectiveType : undefined,
-            connection_type: ExecutionEnvironment.canUseDOM ? connectionData?.connection?.type : undefined,
-            sdk_name: "Web",
-            sdk_version: version,
-            sdk_platform: ExecutionEnvironment.canUseDOM ? 'browser' : 'non-browser',
-          }
+          app_details: Object.assign({}, event.app_details, this.appDetails),
+          user_details: Object.assign({}, event.user_details, this.userDetails),
+          helika_data: this.getDeviceDetails()
         }
       );
       givenEvent.event.helika_referral_link = helika_referral_link;
@@ -157,7 +136,7 @@ export class EVENTS extends Base {
       }[]
     } = {
       id: v4(),
-      user_id: user_id,
+      user_id: this.userDetails.user_id,
       events: newEvents
     }
 

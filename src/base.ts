@@ -3,6 +3,7 @@ import { DisableDataSettings, fingerprint } from "./index";
 import { v4 } from 'uuid';
 import ExecutionEnvironment from 'exenv';
 import { version } from './version'
+import _ from 'lodash'
 
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 
@@ -14,6 +15,9 @@ export abstract class Base {
   protected sessionExpiry: any;
   protected disabledDataSettings: DisableDataSettings;
   protected enabled: boolean;
+  protected appDetails: any;
+  protected userDetails: any;
+  protected anonId: string;
 
   constructor(apiKey: string, gameId: string) {
     if (!apiKey || apiKey === '') {
@@ -29,6 +33,91 @@ export abstract class Base {
     this.baseUrl = "http://localhost:3000";
     this.disabledDataSettings = DisableDataSettings.None;
     this.enabled = true;
+    this.appDetails = {
+      platform_id: null,
+      app_version: null,
+      server_version: null,
+      store_id: null,
+      source_id: null,
+    };
+    this.anonId = this.generateAnonId()
+    this.userDetails = {
+      user_id: this.anonId,
+      email: null,
+      wallet: null
+    }
+  }
+
+  protected generateAnonId(): any {
+    //todo:paul: get anon hash from @christian
+    let hash = 'anon_example123'
+    if (ExecutionEnvironment.canUseDOM) {
+      let storedHash = localStorage.getItem('helikaAnonId');
+      if (storedHash && !_.isEmpty(storedHash)) {
+        hash = storedHash;
+      } else {
+        localStorage.setItem('helikaAnonId', hash)
+      }
+    }
+    return hash
+  }
+
+  protected getUserDetails(): any {
+    return this.userDetails;
+  }
+
+  protected setUserDetails(details: {
+    user_id: string,
+    email?: string | undefined,
+    wallet?: string | undefined,
+    [key: string]: any;
+  }): any {
+    this.userDetails = Object.assign({}, this.userDetails, details)
+  }
+
+  protected getAppDetails(): any {
+    return this.appDetails;
+  }
+
+  protected setAppDetails(details: {
+    platform_id?: string | undefined,
+    app_version?: string | undefined,
+    store_id?: string | undefined,
+    source_id?: string | undefined,
+    server_version?: string | undefined,
+    [key: string]: any;
+  }): any {
+    this.appDetails = Object.assign({}, this.appDetails, details)
+  }
+
+  protected getDeviceDetails(): any {
+    let defaultObject = {
+      anon_id: this.anonId,
+      taxonomy_ver: 'v2',
+      resolution: undefined,
+      touch_support: undefined,
+      device_type: undefined,
+      os: undefined,
+      downlink: undefined,
+      effective_type: undefined,
+      connection_type: undefined,
+      sdk_name: "Web",
+      sdk_version: version,
+      sdk_platform: 'web-sdk',
+    }
+    if (ExecutionEnvironment.canUseDOM) {
+      let connectionData: any = window.navigator;
+      return Object.assign({}, defaultObject, {
+        resolution: `${window.innerWidth}x${window.innerHeight}`,
+        touch_support: connectionData?.maxTouchPoints > 0,
+        device_type: connectionData?.userAgentData?.mobile ? 'mobile' : connectionData?.userAgentData?.platform,
+        os: connectionData?.userAgentData?.platform,
+        downlink: connectionData?.connection?.downlink,
+        effective_type: connectionData?.connection?.effectiveType,
+        connection_type: connectionData?.connection?.type,
+      });
+    }
+    return defaultObject;
   }
 
   public isEnabled(): boolean {

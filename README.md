@@ -48,6 +48,18 @@ const helikaSDK = new Helika.EVENTS(api_key, gameId, EventsBaseURL.EVENTS_DEV);
 
 // Optional - if you want to disable some data from getting stored due to compliance
 helikaSDK.setDataSettings(DisableDataSettings.None);
+helikaSDK.setAppDetails({
+    platform_id: 'mySDK', //optional
+    app_version: '1.0.0',//optional
+    store_id: 'steam',//optional
+    source_id: 'facebook',//optional
+    server_version: '1.0.0', //optional, if from client server, not client app
+})
+//REQUIRED if sending userEvents, else OPTIONAL
+helikaSDK.setUserDetails({
+	user_id: '123456',
+	email: '123456@gmail.com'
+})
 
 // Start a session/create a new session which initiates the SDK instance with a
 // sessionId which is required to fire events. This should only be called when 
@@ -64,10 +76,27 @@ events = [{
 	}
 }]
 
+userEvents = [{
+	event_type: 'user_play_game',
+	event: {
+		user: 'user_1',
+		win_number: 1,
+		wallet: '0x4kd....'
+	}
+}]
+
 // Asynchronously
 // await helikaSDK.createEvent(events);
 
 helikaSDK.createEvent(events)
+.then((resp) => {
+	//do something...
+	// console.log(resp);
+}).catch(e => {
+	console.error(e);
+});
+
+helikaSDK.createUserEvemt(userEvents)
 .then((resp) => {
 	//do something...
 	// console.log(resp);

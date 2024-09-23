@@ -1,10 +1,7 @@
-import { Base } from "./base";
-import { UA } from "./ua";
 import { EVENTS } from "./events";
-import { applyMixins } from "./utils";
 import { FingerprintJSPro } from "@fingerprintjs/fingerprintjs-pro-react";
 
-export default { EVENTS: EVENTS, UA: UA }
+export default { EVENTS: EVENTS }
 
 export enum UABaseURL {
   //LOCAL,

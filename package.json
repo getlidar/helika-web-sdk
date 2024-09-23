@@ -1,6 +1,6 @@
 {
   "name": "helika-sdk",
-  "version": "0.2.13",
+  "version": "0.3.0",
   "description": "The Helika SDK is for developers to be able to make API calls to the Helika DEV and PROD endpoints.",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -17,6 +17,7 @@
   "author": "Paul S",
   "license": "ISC",
   "devDependencies": {
+    "@types/lodash": "^4.17.9",
     "@types/uuid": "^9.0.5",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "eslint": "^8.23.1",
@@ -36,6 +37,7 @@
     "@types/exenv": "^1.2.1",
     "axios": "^0.27.2",
     "exenv": "^1.2.2",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-router-dom": "^6.16.0",
     "uuid": "^9.0.1"
