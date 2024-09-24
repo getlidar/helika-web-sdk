@@ -90,7 +90,6 @@ export class EVENTS extends Base {
       console.error(e);
     }
 
-
     let newEvents = events.map((event: any) => {
       let givenEvent: any = Object.assign(
         {},
@@ -175,7 +174,7 @@ export class EVENTS extends Base {
     let params = this.prepareEventParams(events, true);
 
     let eventHasUserId = params?.events?.filter((event: any) => {
-      return _.isNil(event?.event?.user_details?.user_id)
+      return _.isNil(event?.user_details?.user_id)
     })
 
     if (!_.isEmpty(eventHasUserId)) {
