@@ -95,6 +95,7 @@ export class EVENTS extends Base {
         {},
         event,
         {
+          user_id: this.userDetails.user_id,
           app_details: Object.assign({}, event.app_details, this.appDetails),
           user_details: Object.assign({}, event.user_details, this.userDetails),
           helika_data: this.getDeviceDetails()
@@ -118,7 +119,6 @@ export class EVENTS extends Base {
 
     var params: {
       id: string,
-      user_id: string,
       events: {
         created_at: string,
         game_id: string,
@@ -127,7 +127,6 @@ export class EVENTS extends Base {
       }[]
     } = {
       id: v4(),
-      user_id: this.userDetails.user_id,
       events: newEvents
     }
 
