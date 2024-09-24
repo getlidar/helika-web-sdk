@@ -55,7 +55,12 @@ helikaSDK.setAppDetails({
     source_id: 'facebook',//optional
     server_version: '1.0.0', //optional, if from client server, not client app
 })
-//REQUIRED if sending userEvents, else OPTIONAL
+/*
+REQUIRED if sending userEvents, else OPTIONAL
+If userDetails is not set, we autogenerate an anonymous id to the user. When you update the userDetails via setUserDetails(), we'll automatically associate the anonymous id to the user_id.
+
+Include any user identifying information that you'd like to keep track of such as any emails, wallet addresses, player_id, group_id, usernames, etc.
+*/
 helikaSDK.setUserDetails({
 	user_id: '123456',
 	email: '123456@gmail.com'

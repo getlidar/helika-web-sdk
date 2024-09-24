@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import ExecutionEnvironment from 'exenv';
 import { version } from './version'
 import _ from 'lodash'
+import CryptoJS from 'crypto-js';
 
 const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 
@@ -49,8 +50,10 @@ export abstract class Base {
   }
 
   protected generateAnonId(): any {
-    //todo:paul: get anon hash from @christian
-    let hash = 'anon_example123'
+
+    let hash: any = CryptoJS.SHA256(`helika_${v4()}`);
+    hash = `helika_anon_${hash.toString(CryptoJS.enc.Hex)}`
+
     if (ExecutionEnvironment.canUseDOM) {
       let storedHash = localStorage.getItem('helikaAnonId');
       if (storedHash && !_.isEmpty(storedHash)) {
@@ -104,6 +107,7 @@ export abstract class Base {
       sdk_name: "Web",
       sdk_version: version,
       sdk_platform: 'web-sdk',
+      event_source: 'server'
     }
     if (ExecutionEnvironment.canUseDOM) {
       let connectionData: any = window.navigator;
@@ -115,6 +119,7 @@ export abstract class Base {
         downlink: connectionData?.connection?.downlink,
         effective_type: connectionData?.connection?.effectiveType,
         connection_type: connectionData?.connection?.type,
+        event_source: 'client'
       });
     }
     return defaultObject;
