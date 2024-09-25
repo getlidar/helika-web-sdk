@@ -132,7 +132,6 @@ export abstract class Base {
   }
 
   protected async fingerprint(): Promise<any> {
-
     let loadOptions = {
       apiKey: fpApiKey,
       scriptUrlPattern: [
@@ -232,22 +231,24 @@ export abstract class Base {
   protected refreshUtms() {
     try {
       if (ExecutionEnvironment.canUseDOM) {
-        let newUtms: any = this.getAllUrlParams();
-        if (newUtms && newUtms.length > 0) {
-          localStorage.setItem('helika_utms', JSON.stringify(newUtms))
-        } else {
-          let newUtmsUnparsed = localStorage.getItem('helika_utms')
-          if (newUtmsUnparsed && newUtmsUnparsed?.trim()?.length > 0) {
-            newUtms = JSON.parse(newUtmsUnparsed)
-          } else {
-            newUtms = null;
-          }
+        // Grab all utms, store it, and return it
+        let utms: any = this.getAllUrlParams();
+        if (!_.isEmpty(utms)) {
+          localStorage.setItem('helika_utms', JSON.stringify(utms))
+          return utms
         }
-        return newUtms;
+
+        // url utms is empty
+        let storedUtms = localStorage.getItem('helika_utms')
+        if (storedUtms && !_.isEmpty(storedUtms)) {
+          return JSON.parse(storedUtms)
+        }
       }
     } catch (e) {
       console.error(e);
     }
+
+    // no utms were found 
     return null;
   }
 
@@ -255,12 +256,12 @@ export abstract class Base {
     try {
       if (ExecutionEnvironment.canUseDOM) {
         let helika_referral_link = this.getUrlParam('linkId');
-        if (helika_referral_link) {
+        if (helika_referral_link && !_.isEmpty(helika_referral_link)) {
           localStorage.setItem('helika_referral_link', helika_referral_link);
-        } else {
-          helika_referral_link = localStorage.getItem('helika_referral_link')
+          return helika_referral_link
         }
-        return helika_referral_link;
+
+        return localStorage.getItem('helika_referral_link');
       }
     } catch (e) {
       console.error(e);
@@ -314,12 +315,9 @@ export abstract class Base {
   }
 
   protected async sessionCreate<T>(params?: any): Promise<any> {
-
     this.sessionID = v4();
     this.sessionExpiry = this.addMinutes(new Date(), 15);
     let fpData: any = {};
-    let utms = this.refreshUtms();
-    let helika_referral_link = this.refreshLinkId();
 
     try {
       if (ExecutionEnvironment.canUseDOM) {
@@ -352,93 +350,80 @@ export abstract class Base {
     }
 
     //send event to initiate session
-    var initevent = {
-      created_at: new Date().toISOString(),
-      game_id: this.gameId,
-      event_type: 'session_created',
-      event: {
-        type: params.type,
-        sdk_name: "Web",
-        sdk_version: version,
-        sdk_class: params.sdk_class,
-        fp_data: fpData,
-        helika_referral_link: helika_referral_link,
-        session_id: this.sessionID,
-        utms: utms,
-        event_sub_type: 'session_created'
-      }
-    };
+    var initEvent: any = this.getTemplateEvent("session_created", "session_created")
+    initEvent.event = Object.assign({}, initEvent.event, {
+      type: params.type,
+      sdk_class: params.sdk_class,
+      fp_data: fpData,
+    })
+
     let event_params = {
       id: v4(),
-      events: [initevent]
+      events: [initEvent]
     }
 
     try {
       return await this.postRequest(`/game/game-event`, event_params);
     } catch (e: any) {
-      if (
-        e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
-        e.response.data.message.startsWith('Internal server error - Invalid API key:')
-      ) {
-        this.sessionID = null;
-        if (ExecutionEnvironment.canUseDOM) {
-          localStorage.removeItem('sessionID');
-        }
-        throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
-      }
-      throw new Error(e.message);
+      this.processEventSentError(e);
     }
-
   }
 
 
   protected async endSession<T>(params?: any): Promise<any> {
-
-    this.sessionID = v4();
-    this.sessionExpiry = this.addMinutes(new Date(), 15);
-    let fpData: any = {};
-    let utms = this.refreshUtms();
-    let helika_referral_link = this.refreshLinkId();
-
     //send event to initiate session
-    var initevent = {
-      created_at: new Date().toISOString(),
-      game_id: this.gameId,
-      event_type: "Events",
-      event: {
-        type: 'Session End',
-        sdk_name: "Web",
-        sdk_version: version,
-        sdk_class: "Events",
-        fp_data: fpData,
-        helika_referral_link: helika_referral_link,
-        session_id: this.sessionID,
-        utms: utms,
-        event_sub_type: 'session_end'
-      }
-    };
+    var endEvent: any = this.getTemplateEvent("session_end", "session_end")
+    endEvent.event_type = "";
+    endEvent.event = Object.assign({}, endEvent.event, {
+      event_sub_type: 'session_end',
+      sdk_class: "Events"
+    })
+
     let event_params = {
       id: v4(),
-      events: [initevent]
+      events: [endEvent]
     }
 
     try {
       return await this.postRequest(`/game/game-event`, event_params);
     } catch (e: any) {
-      if (
-        e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
-        e.response.data.message.startsWith('Internal server error - Invalid API key:')
-      ) {
-        this.sessionID = null;
-        if (ExecutionEnvironment.canUseDOM) {
-          localStorage.removeItem('sessionID');
-        }
-        throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
-      }
-      throw new Error(e.message);
+      this.processEventSentError(e);
     }
-
   }
+
+  protected getTemplateEvent(event_type: string, event_sub_type?: string) {
+    let utms = this.refreshUtms();
+    let helika_referral_link = this.refreshLinkId();
+
+    return {
+      created_at: new Date().toISOString(),
+      game_id: this.gameId,
+      event_type: event_type,
+      event: {
+        session_id: this.sessionID,
+        event_sub_type: event_sub_type,
+        sdk_name: "Web",
+        sdk_version: version,
+        helika_referral_link: helika_referral_link,
+        utms: utms
+      }
+    }
+  }
+
+  protected processEventSentError(e: any) {
+    if (
+      e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
+      e.response.data.message.startsWith('Internal server error - Invalid API key:')
+    ) {
+      this.sessionID = null;
+      if (ExecutionEnvironment.canUseDOM) {
+        localStorage.removeItem('sessionID');
+      }
+      throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
+    }
+    throw new Error(e.message);
+  }
+
 
   protected addHours(date: Date, hours: number) {
     date.setHours(date.getHours() + hours);
