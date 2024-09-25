@@ -2,6 +2,8 @@ import { Base } from "../base";
 import { EventsBaseURL } from "../index";
 import ExecutionEnvironment from 'exenv';
 import { v4 } from 'uuid';
+import { version } from '../version'
+import _ from "lodash";
 
 export class EVENTS extends Base {
   protected playerId: string;
@@ -65,17 +67,14 @@ export class EVENTS extends Base {
     }
   }
 
-  async createEvent(
+  private prepareEventParams(
     events: {
       event_type: string,
-      event: Object
-    }[],
-  ): Promise<{ message: string }> {
-    await this.refreshSessionIdFromStorage();
-
-    if (!this.sessionID) {
-      throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
-    }
+      event: {
+        event_details: Object,
+        [key: string]: any;
+      }
+    }[], isUserEvent: boolean) {
 
     let created_at = new Date().toISOString();
     let helika_referral_link: any = null;
@@ -92,7 +91,19 @@ export class EVENTS extends Base {
     }
 
     let newEvents = events.map((event: any) => {
-      let givenEvent: any = Object.assign({}, event);
+      let givenEvent: any = Object.assign(
+        {},
+        event,
+        {
+          user_id: this.userDetails.user_id,
+          app_details: Object.assign({}, event.app_details, this.appDetails),
+          user_details: Object.assign({}, event.user_details, this.userDetails),
+          helika_data: this.getDeviceDetails()
+        }
+      );
+      if (!isUserEvent) {
+        delete givenEvent.user_details;
+      }
       givenEvent.event.helika_referral_link = helika_referral_link;
       givenEvent.event.utms = utms;
       givenEvent.event.url = current_url;
@@ -119,61 +130,54 @@ export class EVENTS extends Base {
       events: newEvents
     }
 
+    return params;
+  }
+
+  async createEvent(
+    events: {
+      event_type: string,
+      event: {
+        event_details: Object,
+        [key: string]: any;
+      }
+    }[],
+  ): Promise<{ message: string }> {
+    await this.refreshSessionIdFromStorage();
+
+    if (!this.sessionID) {
+      throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
+    }
+
+    let params = this.prepareEventParams(events, false)
+
     this.extendSession();
 
     return this.postRequest(`/game/game-event`, params);
   }
 
-  async createUAEvent(
+  async createUserEvent(
     events: {
       event_type: string,
-      event: Object
+      event: {
+        event_details: Object,
+        [key: string]: any;
+      }
     }[],
   ): Promise<{ message: string }> {
-
     await this.refreshSessionIdFromStorage();
 
-    if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
-
-    let created_at = new Date().toISOString();
-    let helika_referral_link: any = null;
-    let utms: any = null;
-    let current_url: string = "";
-    try {
-      if (ExecutionEnvironment.canUseDOM) {
-        helika_referral_link = this.refreshLinkId();
-        utms = this.refreshUtms();
-        current_url = window.location.href;
-      }
-    } catch (e) {
-      console.error(e);
+    if (!this.sessionID) {
+      throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
 
-    let newEvents = events.map((event: any) => {
-      let givenEvent: any = Object.assign({}, event);
-      givenEvent.event.helika_referral_link = helika_referral_link;
-      givenEvent.event.utms = utms;
-      givenEvent.event.url = current_url;
-      if (event.event.session_id) {
-        givenEvent.event.client_session_id = event.event.session_id
-      }
-      givenEvent.event.session_id = this.sessionID;
-      givenEvent.created_at = created_at;
-      givenEvent.game_id = 'UA';
-      return givenEvent;
-    });
+    let params = this.prepareEventParams(events, true);
 
-    var params: {
-      id: string,
-      events: {
-        created_at: string,
-        game_id: string,
-        event_type: string,
-        event: Object
-      }[]
-    } = {
-      id: v4(),
-      events: newEvents
+    let eventHasUserId = params?.events?.filter((event: any) => {
+      return _.isNil(event?.user_details?.user_id)
+    })
+
+    if (!_.isEmpty(eventHasUserId)) {
+      throw new Error('Before sending user events, user_id must be set using sdk.setUserDetails()')
     }
 
     this.extendSession();
