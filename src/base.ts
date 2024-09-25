@@ -77,6 +77,10 @@ export abstract class Base {
     this.appDetails = Object.assign({}, this.appDetails, details)
   }
 
+  public setDataSettings(settings: DisableDataSettings) {
+    this.disabledDataSettings = settings;
+  }
+
   public isEnabled(): boolean {
     return this.enabled;
   }
@@ -369,7 +373,6 @@ export abstract class Base {
     }
   }
 
-
   protected async endSession<T>(params?: any): Promise<any> {
     //send event to initiate session
     var endEvent: any = this.getTemplateEvent("session_end", "session_end")
@@ -394,18 +397,25 @@ export abstract class Base {
   protected getTemplateEvent(event_type: string, event_sub_type?: string) {
     let utms = this.refreshUtms();
     let helika_referral_link = this.refreshLinkId();
+    let current_url: string = "";
+
+    if (ExecutionEnvironment.canUseDOM) {
+      current_url = window.location.href;
+    }
 
     return {
       created_at: new Date().toISOString(),
       game_id: this.gameId,
       event_type: event_type,
       event: {
+        user_id: this.userDetails.user_id,
         session_id: this.sessionID,
-        event_sub_type: event_sub_type,
+        event_sub_type: event_sub_type ? event_sub_type : null,
         sdk_name: "Web",
         sdk_version: version,
         helika_referral_link: helika_referral_link,
-        utms: utms
+        utms: utms,
+        url: current_url
       }
     }
   }
@@ -424,7 +434,6 @@ export abstract class Base {
     throw new Error(e.message);
   }
 
-
   protected addHours(date: Date, hours: number) {
     date.setHours(date.getHours() + hours);
     return date.toString();
@@ -440,9 +449,5 @@ export abstract class Base {
     if (ExecutionEnvironment.canUseDOM) {
       localStorage.setItem('sessionExpiry', this.sessionExpiry);
     };
-  }
-
-  public setDataSettings(settings: DisableDataSettings) {
-    this.disabledDataSettings = settings;
   }
 }
