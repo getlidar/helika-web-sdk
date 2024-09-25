@@ -36,8 +36,8 @@ export abstract class Base {
     this.enabled = true;
     this.appDetails = {
       platform_id: null,
-      app_version: null,
-      server_version: null,
+      client_app_version: null,
+      server_app_version: null,
       store_id: null,
       source_id: null,
     };
@@ -49,27 +49,11 @@ export abstract class Base {
     }
   }
 
-  protected generateAnonId(): any {
-
-    let hash: any = CryptoJS.SHA256(`helika_${v4()}`);
-    hash = `helika_anon_${hash.toString(CryptoJS.enc.Hex)}`
-
-    if (ExecutionEnvironment.canUseDOM) {
-      let storedHash = localStorage.getItem('helikaAnonId');
-      if (storedHash && !_.isEmpty(storedHash)) {
-        hash = storedHash;
-      } else {
-        localStorage.setItem('helikaAnonId', hash)
-      }
-    }
-    return hash
-  }
-
-  protected getUserDetails(): any {
+  public getUserDetails(): any {
     return this.userDetails;
   }
 
-  protected setUserDetails(details: {
+  public setUserDetails(details: {
     user_id: string,
     email?: string | undefined,
     wallet?: string | undefined,
@@ -78,19 +62,41 @@ export abstract class Base {
     this.userDetails = Object.assign({}, this.userDetails, details)
   }
 
-  protected getAppDetails(): any {
+  public getAppDetails(): any {
     return this.appDetails;
   }
 
-  protected setAppDetails(details: {
+  public setAppDetails(details: {
     platform_id?: string | undefined,
-    app_version?: string | undefined,
+    client_app_version?: string | undefined,
+    server_app_version?: string | undefined,
     store_id?: string | undefined,
     source_id?: string | undefined,
-    server_version?: string | undefined,
     [key: string]: any;
   }): any {
     this.appDetails = Object.assign({}, this.appDetails, details)
+  }
+
+  public isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  public setEnabled(enabled: boolean) {
+    this.enabled = enabled;
+  }
+
+  protected generateAnonId(): any {
+    let hash: any = CryptoJS.SHA256(v4());
+    hash = `anon_${hash.toString(CryptoJS.enc.Hex)}`
+
+    if (ExecutionEnvironment.canUseDOM) {
+      let storedHash = localStorage.getItem('helikaAnonId');
+      if (!_.isEmpty(storedHash)) {
+        return storedHash;
+      }
+      localStorage.setItem('helikaAnonId', hash);
+    }
+    return hash
   }
 
   protected getDeviceDetails(): any {
@@ -123,14 +129,6 @@ export abstract class Base {
       });
     }
     return defaultObject;
-  }
-
-  public isEnabled(): boolean {
-    return this.enabled;
-  }
-
-  public setEnabled(enabled: boolean) {
-    this.enabled = enabled;
   }
 
   protected async fingerprint(): Promise<any> {

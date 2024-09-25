@@ -50,10 +50,10 @@ const helikaSDK = new Helika.EVENTS(api_key, gameId, EventsBaseURL.EVENTS_DEV);
 helikaSDK.setDataSettings(DisableDataSettings.None);
 helikaSDK.setAppDetails({
     platform_id: 'mySDK', //optional
-    app_version: '1.0.0',//optional
+    client_app_version: '1.0.0',//optional
     store_id: 'steam',//optional
     source_id: 'facebook',//optional
-    server_version: '1.0.0', //optional, if from client server, not client app
+    server_app_version: '1.0.0', //optional, if from client server, not client app
 })
 /*
 REQUIRED if sending userEvents, else OPTIONAL
