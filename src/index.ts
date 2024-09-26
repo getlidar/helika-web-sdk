@@ -3,12 +3,6 @@ import { FingerprintJSPro } from "@fingerprintjs/fingerprintjs-pro-react";
 
 export default { EVENTS: EVENTS }
 
-export enum UABaseURL {
-  //LOCAL,
-  UA_DEV,
-  UA_PROD
-}
-
 export enum EventsBaseURL {
   EVENTS_LOCAL,
   EVENTS_DEV,
