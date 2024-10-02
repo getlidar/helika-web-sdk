@@ -1,5 +1,4 @@
 import { EVENTS } from "./events";
-import { FingerprintJSPro } from "@fingerprintjs/fingerprintjs-pro-react";
 
 export default { EVENTS: EVENTS }
 
@@ -18,5 +17,3 @@ export enum DisableDataSettings {
   VpnInfo = 1 << 4,     // 100000
   All = ~(~0 << 31)      // 0xFFFF
 }
-
-export const fingerprint = FingerprintJSPro;

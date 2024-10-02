@@ -1,12 +1,10 @@
 import axios from "axios";
-import { DisableDataSettings, fingerprint } from "./index";
+import { DisableDataSettings } from "./index";
 import { v4 } from 'uuid';
 import ExecutionEnvironment from 'exenv';
 import { version } from './version'
 import _ from 'lodash'
 import CryptoJS from 'crypto-js';
-
-const fpApiKey = '1V2jYOavAUDljc9GxEgu';
 
 export abstract class Base {
   private apiKey: string;
@@ -135,82 +133,6 @@ export abstract class Base {
     return defaultObject;
   }
 
-  protected async fingerprint(): Promise<any> {
-    let loadOptions = {
-      apiKey: fpApiKey,
-      scriptUrlPattern: [
-        `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=<version>&loaderVersion=<loaderVersion>`,
-        fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
-      ],
-      endpoint: [
-        'https://yard.helika.io/8nc7wiyuwhncrhw3/o9wn3zvyblw3v8yi8?region=us',
-        fingerprint.defaultEndpoint // Fallback to default endpoint in case of error
-      ],
-    };
-    let fingerprintData = null;
-    try {
-      let loaded = await fingerprint.load(loadOptions);
-      fingerprintData = await loaded.get();
-      return {
-        fingerprint_id: fingerprintData?.visitorId,
-        request_id: fingerprintData?.requestId
-      }
-    } catch (e) {
-      console.error('Error loading fingerprint data');
-      return {};
-    }
-  }
-
-  protected async fullFingerprint(): Promise<any> {
-    try {
-
-      let loadOptions = {
-        apiKey: fpApiKey,
-        scriptUrlPattern: [
-          `https://yard.helika.io/8nc7wiyuwhncrhw3/01cb9q093c?apiKey=${fpApiKey}&version=3&loaderVersion=3.8.6`,
-          fingerprint.defaultScriptUrlPattern, // Fallback to default CDN in case of error
-        ],
-        endpoint: [
-          'https://yard.helika.io/8nc7wiyuwhncrhw3/o9wn3zvyblw3v8yi8?region=us',
-          fingerprint.defaultEndpoint // Fallback to default endpoint in case of error
-        ],
-      };
-      let loaded = await fingerprint.load(loadOptions);
-      let fingerprintData = await loaded.get({
-        extendedResult: true
-      });
-
-      if (this.disabledDataSettings & DisableDataSettings.BrowserInfo) {
-        fingerprintData.browserName = "";
-        fingerprintData.browserVersion = "";
-        fingerprintData.incognito = false;
-      }
-
-      if (this.disabledDataSettings & DisableDataSettings.DeviceInfo) {
-        fingerprintData.device = "";
-      }
-
-      if (this.disabledDataSettings & DisableDataSettings.IpInfo) {
-        fingerprintData.ip = "";
-        delete fingerprintData?.ipLocation;
-      }
-
-      if (this.disabledDataSettings & DisableDataSettings.OsInfo) {
-        fingerprintData.os = "";
-        fingerprintData.osVersion = "";
-      }
-
-      // if (this.disabledDataSettings & DisableDataSettings.VpnInfo) {
-      //   // Not here
-      // }
-
-      return fingerprintData;
-    } catch (e) {
-      console.error('Error loading fingerprint data');
-      return {};
-    }
-  }
-
   protected getUrlParam(paramName: string) {
     var urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(paramName);
@@ -321,7 +243,6 @@ export abstract class Base {
   protected async sessionCreate<T>(params?: any): Promise<any> {
     this.sessionID = v4();
     this.sessionExpiry = this.addMinutes(new Date(), 15);
-    let fpData: any = {};
 
     try {
       if (ExecutionEnvironment.canUseDOM) {
@@ -332,18 +253,6 @@ export abstract class Base {
             this.sessionID = local_session_id;
             localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
             return;
-          } else {
-            // Only grab fingerprint data if it's a new session and fingerprint data not expired yet
-            let helikaFpData = localStorage.getItem('helikaFpData');
-            let helikaFpExpiry = localStorage.getItem('helikaFpExpiry');
-            if (helikaFpData && helikaFpExpiry && (new Date(helikaFpExpiry) > new Date())) {
-              fpData = JSON.parse(helikaFpData)
-            } else {
-              fpData = await this.fullFingerprint();
-              let now = new Date()
-              localStorage.setItem('helikaFpData', JSON.stringify(fpData))
-              localStorage.setItem('helikaFpExpiry', new Date(now.setDate(now.getDate() + 7))?.toString())
-            }
           }
         }
         localStorage.setItem('sessionID', this.sessionID);
@@ -357,8 +266,7 @@ export abstract class Base {
     var initEvent: any = this.getTemplateEvent("session_created", "session_created")
     initEvent.event = Object.assign({}, initEvent.event, {
       type: params.type,
-      sdk_class: params.sdk_class,
-      fp_data: fpData,
+      sdk_class: params.sdk_class
     })
 
     let event_params = {
