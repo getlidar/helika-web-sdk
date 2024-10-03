@@ -1,5 +1,4 @@
 import axios from "axios";
-import { DisableDataSettings } from "./index";
 import { v4 } from 'uuid';
 import ExecutionEnvironment from 'exenv';
 import { version } from './version'
@@ -12,7 +11,7 @@ export abstract class Base {
   protected gameId: string;
   protected sessionID: string | null;
   protected sessionExpiry: any;
-  protected disabledDataSettings: DisableDataSettings;
+  protected piiTracking: boolean;
   protected enabled: boolean;
   protected appDetails: any;
   protected userDetails: any;
@@ -30,7 +29,7 @@ export abstract class Base {
     this.gameId = gameId;
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
-    this.disabledDataSettings = DisableDataSettings.None;
+    this.piiTracking = true;
     this.enabled = true;
     this.appDetails = {
       platform_id: null,
@@ -75,8 +74,15 @@ export abstract class Base {
     this.appDetails = Object.assign({}, this.appDetails, details)
   }
 
-  public setDataSettings(settings: DisableDataSettings) {
-    this.disabledDataSettings = settings;
+  public getPIITracking() {
+    return this.piiTracking;
+  }
+
+  public setPIITracking(piiTracking: boolean) {
+    this.piiTracking = piiTracking;
+    if (this.piiTracking) {
+      // todo: when PII tracking is turned on, send PII tracking data for this session
+    }
   }
 
   public isEnabled(): boolean {
@@ -101,22 +107,43 @@ export abstract class Base {
     return hash
   }
 
-  protected getDeviceDetails(): any {
-    let defaultObject = {
+  protected getTemplateEvent(event_type: string, event_sub_type?: string) {
+    return {
+      created_at: new Date().toISOString(),
+      game_id: this.gameId,
+      event_type: event_type,
+      event: {
+        user_id: this.userDetails.user_id,
+        session_id: this.sessionID,
+        event_sub_type: event_sub_type ? event_sub_type : null,
+      }
+    }
+  }
+
+  protected appendHelikaData(): any {
+    let helikaData = {
       anon_id: this.anonId,
       taxonomy_ver: 'v2',
+      sdk_name: "Web",
+      sdk_version: version,
+      sdk_platform: 'web-sdk',
+      event_source: ExecutionEnvironment.canUseDOM ? 'client' : 'server',
+      pii_tracking: this.piiTracking,
+    };
+
+    return helikaData;
+  }
+
+  protected appendPIIData(helika_data: any): any {
+    let defaultObject = Object.assign({}, helika_data, {
       resolution: undefined,
       touch_support: undefined,
       device_type: undefined,
       os: undefined,
       downlink: undefined,
       effective_type: undefined,
-      connection_type: undefined,
-      sdk_name: "Web",
-      sdk_version: version,
-      sdk_platform: 'web-sdk',
-      event_source: 'server'
-    }
+      connection_type: undefined
+    });
     if (ExecutionEnvironment.canUseDOM) {
       let connectionData: any = window.navigator;
       return Object.assign({}, defaultObject, {
@@ -126,11 +153,32 @@ export abstract class Base {
         os: connectionData?.userAgentData?.platform,
         downlink: connectionData?.connection?.downlink,
         effective_type: connectionData?.connection?.effectiveType,
-        connection_type: connectionData?.connection?.type,
-        event_source: 'client'
+        connection_type: connectionData?.connection?.type
       });
     }
     return defaultObject;
+  }
+
+  protected appendReferralData(helika_data: any): any {
+    let utms = this.refreshUtms();
+    let helika_referral_link = this.refreshLinkId();
+    let current_url: string = "";
+    let referral_code = "";
+
+    if (ExecutionEnvironment.canUseDOM) {
+      current_url = window.location.href;
+    }
+
+    // todo: add referral_code info if any
+    
+    return Object.assign({}, helika_data, {
+      referral_data: {
+        utms: utms,
+        link_id: helika_referral_link,
+        url: current_url,
+        referral_code: referral_code
+      }
+    });
   }
 
   protected getUrlParam(paramName: string) {
@@ -255,7 +303,7 @@ export abstract class Base {
             return;
           }
         }
-        localStorage.setItem('sessionID', this.sessionID);
+        localStorage.setItem('sessionID', this.sessionID ? this.sessionID : "");
         localStorage.setItem('sessionExpiry', this.sessionExpiry.toString());
       }
     } catch (e) {
@@ -268,6 +316,10 @@ export abstract class Base {
       type: params.type,
       sdk_class: params.sdk_class
     })
+
+    if (this.piiTracking) {
+      initEvent.event = this.appendPIIData(initEvent.event);
+    }
 
     let event_params = {
       id: v4(),
@@ -299,32 +351,6 @@ export abstract class Base {
       return await this.postRequest(`/game/game-event`, event_params);
     } catch (e: any) {
       this.processEventSentError(e);
-    }
-  }
-
-  protected getTemplateEvent(event_type: string, event_sub_type?: string) {
-    let utms = this.refreshUtms();
-    let helika_referral_link = this.refreshLinkId();
-    let current_url: string = "";
-
-    if (ExecutionEnvironment.canUseDOM) {
-      current_url = window.location.href;
-    }
-
-    return {
-      created_at: new Date().toISOString(),
-      game_id: this.gameId,
-      event_type: event_type,
-      event: {
-        user_id: this.userDetails.user_id,
-        session_id: this.sessionID,
-        event_sub_type: event_sub_type ? event_sub_type : null,
-        sdk_name: "Web",
-        sdk_version: version,
-        helika_referral_link: helika_referral_link,
-        utms: utms,
-        url: current_url
-      }
     }
   }
 
