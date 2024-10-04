@@ -145,8 +145,11 @@ export class EVENTS extends Base {
       givenEvent.event_type = event.event_type;
       givenEvent.event.event_sub_type = event.event.event_sub_type ? event.event.event_sub_type : null;
       givenEvent.event.app_details = Object.assign({}, event.event.app_details, this.appDetails);
-      givenEvent.event.user_details = Object.assign({}, event.event.user_details, this.userDetails);
-      givenEvent.event.helika_data = Object.assign({}, this.getDeviceDetails());
+      if (isUserEvent) {
+        givenEvent.event.user_details = Object.assign({}, event.event.user_details, this.userDetails);
+      }
+      givenEvent.event.helika_data = this.appendHelikaData();
+      givenEvent.event.helika_data = this.appendReferralData(givenEvent.event.helika_data)
 
       if (!isUserEvent) {
         delete givenEvent.event.user_details;

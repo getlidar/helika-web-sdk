@@ -41,13 +41,13 @@ For Production, use **EVENT_PROD**. This sends the events and queries to the pro
 
 ```ts
 import Helika from "helika-sdk"
-import { DisableDataSettings, EventsBaseURL } from "helika-sdk"
+import { EventsBaseURL } from "helika-sdk"
 
 const gameId = 'my_game_name'
 const helikaSDK = new Helika.EVENTS(api_key, gameId, EventsBaseURL.EVENTS_DEV);
 
-// Optional - if you want to disable some data from getting stored due to compliance
-helikaSDK.setDataSettings(DisableDataSettings.None);
+// Optional - if you want to disable Personal Identifiable Information Tracking due to compliance
+helikaSDK.setPIITracking(true);
 helikaSDK.setAppDetails({
     platform_id: 'mySDK', //optional
     client_app_version: '1.0.0',//optional
