@@ -50,13 +50,23 @@ export abstract class Base {
     return this.userDetails;
   }
 
-  public setUserDetails(details: {
-    user_id: string,
-    email?: string | undefined,
-    wallet?: string | undefined,
-    [key: string]: any;
-  }): any {
-    this.userDetails = Object.assign({}, this.userDetails, details)
+  public setUserDetails(
+    details: {
+      user_id: string | null,
+      email?: string | undefined,
+      wallet?: string | undefined,
+      [key: string]: any;
+    },
+    createNewAnon: boolean = false
+  ): any {
+    if (_.isNil(details.user_id)) {
+      details = {
+        user_id: this.generateAnonId(createNewAnon),
+        email: undefined,
+        wallet: undefined,
+      }
+    }
+    this.userDetails = details;
   }
 
   public getAppDetails(): any {
@@ -93,11 +103,11 @@ export abstract class Base {
     this.enabled = enabled;
   }
 
-  protected generateAnonId(): any {
+  protected generateAnonId(bypassStored: boolean = false): any {
     let hash: any = CryptoJS.SHA256(v4());
     hash = `anon_${hash.toString(CryptoJS.enc.Hex)}`
 
-    if (ExecutionEnvironment.canUseDOM) {
+    if (ExecutionEnvironment.canUseDOM && !bypassStored) {
       let storedHash = localStorage.getItem('helikaAnonId');
       if (!_.isEmpty(storedHash)) {
         return storedHash;
@@ -170,7 +180,7 @@ export abstract class Base {
     }
 
     // todo: add referral_code info if any
-    
+
     return Object.assign({}, helika_data, {
       referral_data: {
         utms: utms,
