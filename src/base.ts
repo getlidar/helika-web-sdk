@@ -4,6 +4,8 @@ import ExecutionEnvironment from 'exenv';
 import { version } from './version'
 import _ from 'lodash'
 import CryptoJS from 'crypto-js';
+import validator from 'validator';
+import { WALLET_REGEX } from "./utils";
 
 export abstract class Base {
   private apiKey: string;
@@ -59,13 +61,20 @@ export abstract class Base {
     },
     createNewAnon: boolean = false
   ): any {
-    if (_.isNil(details.user_id)) {
+    if (_.isNil(details?.user_id)) {
       details = {
         user_id: this.generateAnonId(createNewAnon),
         email: undefined,
         wallet: undefined,
       }
     }
+    if ('email' in details && details?.email && !validator.isEmail(details?.email)) {
+      throw new Error(`User Details property email:'${details?.email}' is not a valid email addess.`)
+    }
+    if ('wallet' in details && details?.wallet && !details?.wallet.match(WALLET_REGEX)) {
+      throw new Error(`User Details property wallet:'${details?.wallet}' is not a valid wallet addess.`)
+    }
+
     this.userDetails = details;
   }
 
