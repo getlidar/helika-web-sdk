@@ -9,3 +9,5 @@ export function applyMixins(derivedCtor: any, baseCtors: any[]) {
     });
   });
 }
+
+export const WALLET_REGEX = /^0x[a-fA-F0-9]{40}$/g

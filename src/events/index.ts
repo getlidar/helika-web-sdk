@@ -6,8 +6,8 @@ import { version } from '../version'
 import _ from "lodash";
 
 export class EVENTS extends Base {
-  constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL) {
-    super(apiKey, gameId);
+  constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL, piiTracking: boolean = true) {
+    super(apiKey, gameId, piiTracking);
 
     switch (baseUrl) {
       case EventsBaseURL.EVENTS_LOCAL: {
@@ -82,7 +82,7 @@ export class EVENTS extends Base {
     let params = this.prepareEventParams(events, true);
 
     let eventHasUserId = params?.events?.filter((event: any) => {
-      return _.isNil(event?.user_details?.user_id)
+      return _.isNil(event?.event?.user_details?.user_id)
     })
 
     if (!_.isEmpty(eventHasUserId)) {
@@ -135,8 +135,9 @@ export class EVENTS extends Base {
     }[], isUserEvent: boolean) {
 
     let templateEvent: any = this.getTemplateEvent("");
+
     let updatedEvents = events.map((event: any) => {
-      let givenEvent: any = Object.assign(
+      let givenEvent: any = _.merge(
         {},
         event,
         templateEvent
@@ -144,9 +145,9 @@ export class EVENTS extends Base {
 
       givenEvent.event_type = event.event_type;
       givenEvent.event.event_sub_type = event.event.event_sub_type ? event.event.event_sub_type : null;
-      givenEvent.event.app_details = Object.assign({}, event.event.app_details, this.appDetails);
+      givenEvent.event.app_details = _.merge({}, event.event.app_details, this.appDetails);
       if (isUserEvent) {
-        givenEvent.event.user_details = Object.assign({}, event.event.user_details, this.userDetails);
+        givenEvent.event.user_details = _.merge({}, event.event.user_details, this.userDetails);
       }
       givenEvent.event.helika_data = this.appendHelikaData();
       givenEvent.event.helika_data = this.appendReferralData(givenEvent.event.helika_data)

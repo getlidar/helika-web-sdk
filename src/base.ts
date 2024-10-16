@@ -4,6 +4,8 @@ import ExecutionEnvironment from 'exenv';
 import { version } from './version'
 import _ from 'lodash'
 import CryptoJS from 'crypto-js';
+import validator from 'validator';
+import { WALLET_REGEX } from "./utils";
 
 export abstract class Base {
   private apiKey: string;
@@ -17,7 +19,7 @@ export abstract class Base {
   protected userDetails: any;
   protected anonId: string;
 
-  constructor(apiKey: string, gameId: string) {
+  constructor(apiKey: string, gameId: string, piiTracking: boolean = true) {
     if (!apiKey || apiKey === '') {
       throw new Error('API Key is required to initiate Helika SDK instance.');
     }
@@ -29,7 +31,7 @@ export abstract class Base {
     this.gameId = gameId;
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
-    this.piiTracking = true;
+    this.piiTracking = piiTracking;
     this.enabled = true;
     this.appDetails = {
       platform_id: null,
@@ -50,13 +52,39 @@ export abstract class Base {
     return this.userDetails;
   }
 
-  public setUserDetails(details: {
-    user_id: string,
-    email?: string | undefined,
-    wallet?: string | undefined,
-    [key: string]: any;
-  }): any {
-    this.userDetails = Object.assign({}, this.userDetails, details)
+  public setUserDetails(
+    details: {
+      user_id: string,
+      email?: string | undefined,
+      wallet?: string | undefined,
+      [key: string]: any;
+    },
+    createNewAnon: boolean = false
+  ): any {
+    if (_.isNil(details?.user_id)) {
+      details = {
+        user_id: this.generateAnonId(createNewAnon),
+        email: undefined,
+        wallet: undefined,
+      }
+    }
+    if ('user_id' in details && (typeof details.user_id !== 'string' && typeof details.user_id !== 'number')) {
+      throw new Error(`User Details property user_id:'${details?.user_id}' must be a string or number.`)
+    }
+    if ('email' in details && details?.email && !validator.isEmail(details?.email)) {
+      throw new Error(`User Details property email:'${details?.email}' is not a valid email addess.`)
+    }
+    if ('email_address' in details && details?.email_address && !validator.isEmail(details?.email_address)) {
+      throw new Error(`User Details property email_address:'${details?.email_address}' is not a valid email addess.`)
+    }
+    if ('wallet' in details && details?.wallet && !details?.wallet.match(WALLET_REGEX)) {
+      throw new Error(`User Details property wallet:'${details?.wallet}' is not a valid wallet addess.`)
+    }
+    if ('wallet_address' in details && details?.wallet_address && !details?.wallet_address.match(WALLET_REGEX)) {
+      throw new Error(`User Details property wallet_address:'${details?.wallet_address}' is not a valid wallet addess.`)
+    }
+    details.user_id = details.user_id?.toString()
+    this.userDetails = details;
   }
 
   public getAppDetails(): any {
@@ -71,7 +99,7 @@ export abstract class Base {
     source_id?: string | undefined,
     [key: string]: any;
   }): any {
-    this.appDetails = Object.assign({}, this.appDetails, details)
+    this.appDetails = details;
   }
 
   public getPIITracking() {
@@ -81,7 +109,32 @@ export abstract class Base {
   public setPIITracking(piiTracking: boolean) {
     this.piiTracking = piiTracking;
     if (this.piiTracking) {
-      // todo: when PII tracking is turned on, send PII tracking data for this session
+      try {
+        if (ExecutionEnvironment.canUseDOM) {
+          //send Pii tracking info if it was just turned on
+          var piiEvent: any = this.getTemplateEvent("session_created", "session_data_updated")
+          piiEvent.event = _.merge({}, piiEvent.event, {
+            type: 'Session Data Refresh',
+            sdk_class: "Events"
+          })
+          piiEvent.event.helika_data = this.appendPIIData(this.appendHelikaData());
+          piiEvent.event.app_details = this.appDetails;
+
+
+          let event_params = {
+            id: v4(),
+            events: [piiEvent]
+          }
+
+          try {
+            return this.postRequest(`/game/game-event`, event_params);
+          } catch (e: any) {
+            this.processEventSentError(e);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 
@@ -93,11 +146,11 @@ export abstract class Base {
     this.enabled = enabled;
   }
 
-  protected generateAnonId(): any {
+  protected generateAnonId(bypassStored: boolean = false): any {
     let hash: any = CryptoJS.SHA256(v4());
     hash = `anon_${hash.toString(CryptoJS.enc.Hex)}`
 
-    if (ExecutionEnvironment.canUseDOM) {
+    if (ExecutionEnvironment.canUseDOM && !bypassStored) {
       let storedHash = localStorage.getItem('helikaAnonId');
       if (!_.isEmpty(storedHash)) {
         return storedHash;
@@ -135,7 +188,7 @@ export abstract class Base {
   }
 
   protected appendPIIData(helika_data: any): any {
-    let defaultObject = Object.assign({}, helika_data, {
+    let piiData = _.merge({}, helika_data, {
       resolution: undefined,
       touch_support: undefined,
       device_type: undefined,
@@ -146,7 +199,7 @@ export abstract class Base {
     });
     if (ExecutionEnvironment.canUseDOM) {
       let connectionData: any = window.navigator;
-      return Object.assign({}, defaultObject, {
+      return _.merge({}, piiData, {
         resolution: `${window.innerWidth}x${window.innerHeight}`,
         touch_support: connectionData?.maxTouchPoints > 0,
         device_type: connectionData?.userAgentData?.mobile ? 'mobile' : connectionData?.userAgentData?.platform,
@@ -156,7 +209,7 @@ export abstract class Base {
         connection_type: connectionData?.connection?.type
       });
     }
-    return defaultObject;
+    return piiData;
   }
 
   protected appendReferralData(helika_data: any): any {
@@ -170,8 +223,8 @@ export abstract class Base {
     }
 
     // todo: add referral_code info if any
-    
-    return Object.assign({}, helika_data, {
+
+    return _.merge({}, helika_data, {
       referral_data: {
         utms: utms,
         link_id: helika_referral_link,
@@ -275,7 +328,6 @@ export abstract class Base {
 
     return new Promise((resolve, reject) => {
       if (!this.enabled) {
-        console.log("Body: ", options);
         resolve({ message: 'Logged event' });
       } else {
         axios
@@ -312,14 +364,17 @@ export abstract class Base {
 
     //send event to initiate session
     var initEvent: any = this.getTemplateEvent("session_created", "session_created")
-    initEvent.event = Object.assign({}, initEvent.event, {
+    initEvent.event = _.merge({}, initEvent.event, {
       type: params.type,
       sdk_class: params.sdk_class
     })
 
+    initEvent.event.helika_data = this.appendHelikaData();
     if (this.piiTracking) {
-      initEvent.event = this.appendPIIData(initEvent.event);
+      initEvent.event.helika_data = this.appendPIIData(initEvent.event.helika_data);
     }
+
+    initEvent.event.app_details = this.appDetails;
 
     let event_params = {
       id: v4(),
@@ -337,10 +392,13 @@ export abstract class Base {
     //send event to initiate session
     var endEvent: any = this.getTemplateEvent("session_end", "session_end")
     endEvent.event_type = "";
-    endEvent.event = Object.assign({}, endEvent.event, {
+    endEvent.event = _.merge({}, endEvent.event, {
       event_sub_type: 'session_end',
       sdk_class: "Events"
     })
+
+    endEvent.event.helika_data = this.appendHelikaData();
+    endEvent.event.app_details = this.appDetails;
 
     let event_params = {
       id: v4(),
