@@ -234,7 +234,7 @@ export abstract class Base {
 
   protected appendReferralData(helika_data: any): any {
     let utms = this.refreshUtms();
-    let helika_referral_link = this.refreshLinkId();
+    let referral_utms = this.refreshReferralUTMs();
     let current_url: string = "";
     let referral_code = "";
 
@@ -247,7 +247,8 @@ export abstract class Base {
     return _.merge({}, helika_data, {
       referral_data: {
         utms: utms,
-        link_id: helika_referral_link,
+        link_id: referral_utms.helika_referral_link,
+        offer_wall_utm: referral_utms.helika_offer_wall_start_app_utm,
         url: current_url,
         referral_code: referral_code
       }
@@ -299,7 +300,36 @@ export abstract class Base {
     return null;
   }
 
-  protected refreshLinkId() {
+  protected refreshReferralUTMs() {
+    let referral_utms: any = {
+      helika_referral_link: null,
+      helika_offer_wall_start_app_utm: null
+    }
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        let helika_referral_link = this.getUrlParam('linkId');
+        if (helika_referral_link && !_.isEmpty(helika_referral_link)) {
+          localStorage.setItem('helika_referral_link', helika_referral_link);
+        } else {
+          helika_referral_link = localStorage.getItem('helika_referral_link');
+        }
+        referral_utms.helika_referral_link = helika_referral_link;
+
+        let helika_offer_wall_start_app_utm = this.getUrlParam('startapp');
+        if (helika_offer_wall_start_app_utm && !_.isEmpty(helika_offer_wall_start_app_utm)) {
+          localStorage.setItem('helika_offer_wall_start_app_utm', helika_offer_wall_start_app_utm);
+        } else {
+          helika_offer_wall_start_app_utm = localStorage.getItem('helika_offer_wall_start_app_utm');
+        }
+        referral_utms.helika_offer_wall_start_app_utm = helika_offer_wall_start_app_utm;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return referral_utms;
+  }
+
+  protected refreshOfferWallStartApp() {
     try {
       if (ExecutionEnvironment.canUseDOM) {
         let helika_referral_link = this.getUrlParam('linkId');
