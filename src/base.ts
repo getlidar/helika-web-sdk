@@ -44,7 +44,7 @@ export abstract class Base {
     this.userDetails = {
       user_id: this.anonId,
       email: null,
-      wallet: null
+      wallet_id: null
     }
   }
 
@@ -56,7 +56,7 @@ export abstract class Base {
     details: {
       user_id: string,
       email?: string | undefined,
-      wallet?: string | undefined,
+      wallet_id?: string | undefined,
       [key: string]: any;
     },
     createNewAnon: boolean = false
@@ -65,7 +65,7 @@ export abstract class Base {
       details = {
         user_id: this.generateAnonId(createNewAnon),
         email: undefined,
-        wallet: undefined,
+        wallet_id: undefined,
       }
     }
     if ('user_id' in details && (typeof details.user_id !== 'string' && typeof details.user_id !== 'number')) {
@@ -77,11 +77,8 @@ export abstract class Base {
     if ('email_address' in details && details?.email_address && !validator.isEmail(details?.email_address)) {
       throw new Error(`User Details property email_address:'${details?.email_address}' is not a valid email addess.`)
     }
-    if ('wallet' in details && details?.wallet && !details?.wallet.match(WALLET_REGEX)) {
-      throw new Error(`User Details property wallet:'${details?.wallet}' is not a valid wallet addess.`)
-    }
-    if ('wallet_address' in details && details?.wallet_address && !details?.wallet_address.match(WALLET_REGEX)) {
-      throw new Error(`User Details property wallet_address:'${details?.wallet_address}' is not a valid wallet addess.`)
+    if ('wallet_id' in details && details?.wallet_id && !details?.wallet_id.match(WALLET_REGEX)) {
+      throw new Error(`User Details property wallet_id:'${details?.wallet_id}' is not a valid wallet addess.`)
     }
     details.user_id = details.user_id?.toString()
     this.userDetails = details;
