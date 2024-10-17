@@ -154,7 +154,9 @@ export class EVENTS extends Base {
 
       if (!isUserEvent) {
         delete givenEvent.event.user_details;
-        delete givenEvent.event.user_id;
+
+        // replace the user_id with the 'anonId' because we just want to attach this non-user event data to a source.
+        givenEvent.event.user_id = this.anonId;
       }
 
       return givenEvent;
