@@ -221,7 +221,7 @@ export abstract class Base {
   }
 
   protected appendPIIData(helika_data: any): any {
-    let piiData = _.merge({}, helika_data, {
+    let piiData = {
       resolution: undefined,
       touch_support: undefined,
       device_type: undefined,
@@ -229,10 +229,10 @@ export abstract class Base {
       downlink: undefined,
       effective_type: undefined,
       connection_type: undefined
-    });
+    }
     if (ExecutionEnvironment.canUseDOM) {
       let connectionData: any = window.navigator;
-      return _.merge({}, piiData, {
+      piiData = _.merge({}, piiData, {
         resolution: `${window.innerWidth}x${window.innerHeight}`,
         touch_support: connectionData?.maxTouchPoints > 0,
         device_type: connectionData?.userAgentData?.mobile ? 'mobile' : connectionData?.userAgentData?.platform,
@@ -242,7 +242,8 @@ export abstract class Base {
         connection_type: connectionData?.connection?.type
       });
     }
-    return piiData;
+    helika_data.additional_user_info = piiData;
+    return helika_data;
   }
 
   protected appendReferralData(helika_data: any): any {
