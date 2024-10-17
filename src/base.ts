@@ -44,7 +44,7 @@ export abstract class Base {
     this.userDetails = {
       user_id: this.anonId,
       email: null,
-      wallet: null
+      wallet_id: null
     }
   }
 
@@ -56,7 +56,7 @@ export abstract class Base {
     details: {
       user_id: string,
       email?: string | undefined,
-      wallet?: string | undefined,
+      wallet_id?: string | undefined,
       [key: string]: any;
     },
     createNewAnon: boolean = false
@@ -65,7 +65,7 @@ export abstract class Base {
       details = {
         user_id: this.generateAnonId(createNewAnon),
         email: undefined,
-        wallet: undefined,
+        wallet_id: undefined,
       }
     }
     if ('user_id' in details && (typeof details.user_id !== 'string' && typeof details.user_id !== 'number')) {
@@ -77,11 +77,8 @@ export abstract class Base {
     if ('email_address' in details && details?.email_address && !validator.isEmail(details?.email_address)) {
       throw new Error(`User Details property email_address:'${details?.email_address}' is not a valid email addess.`)
     }
-    if ('wallet' in details && details?.wallet && !details?.wallet.match(WALLET_REGEX)) {
-      throw new Error(`User Details property wallet:'${details?.wallet}' is not a valid wallet addess.`)
-    }
-    if ('wallet_address' in details && details?.wallet_address && !details?.wallet_address.match(WALLET_REGEX)) {
-      throw new Error(`User Details property wallet_address:'${details?.wallet_address}' is not a valid wallet addess.`)
+    if ('wallet_id' in details && details?.wallet_id && !details?.wallet_id.match(WALLET_REGEX)) {
+      throw new Error(`User Details property wallet_id:'${details?.wallet_id}' is not a valid wallet addess.`)
     }
     details.user_id = details.user_id?.toString()
     this.userDetails = details;
@@ -100,6 +97,28 @@ export abstract class Base {
     [key: string]: any;
   }): any {
     this.appDetails = details;
+  }
+
+  public populateDefaultValues(type: string, values: any) {
+    switch (type) {
+      case 'user_details': {
+        let newValues = _.merge({}, values);
+        newValues.email = values.email || null;
+        newValues.wallet_id = values.wallet_id || null;
+        return newValues;
+      }
+      case 'app_details': {
+        let newValues = _.merge({}, values);
+        newValues.platform_id = values.platform_id || null;
+        newValues.client_app_version = values.client_app_version || null;
+        newValues.server_app_version = values.server_app_version || null;
+        newValues.store_id = values.store_id || null;
+        newValues.source_id = values.source_id || null;
+        return newValues;
+      }
+      default:
+        return values
+    }
   }
 
   public getPIITracking() {
@@ -188,7 +207,7 @@ export abstract class Base {
   }
 
   protected appendPIIData(helika_data: any): any {
-    let piiData = _.merge({}, helika_data, {
+    let piiData = {
       resolution: undefined,
       touch_support: undefined,
       device_type: undefined,
@@ -196,10 +215,10 @@ export abstract class Base {
       downlink: undefined,
       effective_type: undefined,
       connection_type: undefined
-    });
+    }
     if (ExecutionEnvironment.canUseDOM) {
       let connectionData: any = window.navigator;
-      return _.merge({}, piiData, {
+      piiData = _.merge({}, piiData, {
         resolution: `${window.innerWidth}x${window.innerHeight}`,
         touch_support: connectionData?.maxTouchPoints > 0,
         device_type: connectionData?.userAgentData?.mobile ? 'mobile' : connectionData?.userAgentData?.platform,
@@ -209,7 +228,8 @@ export abstract class Base {
         connection_type: connectionData?.connection?.type
       });
     }
-    return piiData;
+    helika_data.additional_user_info = piiData;
+    return helika_data;
   }
 
   protected appendReferralData(helika_data: any): any {
