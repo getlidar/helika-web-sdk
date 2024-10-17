@@ -99,6 +99,42 @@ export abstract class Base {
     this.appDetails = details;
   }
 
+  public populateDefaultValues(type: string, values: any) {
+    switch (type) {
+      case 'user_details': {
+        let newValues = _.merge({}, values);
+        if (!('email' in values) || _.isNil(values.email)) {
+          newValues.email = null;
+        }
+        if (!('wallet_id' in values) || _.isNil(values.wallet_id)) {
+          newValues.wallet_id = null;
+        }
+        return newValues;
+      }
+      case 'app_details': {
+        let newValues = _.merge({}, values);
+        if (!('platform_id' in values) || _.isNil(values.platform_id)) {
+          newValues.platform_id = null;
+        }
+        if (!('client_app_version' in values) || _.isNil(values.client_app_version)) {
+          newValues.client_app_version = null;
+        }
+        if (!('server_app_version' in values) || _.isNil(values.server_app_version)) {
+          newValues.server_app_version = null;
+        }
+        if (!('store_id' in values) || _.isNil(values.store_id)) {
+          newValues.store_id = null;
+        }
+        if (!('source_id' in values) || _.isNil(values.source_id)) {
+          newValues.source_id = null;
+        }
+        return newValues;
+      }
+      default:
+        return values
+    }
+  }
+
   public getPIITracking() {
     return this.piiTracking;
   }

@@ -145,9 +145,9 @@ export class EVENTS extends Base {
 
       givenEvent.event_type = event.event_type;
       givenEvent.event.event_sub_type = event.event.event_sub_type ? event.event.event_sub_type : null;
-      givenEvent.event.app_details = _.merge({}, event.event.app_details, this.appDetails);
+      givenEvent.event.app_details = this.populateDefaultValues('app_details', _.merge({}, event.event.app_details, this.appDetails));
       if (isUserEvent) {
-        givenEvent.event.user_details = _.merge({}, event.event.user_details, this.userDetails);
+        givenEvent.event.user_details = this.populateDefaultValues('user_details', _.merge({}, event.event.user_details, this.userDetails));
       }
       givenEvent.event.helika_data = this.appendHelikaData();
       givenEvent.event.helika_data = this.appendReferralData(givenEvent.event.helika_data)
