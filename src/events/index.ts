@@ -2,13 +2,12 @@ import { Base } from "../base";
 import { EventsBaseURL } from "../index";
 import ExecutionEnvironment from 'exenv';
 import { v4 } from 'uuid';
+import { version } from '../version'
+import _ from "lodash";
 
 export class EVENTS extends Base {
-  protected playerId: string;
-
-  constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL) {
-    super(apiKey, gameId);
-    this.playerId = "";
+  constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL, piiTracking: boolean = true) {
+    super(apiKey, gameId, piiTracking);
 
     switch (baseUrl) {
       case EventsBaseURL.EVENTS_LOCAL: {
@@ -29,15 +28,7 @@ export class EVENTS extends Base {
     }
   }
 
-  public getPlayerId(): string {
-    return this.playerId;
-  }
-
-  public setPlayerId(playerId: string) {
-    this.playerId = playerId;
-  }
-
-  async startSession(): Promise<any> {
+  public async startSession(): Promise<any> {
     try {
       if (ExecutionEnvironment.canUseDOM) {
         // Todo: Move this into the Base Class once Users have been consolidated
@@ -51,24 +42,13 @@ export class EVENTS extends Base {
     }
   }
 
-  protected async refreshSession(): Promise<any> {
-    try {
-      if (ExecutionEnvironment.canUseDOM) {
-        // Todo: Move this into the Base Class once Users have been consolidated
-        return await this.sessionCreate({
-          sdk_class: "Events",
-          type: 'Session Refresh'
-        });
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  async createEvent(
+  public async createEvent(
     events: {
       event_type: string,
-      event: Object
+      event: {
+        event_details: Object,
+        [key: string]: any;
+      }
     }[],
   ): Promise<{ message: string }> {
     await this.refreshSessionIdFromStorage();
@@ -77,103 +57,36 @@ export class EVENTS extends Base {
       throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
 
-    let created_at = new Date().toISOString();
-    let helika_referral_link: any = null;
-    let utms: any = null;
-    let current_url: string = "";
-    try {
-      if (ExecutionEnvironment.canUseDOM) {
-        helika_referral_link = this.refreshLinkId();
-        utms = this.refreshUtms();
-        current_url = window.location.href;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    let newEvents = events.map((event: any) => {
-      let givenEvent: any = Object.assign({}, event);
-      givenEvent.event.helika_referral_link = helika_referral_link;
-      givenEvent.event.utms = utms;
-      givenEvent.event.url = current_url;
-      if (event.event.session_id) {
-        givenEvent.event.client_session_id = event.event.session_id
-      }
-      givenEvent.event.session_id = this.sessionID;
-      givenEvent.event.player_id = this.playerId;
-      givenEvent.created_at = created_at;
-      givenEvent.game_id = this.gameId;
-      return givenEvent;
-    });
-
-    var params: {
-      id: string,
-      events: {
-        created_at: string,
-        game_id: string,
-        event_type: string,
-        event: Object
-      }[]
-    } = {
-      id: v4(),
-      events: newEvents
-    }
+    let params = this.prepareEventParams(events, false)
 
     this.extendSession();
 
     return this.postRequest(`/game/game-event`, params);
   }
 
-  async createUAEvent(
+  public async createUserEvent(
     events: {
       event_type: string,
-      event: Object
+      event: {
+        event_details: Object,
+        [key: string]: any;
+      }
     }[],
   ): Promise<{ message: string }> {
-
     await this.refreshSessionIdFromStorage();
 
-    if (!this.sessionID) throw new Error('SDK Session has not been started. Please call the SessionStart function to initialize instance with a Session ID.');
-
-    let created_at = new Date().toISOString();
-    let helika_referral_link: any = null;
-    let utms: any = null;
-    let current_url: string = "";
-    try {
-      if (ExecutionEnvironment.canUseDOM) {
-        helika_referral_link = this.refreshLinkId();
-        utms = this.refreshUtms();
-        current_url = window.location.href;
-      }
-    } catch (e) {
-      console.error(e);
+    if (!this.sessionID) {
+      throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
 
-    let newEvents = events.map((event: any) => {
-      let givenEvent: any = Object.assign({}, event);
-      givenEvent.event.helika_referral_link = helika_referral_link;
-      givenEvent.event.utms = utms;
-      givenEvent.event.url = current_url;
-      if (event.event.session_id) {
-        givenEvent.event.client_session_id = event.event.session_id
-      }
-      givenEvent.event.session_id = this.sessionID;
-      givenEvent.created_at = created_at;
-      givenEvent.game_id = 'UA';
-      return givenEvent;
-    });
+    let params = this.prepareEventParams(events, true);
 
-    var params: {
-      id: string,
-      events: {
-        created_at: string,
-        game_id: string,
-        event_type: string,
-        event: Object
-      }[]
-    } = {
-      id: v4(),
-      events: newEvents
+    let eventHasUserId = params?.events?.filter((event: any) => {
+      return _.isNil(event?.event?.user_details?.user_id)
+    })
+
+    if (!_.isEmpty(eventHasUserId)) {
+      throw new Error('Before sending user events, user_id must be set using sdk.setUserDetails()')
     }
 
     this.extendSession();
@@ -196,6 +109,73 @@ export class EVENTS extends Base {
         localStorage.setItem('sessionID', this.sessionID);
       }
     }
+  }
+
+  protected async refreshSession(): Promise<any> {
+    try {
+      if (ExecutionEnvironment.canUseDOM) {
+        // Todo: Move this into the Base Class once Users have been consolidated
+        return await this.sessionCreate({
+          sdk_class: "Events",
+          type: 'Session Refresh'
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  private prepareEventParams(
+    events: {
+      event_type: string,
+      event: {
+        event_details: Object,
+        [key: string]: any;
+      }
+    }[], isUserEvent: boolean) {
+
+    let templateEvent: any = this.getTemplateEvent("");
+
+    let updatedEvents = events.map((event: any) => {
+      let givenEvent: any = _.merge(
+        {},
+        event,
+        templateEvent
+      );
+
+      givenEvent.event_type = event.event_type;
+      givenEvent.event.event_sub_type = event.event.event_sub_type ? event.event.event_sub_type : null;
+      givenEvent.event.app_details = this.populateDefaultValues('app_details', _.merge({}, event.event.app_details, this.appDetails));
+      if (isUserEvent) {
+        givenEvent.event.user_details = this.populateDefaultValues('user_details', _.merge({}, event.event.user_details, this.userDetails));
+      }
+      givenEvent.event.helika_data = this.appendHelikaData();
+      givenEvent.event.helika_data = this.appendReferralData(givenEvent.event.helika_data)
+
+      if (!isUserEvent) {
+        delete givenEvent.event.user_details;
+
+        // replace the user_id with the 'anonId' because we just want to attach this non-user event data to a source.
+        givenEvent.event.user_id = this.anonId;
+      }
+
+      return givenEvent;
+    });
+
+    var params: {
+      id: string,
+      events: {
+        created_at: string,
+        game_id: string,
+        event_type: string,
+        event: Object
+      }[]
+    } = {
+      id: v4(),
+      events: updatedEvents
+    }
+
+    return params;
   }
 
 }
