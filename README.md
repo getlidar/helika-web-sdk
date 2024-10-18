@@ -41,13 +41,42 @@ For Production, use **EVENT_PROD**. This sends the events and queries to the pro
 
 ```ts
 import Helika from "helika-sdk"
-import { DisableDataSettings, EventsBaseURL } from "helika-sdk"
+import { EventsBaseURL } from "helika-sdk"
 
 const gameId = 'my_game_name'
 const helikaSDK = new Helika.EVENTS(api_key, gameId, EventsBaseURL.EVENTS_DEV);
 
-// Optional - if you want to disable some data from getting stored due to compliance
-helikaSDK.setDataSettings(DisableDataSettings.None);
+// PII Tracking is set to True by default. You can turn it off by setting the last parameter on the Helika.Events
+// constructor to 'false' as shown below.
+// const helikaSDK = new Helika.EVENTS(api_key, gameId, EventsBaseURL.EVENTS_DEV, false);
+
+// Optional - if you want to disable Personal Identifiable Information Tracking due to compliance
+helikaSDK.setPIITracking(false);
+helikaSDK.setAppDetails({
+    platform_id: 'mySDK', //optional
+    client_app_version: '1.0.0',//optional
+    store_id: 'steam',//optional
+    source_id: 'facebook',//optional
+    server_app_version: '1.0.0', //optional, if from client server, not client app
+})
+
+// To clear AppDetails, pass an empty object to `helikaSDK.setAppDetails()`
+// helikaSDK.setUserDetails({});
+
+/*
+REQUIRED if sending userEvents, else OPTIONAL
+If userDetails is not set, we autogenerate an anonymous id to the user. When you update the userDetails via setUserDetails(), we'll automatically associate the anonymous id to the user_id.
+
+Include any user identifying information that you'd like to keep track of such as any emails, wallet addresses, player_id, group_id, usernames, etc.
+*/
+helikaSDK.setUserDetails({
+	user_id: '123456',
+	email: '123456@gmail.com',
+	wallet_id: '0x4kd....'
+})
+
+// To clear UserData, pass an object to `helikaSDK.setUserDetails()` and set user_id to null
+// helikaSDK.setUserDetails({user_id=null});
 
 // Start a session/create a new session which initiates the SDK instance with a
 // sessionId which is required to fire events. This should only be called when 
@@ -64,10 +93,27 @@ events = [{
 	}
 }]
 
+userEvents = [{
+	event_type: 'user_play_game',
+	event: {
+		user: 'user_1',
+		win_number: 1,
+		wallet: '0x4kd....'
+	}
+}]
+
 // Asynchronously
 // await helikaSDK.createEvent(events);
 
 helikaSDK.createEvent(events)
+.then((resp) => {
+	//do something...
+	// console.log(resp);
+}).catch(e => {
+	console.error(e);
+});
+
+helikaSDK.createUserEvemt(userEvents)
 .then((resp) => {
 	//do something...
 	// console.log(resp);
