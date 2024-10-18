@@ -6,6 +6,7 @@ import _ from 'lodash'
 import CryptoJS from 'crypto-js';
 import validator from 'validator';
 import { WALLET_REGEX } from "./utils";
+import { DisableDataSettings } from "./index";
 
 export abstract class Base {
   private apiKey: string;
@@ -163,6 +164,31 @@ export abstract class Base {
 
   public setEnabled(enabled: boolean) {
     this.enabled = enabled;
+  }
+
+  public getPlayerId(): string {
+    console.warn("getPlayerId() is deprecated. Please use getUserDetails() instead.")
+    return "Function is deprecated.";
+  }
+
+  public setPlayerId(playerId: string) {
+    console.warn("setPlayerId() is deprecated. Please use setUserDetails() instead.")
+    // This is deprecated. No-op
+  }
+
+  public setDataSettings(settings: DisableDataSettings) {
+    console.warn("setDataSettings() is deprecated.")
+    // This is deprecated. No-op
+  }
+
+  async createUAEvent(
+    events: {
+      event_type: string,
+      event: Object
+    }[],
+  ): Promise<{ message: string }> {
+    console.warn("createUAEvent() is deprecated. Please use createEvent() or createUserEvent() instead.")
+    return { message: "Function is deprecated." }
   }
 
   protected generateAnonId(bypassStored: boolean = false): any {
