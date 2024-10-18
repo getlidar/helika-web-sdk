@@ -6,6 +6,7 @@ import _ from 'lodash'
 import CryptoJS from 'crypto-js';
 import validator from 'validator';
 import { WALLET_REGEX } from "./utils";
+import { DisableDataSettings } from "./index";
 
 export abstract class Base {
   private apiKey: string;
@@ -163,6 +164,10 @@ export abstract class Base {
 
   public setEnabled(enabled: boolean) {
     this.enabled = enabled;
+  }
+
+  public setDataSettings(settings: DisableDataSettings) {
+    // This is deprecated. No-op
   }
 
   protected generateAnonId(bypassStored: boolean = false): any {
