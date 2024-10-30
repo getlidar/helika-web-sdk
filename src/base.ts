@@ -419,6 +419,7 @@ export abstract class Base {
     if (this.piiTracking) {
       initEvent.event.helika_data = this.appendPIIData(initEvent.event.helika_data);
     }
+    initEvent.event.helika_data = this.appendReferralData(initEvent.event.helika_data);
 
     initEvent.event.app_details = this.appDetails;
 
