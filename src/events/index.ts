@@ -56,10 +56,11 @@ export class EVENTS extends Base {
     if (!this.sessionID) {
       throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
-
-    let params = this.prepareEventParams(events, false)
-
     this.extendSession();
+
+    let params: any = this.prepareEventParams(events, false)
+    let signature = await this.generateSignature(params);
+    params["signature"] = signature;
 
     return this.postRequest(`/game/game-event`, params);
   }
@@ -79,7 +80,7 @@ export class EVENTS extends Base {
       throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
 
-    let params = this.prepareEventParams(events, true);
+    let params: any = this.prepareEventParams(events, true);
 
     let eventHasUserId = params?.events?.filter((event: any) => {
       return _.isNil(event?.event?.user_details?.user_id)
@@ -90,6 +91,9 @@ export class EVENTS extends Base {
     }
 
     this.extendSession();
+
+    let signature = await this.generateSignature(params);
+    params["signature"] = signature;
 
     return this.postRequest(`/game/game-event`, params);
   }
