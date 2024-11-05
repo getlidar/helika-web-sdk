@@ -19,6 +19,7 @@ export abstract class Base {
   protected appDetails: any;
   protected userDetails: any;
   protected anonId: string;
+  protected secretKey: string | null;
 
   constructor(apiKey: string, gameId: string, piiTracking: boolean = true) {
     if (!apiKey || apiKey === '') {
@@ -47,6 +48,7 @@ export abstract class Base {
       email: null,
       wallet_id: null
     }
+    this.secretKey = null;
   }
 
   public getUserDetails(): any {
@@ -126,7 +128,7 @@ export abstract class Base {
     return this.piiTracking;
   }
 
-  public setPIITracking(piiTracking: boolean) {
+  public async setPIITracking(piiTracking: boolean) {
     this.piiTracking = piiTracking;
     if (this.piiTracking) {
       try {
@@ -141,13 +143,16 @@ export abstract class Base {
           piiEvent.event.app_details = this.appDetails;
 
 
-          let event_params = {
+          let event_params: any = {
             id: v4(),
             events: [piiEvent]
           }
 
+          let signature = await this.generateSignature(event_params);
+          event_params["signature"] = signature;
+
           try {
-            return this.postRequest(`/game/game-event`, event_params);
+            return await this.postRequest(`/game/game-event`, event_params);
           } catch (e: any) {
             this.processEventSentError(e);
           }
@@ -179,6 +184,10 @@ export abstract class Base {
   public setDataSettings(settings: DisableDataSettings) {
     console.warn("setDataSettings() is deprecated.")
     // This is deprecated. No-op
+  }
+
+  public setSecurityKey(securityKey: string | null) {
+    this.secretKey = securityKey;
   }
 
   async createUAEvent(
@@ -423,10 +432,13 @@ export abstract class Base {
 
     initEvent.event.app_details = this.appDetails;
 
-    let event_params = {
+    let event_params: any = {
       id: v4(),
       events: [initEvent]
     }
+
+    let signature = await this.generateSignature(event_params);
+    event_params["signature"] = signature;
 
     try {
       return await this.postRequest(`/game/game-event`, event_params);
@@ -447,10 +459,13 @@ export abstract class Base {
     endEvent.event.helika_data = this.appendHelikaData();
     endEvent.event.app_details = this.appDetails;
 
-    let event_params = {
+    let event_params: any = {
       id: v4(),
       events: [endEvent]
     }
+
+    let signature = await this.generateSignature(event_params);
+    event_params["signature"] = signature;
 
     try {
       return await this.postRequest(`/game/game-event`, event_params);
@@ -471,6 +486,21 @@ export abstract class Base {
       throw new Error('Error: Invalid API key. Please re-initiate the Helika SDK with a valid API Key.');
     }
     throw new Error(e.message);
+  }
+
+  protected async generateSignature(payload: any) {
+    if (!this.secretKey) {
+      return payload;
+    }
+
+    // Convert payload to a JSON string
+    const payloadString = JSON.stringify(payload);
+
+    // Generate the HMAC-SHA256 signature
+    const hash = CryptoJS.HmacSHA256(payloadString, this.secretKey);
+
+    // Convert to hexadecimal string
+    return hash.toString(CryptoJS.enc.Hex);
   }
 
   protected addHours(date: Date, hours: number) {
