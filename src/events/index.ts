@@ -147,7 +147,7 @@ export class EVENTS extends Base {
         templateEvent
       );
 
-      givenEvent.event_type = event.event_type;
+      givenEvent.event_type = event.event_type?.toLocaleLowerCase();
       givenEvent.event.event_sub_type = event.event.event_sub_type ? event.event.event_sub_type : null;
       givenEvent.event.app_details = this.populateDefaultValues('app_details', _.merge({}, event.event.app_details, this.appDetails));
       if (isUserEvent) {

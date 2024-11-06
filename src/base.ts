@@ -30,7 +30,7 @@ export abstract class Base {
     }
     this.apiKey = apiKey;
     this.sessionID = null;
-    this.gameId = gameId;
+    this.gameId = gameId.toLocaleLowerCase();
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
     this.piiTracking = piiTracking;
@@ -217,8 +217,8 @@ export abstract class Base {
   protected getTemplateEvent(event_type: string, event_sub_type?: string) {
     return {
       created_at: new Date().toISOString(),
-      game_id: this.gameId,
-      event_type: event_type,
+      game_id: this.gameId?.toLocaleLowerCase(),
+      event_type: event_type?.toLocaleLowerCase(),
       event: {
         user_id: this.userDetails.user_id,
         session_id: this.sessionID,
@@ -488,13 +488,51 @@ export abstract class Base {
     throw new Error(e.message);
   }
 
+  protected stringifyPayload(payload: any) {
+    // Recursively sort object keys for consistent serialization
+    if (typeof payload === 'object' && payload !== null) {
+      if (Array.isArray(payload)) {
+        let val: string = `[${payload.map((item) => this.stringifyPayload(item)).join(',')}]`;
+        return val
+      } else {
+        const sortedKeys = Object.keys(payload).sort();
+        return `{${sortedKeys.map((key: any) => {
+          let val: string = ''
+          val = `"${key}":${this.stringifyPayload(payload[key])}`
+          return val
+        }
+        ).join(',')}}`;
+      }
+    }
+    return JSON.stringify(payload); // Handles primitive types
+  }
+
+  static removeUndefined(obj: any) {
+    if (_.isArray(obj)) {
+      let newVal: any = _.compact(obj.map((item) => Base.removeUndefined(item)));
+      // If the object is an array, recurse through and remove undefined values
+      return newVal
+    } else if (_.isObject(obj)) {
+      let newVal: any = _.omitBy(_.mapValues(obj, Base.removeUndefined), _.isUndefined);
+      // If the object is a plain object, omit keys where the value is undefined
+      return newVal
+    }
+    return obj;
+  }
+
   protected async generateSignature(payload: any) {
     if (!this.secretKey) {
       return payload;
     }
 
+    let newPayload = payload
+    newPayload = Base.removeUndefined(newPayload);
+
+
     // Convert payload to a JSON string
-    const payloadString = JSON.stringify(payload);
+    let payloadString = JSON.stringify(newPayload, Object.keys(newPayload).sort());
+
+    payloadString = this.stringifyPayload(newPayload)
 
     // Generate the HMAC-SHA256 signature
     const hash = CryptoJS.HmacSHA256(payloadString, this.secretKey);
