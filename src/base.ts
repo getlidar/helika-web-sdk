@@ -148,7 +148,7 @@ export abstract class Base {
             events: [piiEvent]
           }
 
-          let signature = await this.generateSignature(event_params);
+          let signature = await Base.generateSignature(event_params, this.secretKey);
           event_params["signature"] = signature;
 
           try {
@@ -437,7 +437,7 @@ export abstract class Base {
       events: [initEvent]
     }
 
-    let signature = await this.generateSignature(event_params);
+    let signature = await Base.generateSignature(event_params, this.secretKey);
     event_params["signature"] = signature;
 
     try {
@@ -464,7 +464,7 @@ export abstract class Base {
       events: [endEvent]
     }
 
-    let signature = await this.generateSignature(event_params);
+    let signature = await Base.generateSignature(event_params, this.secretKey);
     event_params["signature"] = signature;
 
     try {
@@ -488,17 +488,52 @@ export abstract class Base {
     throw new Error(e.message);
   }
 
-  protected stringifyPayload(payload: any) {
+  protected addHours(date: Date, hours: number) {
+    date.setHours(date.getHours() + hours);
+    return date.toString();
+  }
+
+  protected addMinutes(date: Date, minutes: number) {
+    date.setMinutes(date.getMinutes() + minutes);
+    return date.toString();
+  }
+
+  protected extendSession() {
+    this.sessionExpiry = this.addMinutes(new Date(), 15);
+    if (ExecutionEnvironment.canUseDOM) {
+      localStorage.setItem('sessionExpiry', this.sessionExpiry);
+    };
+  }
+
+  static async generateSignature(payload: any, secretKey: string | null) {
+    if (!secretKey) {
+      return null;
+    }
+
+    // Remove Undefined fields
+    let newPayload = Base.removeUndefined(payload);
+
+    // Convert payload to a JSON string
+    let payloadString = Base.stringifyPayload(newPayload);
+
+    // Generate the HMAC-SHA256 signature
+    const hash = CryptoJS.HmacSHA256(payloadString, secretKey);
+
+    // Convert to hexadecimal string
+    return hash.toString(CryptoJS.enc.Hex);
+  }
+
+  static stringifyPayload(payload: any) {
     // Recursively sort object keys for consistent serialization
     if (typeof payload === 'object' && payload !== null) {
       if (Array.isArray(payload)) {
-        let val: string = `[${payload.map((item) => this.stringifyPayload(item)).join(',')}]`;
+        let val: string = `[${payload.map((item) => Base.stringifyPayload(item)).join(',')}]`;
         return val
       } else {
         const sortedKeys = Object.keys(payload).sort();
         return `{${sortedKeys.map((key: any) => {
           let val: string = ''
-          val = `"${key}":${this.stringifyPayload(payload[key])}`
+          val = `"${key}":${Base.stringifyPayload(payload[key])}`
           return val
         }
         ).join(',')}}`;
@@ -518,43 +553,5 @@ export abstract class Base {
       return newVal
     }
     return obj;
-  }
-
-  protected async generateSignature(payload: any) {
-    if (!this.secretKey) {
-      return payload;
-    }
-
-    let newPayload = payload
-    newPayload = Base.removeUndefined(newPayload);
-
-
-    // Convert payload to a JSON string
-    let payloadString = JSON.stringify(newPayload, Object.keys(newPayload).sort());
-
-    payloadString = this.stringifyPayload(newPayload)
-
-    // Generate the HMAC-SHA256 signature
-    const hash = CryptoJS.HmacSHA256(payloadString, this.secretKey);
-
-    // Convert to hexadecimal string
-    return hash.toString(CryptoJS.enc.Hex);
-  }
-
-  protected addHours(date: Date, hours: number) {
-    date.setHours(date.getHours() + hours);
-    return date.toString();
-  }
-
-  protected addMinutes(date: Date, minutes: number) {
-    date.setMinutes(date.getMinutes() + minutes);
-    return date.toString();
-  }
-
-  protected extendSession() {
-    this.sessionExpiry = this.addMinutes(new Date(), 15);
-    if (ExecutionEnvironment.canUseDOM) {
-      localStorage.setItem('sessionExpiry', this.sessionExpiry);
-    };
   }
 }

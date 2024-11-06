@@ -59,7 +59,7 @@ export class EVENTS extends Base {
     this.extendSession();
 
     let params: any = this.prepareEventParams(events, false)
-    let signature = await this.generateSignature(params);
+    let signature = await Base.generateSignature(params, this.secretKey);
     params["signature"] = signature;
 
     return this.postRequest(`/game/game-event`, params);
@@ -92,7 +92,7 @@ export class EVENTS extends Base {
 
     this.extendSession();
 
-    let signature = await this.generateSignature(params);
+    let signature = await Base.generateSignature(params, this.secretKey);
     params["signature"] = signature;
 
     return this.postRequest(`/game/game-event`, params);
