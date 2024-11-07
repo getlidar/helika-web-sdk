@@ -19,6 +19,7 @@ export abstract class Base {
   protected appDetails: any;
   protected userDetails: any;
   protected anonId: string;
+  protected secretKey: string | null;
 
   constructor(apiKey: string, gameId: string, piiTracking: boolean = true) {
     if (!apiKey || apiKey === '') {
@@ -29,7 +30,7 @@ export abstract class Base {
     }
     this.apiKey = apiKey;
     this.sessionID = null;
-    this.gameId = gameId;
+    this.gameId = gameId.toLocaleLowerCase();
     this.sessionExpiry = new Date();
     this.baseUrl = "http://localhost:3000";
     this.piiTracking = piiTracking;
@@ -47,6 +48,7 @@ export abstract class Base {
       email: null,
       wallet_id: null
     }
+    this.secretKey = null;
   }
 
   public getUserDetails(): any {
@@ -126,7 +128,7 @@ export abstract class Base {
     return this.piiTracking;
   }
 
-  public setPIITracking(piiTracking: boolean) {
+  public async setPIITracking(piiTracking: boolean) {
     this.piiTracking = piiTracking;
     if (this.piiTracking) {
       try {
@@ -141,13 +143,16 @@ export abstract class Base {
           piiEvent.event.app_details = this.appDetails;
 
 
-          let event_params = {
+          let event_params: any = {
             id: v4(),
             events: [piiEvent]
           }
 
+          let signature = await Base.generateSignature(event_params, this.secretKey);
+          event_params["signature"] = signature;
+
           try {
-            return this.postRequest(`/game/game-event`, event_params);
+            return await this.postRequest(`/game/game-event`, event_params);
           } catch (e: any) {
             this.processEventSentError(e);
           }
@@ -181,6 +186,10 @@ export abstract class Base {
     // This is deprecated. No-op
   }
 
+  public setSecurityKey(securityKey: string | null) {
+    this.secretKey = securityKey;
+  }
+
   async createUAEvent(
     events: {
       event_type: string,
@@ -208,8 +217,8 @@ export abstract class Base {
   protected getTemplateEvent(event_type: string, event_sub_type?: string) {
     return {
       created_at: new Date().toISOString(),
-      game_id: this.gameId,
-      event_type: event_type,
+      game_id: this.gameId?.toLocaleLowerCase(),
+      event_type: event_type?.toLocaleLowerCase(),
       event: {
         user_id: this.userDetails.user_id,
         session_id: this.sessionID,
@@ -423,10 +432,13 @@ export abstract class Base {
 
     initEvent.event.app_details = this.appDetails;
 
-    let event_params = {
+    let event_params: any = {
       id: v4(),
       events: [initEvent]
     }
+
+    let signature = await Base.generateSignature(event_params, this.secretKey);
+    event_params["signature"] = signature;
 
     try {
       return await this.postRequest(`/game/game-event`, event_params);
@@ -447,10 +459,13 @@ export abstract class Base {
     endEvent.event.helika_data = this.appendHelikaData();
     endEvent.event.app_details = this.appDetails;
 
-    let event_params = {
+    let event_params: any = {
       id: v4(),
       events: [endEvent]
     }
+
+    let signature = await Base.generateSignature(event_params, this.secretKey);
+    event_params["signature"] = signature;
 
     try {
       return await this.postRequest(`/game/game-event`, event_params);
@@ -488,5 +503,55 @@ export abstract class Base {
     if (ExecutionEnvironment.canUseDOM) {
       localStorage.setItem('sessionExpiry', this.sessionExpiry);
     };
+  }
+
+  static async generateSignature(payload: any, secretKey: string | null) {
+    if (!secretKey) {
+      return null;
+    }
+
+    // Remove Undefined fields
+    let newPayload = Base.removeUndefined(payload);
+
+    // Convert payload to a JSON string
+    let payloadString = Base.stringifyPayload(newPayload);
+
+    // Generate the HMAC-SHA256 signature
+    const hash = CryptoJS.HmacSHA256(payloadString, secretKey);
+
+    // Convert to hexadecimal string
+    return hash.toString(CryptoJS.enc.Hex);
+  }
+
+  static stringifyPayload(payload: any) {
+    // Recursively sort object keys for consistent serialization
+    if (typeof payload === 'object' && payload !== null) {
+      if (Array.isArray(payload)) {
+        let val: string = `[${payload.map((item) => Base.stringifyPayload(item)).join(',')}]`;
+        return val
+      } else {
+        const sortedKeys = Object.keys(payload).sort();
+        return `{${sortedKeys.map((key: any) => {
+          let val: string = ''
+          val = `"${key}":${Base.stringifyPayload(payload[key])}`
+          return val
+        }
+        ).join(',')}}`;
+      }
+    }
+    return JSON.stringify(payload); // Handles primitive types
+  }
+
+  static removeUndefined(obj: any) {
+    if (_.isArray(obj)) {
+      let newVal: any = _.compact(obj.map((item) => Base.removeUndefined(item)));
+      // If the object is an array, recurse through and remove undefined values
+      return newVal
+    } else if (_.isObject(obj)) {
+      let newVal: any = _.omitBy(_.mapValues(obj, Base.removeUndefined), _.isUndefined);
+      // If the object is a plain object, omit keys where the value is undefined
+      return newVal
+    }
+    return obj;
   }
 }
