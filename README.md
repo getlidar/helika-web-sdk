@@ -1,4 +1,6 @@
-# Helika User Acquisition SDK
+# Helika User Acquisition SDK - DEV BRANCH
+
+# WARNING - DO NOT USE IN PRODUCTION
 
 SDK for use with the Events endpoints (https://api.helika.io/v1 or https://api-stage.helika.io/v1)
 
