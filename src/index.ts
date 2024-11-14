@@ -1,11 +1,17 @@
 import { EVENTS } from "./events";
+import { SOCIAL_CONNECT } from "./social_connect";
 
-export default { EVENTS: EVENTS }
+export default { EVENTS: EVENTS, SOCIAL_CONNECT: SOCIAL_CONNECT }
 
 export enum EventsBaseURL {
   EVENTS_LOCAL,
   EVENTS_DEV,
   EVENTS_PROD
+}
+
+export enum SocialConnect {
+  SOCIAL_SANDBOX,
+  SOCIAL_PROD
 }
 
 export enum DisableDataSettings {
