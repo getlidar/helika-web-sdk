@@ -92,16 +92,18 @@ export class SOCIAL_CONNECT extends Base {
         console.error('Empty IMX passport of accounts')
       }
 
+      let response = {
+        accessToken: accessToken,
+        imxProfile: imxProfile
+      }
+
       //handle success
       if (handleConnectIMXSuccess && (typeof handleConnectIMXSuccess === 'function')) {
-        handleConnectIMXSuccess(!_.isEmpty(imxProfile?.sub) ? imxProfile?.sub : undefined)
+        handleConnectIMXSuccess(response)
       }
 
       //return accessToken and IMX Profile
-      return {
-        accessToken: accessToken,
-        imxProfile: imxProfile
-      };
+      return response;
 
     } catch (e) {
       console.error('Error:', e)
