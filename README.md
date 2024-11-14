@@ -125,3 +125,53 @@ helikaSDK.createUserEvemt(userEvents)
 
 ## Full docs
 For the full documentation, please head to [official docs](https://dash.readme.com/project/helika/v1.0/docs/web-sdk).
+
+
+
+## IMX Connection
+
+Requirements:
+
+1. Client implementing the Helika SDK for IMX connection  will need and IMX Account and Project (see https://www.immutable.com/products/developer-hub , we might need to create a guide for clients for creating this)
+2. Using the project above, provide the IMX Project details to the sdk ( see imxProjectDetails in src/social_connect/index, we will also need to create a guide for this)
+3. Clients will need to setup a login redirect page for IMX redirects, see example code below:
+
+
+LOGIN PAGE
+```ts
+
+import Helika, { SocialConnect } from "helika-sdk";
+import { useEffect,useState } from "react";
+
+export default function ImxLoginRedirectPage() {
+
+  useEffect(()=>{
+
+    let helikaImxInstance = new Helika.SOCIAL_CONNECT(
+      process.env.HELIKA_API_KEY,
+      process.env.GAME_ID,
+      SocialConnect.SOCIAL_SANDBOX,
+      false,
+      {
+          publishableKey: process.env.CLIENT_IMX_PROJECT_PUBLISHABLE_KEY,
+          clientId: process.env.CLIENT_IMX_PROJECT_CLIENT_ID,
+          redirectUri: `http://localhost:3000/imx/login`, // replace with one of your redirect URIs from Hub
+          logoutRedirectUri: `http://localhost:3000/`, // replace with one of your logout URIs from Hub
+      }
+    )
+    if (!helikaImxInstance) return
+    let instance = helikaImxInstance.getPassportInstance()
+    if (instance) {
+		// this will complete the IMX connection
+      instance.loginCallback();
+    }
+  },[])
+
+  return (
+    <div>
+      IMX LOGIN
+    </div>
+  );
+}
+
+```
