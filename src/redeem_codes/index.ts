@@ -32,13 +32,13 @@ export class REDEEM_CODES extends Base {
 
     let params: any = this.prepareEventParams(redeem_code, user_id)
 
-    return this.postRequest(`/redeem`, params);
+    return this.postRequest(`/redemption-codes/use/redeem`, params);
   }
 
   private prepareEventParams(redeem_code: string, user_id: string) {
 
     let params = {
-      redeem_code: redeem_code,
+      code: redeem_code,
       user_id: user_id
     }
     return params;
