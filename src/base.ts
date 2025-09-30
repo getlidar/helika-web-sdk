@@ -152,7 +152,7 @@ export abstract class Base {
           event_params["signature"] = signature;
 
           try {
-            return await this.postRequest(`/game/game-event`, event_params);
+            return await this.postRequest(`/events/`, event_params);
           } catch (e: any) {
             this.processEventSentError(e);
           }
@@ -441,7 +441,7 @@ export abstract class Base {
     event_params["signature"] = signature;
 
     try {
-      return await this.postRequest(`/game/game-event`, event_params);
+      return await this.postRequest(`/events/`, event_params);
     } catch (e: any) {
       this.processEventSentError(e);
     }
@@ -468,7 +468,7 @@ export abstract class Base {
     event_params["signature"] = signature;
 
     try {
-      return await this.postRequest(`/game/game-event`, event_params);
+      return await this.postRequest(`/events/`, event_params);
     } catch (e: any) {
       this.processEventSentError(e);
     }
