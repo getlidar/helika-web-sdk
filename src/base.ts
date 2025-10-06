@@ -476,7 +476,7 @@ export abstract class Base {
 
   protected processEventSentError(e: any) {
     if (
-      e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
+      e && 'response' in e && e.response && 'data' in e.response && e.response.data && 'message' in e.response.data && e.response.data.message &&
       e.response.data.message.startsWith('Internal server error - Invalid API key:')
     ) {
       this.sessionID = null;
