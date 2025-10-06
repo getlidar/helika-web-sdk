@@ -1,6 +1,6 @@
 # Helika User Acquisition SDK
 
-SDK for use with the Events endpoints (https://api.helika.io/v1 or https://api-stage.helika.io/v1)
+SDK for use with the Events endpoints (https://events.analytics.helika.io)
 
 The Helika SDK is for developers to be able to make API calls to the Helika DEV and PROD endpoints.
 The following pages will describe how to make calls to the Helika API. Developers will need to install the helika-sdk to their project.
