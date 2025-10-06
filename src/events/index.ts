@@ -13,17 +13,17 @@ export class EVENTS extends Base {
     switch (baseUrl) {
       case EventsBaseURL.EVENTS_LOCAL: {
         // this.baseUrl = 'http://localhost:3000';
-        this.baseUrl = "https://events.analytics.helika.io/";
+        this.baseUrl = "https://events.analytics.helika.io";
         this.enabled = false;
         break;
       }
       case EventsBaseURL.EVENTS_PROD: {
-        this.baseUrl = "https://events.analytics.helika.io/";
+        this.baseUrl = "https://events.analytics.helika.io";
         break;
       }
       case EventsBaseURL.EVENTS_DEV:
       default: {
-        this.baseUrl = "https://events.analytics.helika.io/";
+        this.baseUrl = "https://events.analytics.helika.io";
         break;
       }
     }
