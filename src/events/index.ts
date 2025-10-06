@@ -12,8 +12,7 @@ export class EVENTS extends Base {
     // Todo: I don't know if we'll have more than one endpoint for events, so we'll keep it as is for now.
     switch (baseUrl) {
       case EventsBaseURL.EVENTS_LOCAL: {
-        // this.baseUrl = 'http://localhost:3000';
-        this.baseUrl = "https://events.analytics.helika.io";
+         this.baseUrl = 'http://localhost:8182';
         this.enabled = false;
         break;
       }

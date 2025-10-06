@@ -32,7 +32,7 @@ export abstract class Base {
     this.sessionID = null;
     this.gameId = gameId.toLocaleLowerCase();
     this.sessionExpiry = new Date();
-    this.baseUrl = "http://localhost:3000";
+    this.baseUrl = "http://localhost:8182";
     this.piiTracking = piiTracking;
     this.enabled = true;
     this.appDetails = {
