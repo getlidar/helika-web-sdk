@@ -9,20 +9,20 @@ export class EVENTS extends Base {
   constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL, piiTracking: boolean = true) {
     super(apiKey, gameId, piiTracking);
 
+    // Todo: I don't know if we'll have more than one endpoint for events, so we'll keep it as is for now.
     switch (baseUrl) {
       case EventsBaseURL.EVENTS_LOCAL: {
-        // this.baseUrl = 'http://localhost:3000';
-        this.baseUrl = "https://api-stage.helika.io/v1";
+         this.baseUrl = 'http://localhost:8182';
         this.enabled = false;
         break;
       }
       case EventsBaseURL.EVENTS_PROD: {
-        this.baseUrl = "https://api.helika.io/v1";
+        this.baseUrl = "https://events.analytics.helika.io";
         break;
       }
       case EventsBaseURL.EVENTS_DEV:
       default: {
-        this.baseUrl = "https://api-stage.helika.io/v1";
+        this.baseUrl = "https://events.analytics.helika.io";
         break;
       }
     }
@@ -56,12 +56,13 @@ export class EVENTS extends Base {
     if (!this.sessionID) {
       throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
-
-    let params = this.prepareEventParams(events, false)
-
     this.extendSession();
 
-    return this.postRequest(`/game/game-event`, params);
+    let params: any = this.prepareEventParams(events, false)
+    let signature = await Base.generateSignature(params, this.secretKey);
+    params["signature"] = signature;
+
+    return this.postRequest(`/events/`, params);
   }
 
   public async createUserEvent(
@@ -79,7 +80,7 @@ export class EVENTS extends Base {
       throw new Error('Could not create event. No session id. Please initiate a session first (See Helika Docs).');
     }
 
-    let params = this.prepareEventParams(events, true);
+    let params: any = this.prepareEventParams(events, true);
 
     let eventHasUserId = params?.events?.filter((event: any) => {
       return _.isNil(event?.event?.user_details?.user_id)
@@ -91,7 +92,10 @@ export class EVENTS extends Base {
 
     this.extendSession();
 
-    return this.postRequest(`/game/game-event`, params);
+    let signature = await Base.generateSignature(params, this.secretKey);
+    params["signature"] = signature;
+
+    return this.postRequest(`/events/`, params);
   }
 
   protected async refreshSessionIdFromStorage() {
@@ -143,7 +147,7 @@ export class EVENTS extends Base {
         templateEvent
       );
 
-      givenEvent.event_type = event.event_type;
+      givenEvent.event_type = event.event_type?.toLocaleLowerCase();
       givenEvent.event.event_sub_type = event.event.event_sub_type ? event.event.event_sub_type : null;
       givenEvent.event.app_details = this.populateDefaultValues('app_details', _.merge({}, event.event.app_details, this.appDetails));
       if (isUserEvent) {
