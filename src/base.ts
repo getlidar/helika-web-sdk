@@ -32,7 +32,7 @@ export abstract class Base {
     this.sessionID = null;
     this.gameId = gameId.toLocaleLowerCase();
     this.sessionExpiry = new Date();
-    this.baseUrl = "http://localhost:3000";
+    this.baseUrl = "http://localhost:8182";
     this.piiTracking = piiTracking;
     this.enabled = true;
     this.appDetails = {
@@ -476,7 +476,7 @@ export abstract class Base {
 
   protected processEventSentError(e: any) {
     if (
-      e && 'response' in e && 'data' in e.response && 'message' in e.response.data &&
+      e && 'response' in e && e.response && 'data' in e.response && e.response.data && 'message' in e.response.data && e.response.data.message &&
       e.response.data.message.startsWith('Internal server error - Invalid API key:')
     ) {
       this.sessionID = null;
