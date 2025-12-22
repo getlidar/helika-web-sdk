@@ -20,6 +20,7 @@ export abstract class Base {
   protected userDetails: any;
   protected anonId: string;
   protected secretKey: string | null;
+  protected env: string = "local";
 
   constructor(apiKey: string, gameId: string, piiTracking: boolean = true) {
     if (!apiKey || apiKey === '') {
@@ -152,7 +153,7 @@ export abstract class Base {
           event_params["signature"] = signature;
 
           try {
-            return await this.postRequest(`/events/`, event_params);
+            return await this.postRequest(this.getEventsUrl(), event_params);
           } catch (e: any) {
             this.processEventSentError(e);
           }
@@ -351,8 +352,7 @@ export abstract class Base {
     return null;
   }
 
-  protected getRequest<T>(endpoint: string, options?: any): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
+  protected getRequest<T>(url: string, options?: any): Promise<T> {
     const headers = {
       "Content-Type": "application/json",
       "x-api-key": this.apiKey,
@@ -363,7 +363,7 @@ export abstract class Base {
     };
     return new Promise((resolve, reject) => {
       axios
-        .get(`${url}`, config)
+        .get(url, config)
         .then((resp: any) => {
           resolve(resp.data);
         })
@@ -371,8 +371,7 @@ export abstract class Base {
     });
   }
 
-  protected postRequest<T>(endpoint: string, options?: any): Promise<any> {
-    const url = `${this.baseUrl}${endpoint}`;
+  protected postRequest<T>(url: string, options?: any): Promise<any> {
     const headers = {
       "Content-Type": "application/json",
       "x-api-key": this.apiKey,
@@ -386,7 +385,7 @@ export abstract class Base {
         resolve({ message: 'Logged event' });
       } else {
         axios
-          .post(`${url}`, options, config)
+          .post(url, options, config)
           .then((resp: any) => {
             resolve(resp.data);
           })
@@ -441,7 +440,7 @@ export abstract class Base {
     event_params["signature"] = signature;
 
     try {
-      return await this.postRequest(`/events/`, event_params);
+      return await this.postRequest(this.getEventsUrl(), event_params);
     } catch (e: any) {
       this.processEventSentError(e);
     }
@@ -468,7 +467,7 @@ export abstract class Base {
     event_params["signature"] = signature;
 
     try {
-      return await this.postRequest(`/events/`, event_params);
+      return await this.postRequest(this.getEventsUrl(), event_params);
     } catch (e: any) {
       this.processEventSentError(e);
     }
@@ -503,6 +502,13 @@ export abstract class Base {
     if (ExecutionEnvironment.canUseDOM) {
       localStorage.setItem('sessionExpiry', this.sessionExpiry);
     };
+  }
+
+  protected getEventsUrl(): string {
+    if (this.env === "production") {
+      return this.baseUrl + "/events/";
+    }
+    return this.baseUrl + "/events/sandbox";
   }
 
   static async generateSignature(payload: any, secretKey: string | null) {

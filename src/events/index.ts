@@ -8,21 +8,22 @@ import _ from "lodash";
 export class EVENTS extends Base {
   constructor(apiKey: string, gameId: string, baseUrl: EventsBaseURL, piiTracking: boolean = true) {
     super(apiKey, gameId, piiTracking);
-
-    // Todo: I don't know if we'll have more than one endpoint for events, so we'll keep it as is for now.
     switch (baseUrl) {
       case EventsBaseURL.EVENTS_LOCAL: {
-         this.baseUrl = 'http://localhost:8182';
+        this.baseUrl = 'http://localhost:8182/events/sandbox';
+        this.env = "local";
         this.enabled = false;
         break;
       }
       case EventsBaseURL.EVENTS_PROD: {
-        this.baseUrl = "https://events.analytics.helika.io";
+        this.baseUrl = "https://events.analytics.helika.io/events/";
+        this.env = "production";
         break;
       }
       case EventsBaseURL.EVENTS_DEV:
       default: {
-        this.baseUrl = "https://events.analytics.helika.io";
+        this.baseUrl = "https://events.analytics.helika.io/events/sandbox";
+        this.env = "sandbox";
         break;
       }
     }
@@ -62,7 +63,7 @@ export class EVENTS extends Base {
     let signature = await Base.generateSignature(params, this.secretKey);
     params["signature"] = signature;
 
-    return this.postRequest(`/events/`, params);
+    return this.postRequest(this.getEventsUrl(), params);
   }
 
   public async createUserEvent(
@@ -95,7 +96,7 @@ export class EVENTS extends Base {
     let signature = await Base.generateSignature(params, this.secretKey);
     params["signature"] = signature;
 
-    return this.postRequest(`/events/`, params);
+    return this.postRequest(this.getEventsUrl(), params);
   }
 
   protected async refreshSessionIdFromStorage() {
