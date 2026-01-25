@@ -1,11 +1,17 @@
 import { EVENTS } from "./events";
+import { REDEEM_CODES } from "./redeem_codes";
 
-export default { EVENTS: EVENTS }
+export default { EVENTS: EVENTS, REDEEM_CODES: REDEEM_CODES }
 
 export enum EventsBaseURL {
   EVENTS_LOCAL,
   EVENTS_DEV,
   EVENTS_PROD
+}
+export enum RedeemCodesURL {
+  REDEEM_CODES_LOCAL,
+  REDEEM_CODES_DEV,
+  REDEEM_CODES_PROD
 }
 
 export enum DisableDataSettings {
